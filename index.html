@@ -81,8 +81,8 @@
   .spin-btn:active{transform:translateY(0)}
 
   /* Spin carousel */
-  .reel{height:90px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin:8px 0 4px;border-radius:10px}
-  .reel-track{display:flex;flex-direction:column;transition:transform 0s linear}
+  .reel{height:90px;display:block;position:relative;overflow:hidden;margin:8px 0 4px;border-radius:10px}
+  .reel-track{display:flex;flex-direction:column;width:100%;will-change:transform}
   .reel-item{height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
   .reel-item .t{font-size:26px;font-weight:800;letter-spacing:.5px}
   .reel-item .y{font-size:22px;font-weight:800;color:var(--gold);margin-top:2px}
@@ -455,15 +455,123 @@ const TEAM_SEASONS = [
 ];
 
 const OPPONENTS = [
-  { n:"Australia",     wtc:88, odi:88, t20:84 },
-  { n:"India",         wtc:90, odi:92, t20:90 },
-  { n:"England",       wtc:84, odi:86, t20:86 },
-  { n:"New Zealand",   wtc:84, odi:82, t20:80 },
-  { n:"Pakistan",      wtc:78, odi:82, t20:84 },
-  { n:"South Africa",  wtc:82, odi:84, t20:84 },
-  { n:"West Indies",   wtc:70, odi:74, t20:80 },
-  { n:"Sri Lanka",     wtc:72, odi:76, t20:76 }
+  { n:"Australia",     wtc:92, odi:92, t20:90 },
+  { n:"India",         wtc:93, odi:93, t20:92 },
+  { n:"England",       wtc:91, odi:90, t20:90 },
+  { n:"New Zealand",   wtc:88, odi:88, t20:86 },
+  { n:"Pakistan",      wtc:90, odi:90, t20:90 },
+  { n:"South Africa",  wtc:91, odi:91, t20:89 },
+  { n:"West Indies",   wtc:93, odi:93, t20:91 },
+  { n:"Sri Lanka",     wtc:88, odi:90, t20:88 }
 ];
+
+// All-time XI per nation — used as the actual opponent in match sim
+const OPP_XI = {
+  "Australia": [
+    { n:"Matthew Hayden",    roles:["OPN"], season:93, prime:93 },
+    { n:"Adam Gilchrist",    roles:["WK","OPN"], season:92, prime:92 },
+    { n:"Ricky Ponting",     roles:["BAT"], season:94, prime:94 },
+    { n:"Steve Smith",       roles:["BAT"], season:94, prime:94 },
+    { n:"Steve Waugh",       roles:["BAT","AR"], season:90, prime:90 },
+    { n:"Michael Bevan",     roles:["FIN","BAT"], season:91, prime:91 },
+    { n:"Shane Warne",       roles:["SPN"], season:96, prime:96 },
+    { n:"Glenn McGrath",     roles:["PAC"], season:96, prime:96 },
+    { n:"Dennis Lillee",     roles:["PAC"], season:95, prime:95 },
+    { n:"Brett Lee",         roles:["PAC"], season:93, prime:93 },
+    { n:"Pat Cummins",       roles:["PAC","AR"], season:92, prime:92 }
+  ],
+  "India": [
+    { n:"Virender Sehwag",   roles:["OPN"], season:92, prime:92 },
+    { n:"Sachin Tendulkar",  roles:["OPN","BAT"], season:96, prime:96 },
+    { n:"Rahul Dravid",      roles:["BAT"], season:92, prime:92 },
+    { n:"Virat Kohli",       roles:["BAT"], season:95, prime:95 },
+    { n:"Sourav Ganguly",    roles:["BAT"], season:88, prime:88 },
+    { n:"MS Dhoni",          roles:["WK","FIN"], season:90, prime:90 },
+    { n:"Kapil Dev",         roles:["AR","PAC"], season:90, prime:90 },
+    { n:"Anil Kumble",       roles:["SPN"], season:90, prime:90 },
+    { n:"R Ashwin",          roles:["SPN","AR"], season:90, prime:90 },
+    { n:"Zaheer Khan",       roles:["PAC"], season:88, prime:88 },
+    { n:"Jasprit Bumrah",    roles:["PAC"], season:96, prime:96 }
+  ],
+  "England": [
+    { n:"Jack Hobbs",        roles:["OPN"], season:90, prime:90 },
+    { n:"Len Hutton",        roles:["OPN"], season:90, prime:90 },
+    { n:"Joe Root",          roles:["BAT"], season:92, prime:92 },
+    { n:"Kevin Pietersen",   roles:["BAT"], season:92, prime:92 },
+    { n:"Ben Stokes",        roles:["AR"], season:92, prime:92 },
+    { n:"Jos Buttler",       roles:["WK","FIN"], season:92, prime:92 },
+    { n:"Ian Botham",        roles:["AR","PAC"], season:92, prime:92 },
+    { n:"James Anderson",    roles:["PAC"], season:92, prime:92 },
+    { n:"Stuart Broad",      roles:["PAC","AR"], season:90, prime:90 },
+    { n:"Graeme Swann",      roles:["SPN"], season:92, prime:92 },
+    { n:"Fred Trueman",      roles:["PAC"], season:90, prime:90 }
+  ],
+  "New Zealand": [
+    { n:"Glenn Turner",      roles:["OPN"], season:84, prime:84 },
+    { n:"Devon Conway",      roles:["OPN"], season:86, prime:86 },
+    { n:"Kane Williamson",   roles:["BAT"], season:93, prime:93 },
+    { n:"Martin Crowe",      roles:["BAT"], season:90, prime:90 },
+    { n:"Ross Taylor",       roles:["BAT"], season:90, prime:90 },
+    { n:"Brendon McCullum",  roles:["WK","FIN"], season:88, prime:88 },
+    { n:"Daniel Vettori",    roles:["SPN","AR"], season:88, prime:88 },
+    { n:"Richard Hadlee",    roles:["AR","PAC"], season:96, prime:96 },
+    { n:"Trent Boult",       roles:["PAC"], season:90, prime:90 },
+    { n:"Tim Southee",       roles:["PAC"], season:90, prime:90 },
+    { n:"Kyle Jamieson",     roles:["PAC","AR"], season:88, prime:88 }
+  ],
+  "Pakistan": [
+    { n:"Saeed Anwar",       roles:["OPN"], season:88, prime:88 },
+    { n:"Hanif Mohammad",    roles:["OPN"], season:86, prime:86 },
+    { n:"Javed Miandad",     roles:["BAT"], season:94, prime:94 },
+    { n:"Inzamam-ul-Haq",    roles:["BAT"], season:92, prime:92 },
+    { n:"Younis Khan",       roles:["BAT"], season:88, prime:88 },
+    { n:"Moin Khan",         roles:["WK","BAT"], season:82, prime:82 },
+    { n:"Imran Khan",        roles:["AR","PAC"], season:96, prime:96 },
+    { n:"Wasim Akram",       roles:["AR","PAC"], season:96, prime:96 },
+    { n:"Waqar Younis",      roles:["PAC"], season:94, prime:94 },
+    { n:"Saqlain Mushtaq",   roles:["SPN"], season:88, prime:88 },
+    { n:"Saeed Ajmal",       roles:["SPN"], season:92, prime:92 }
+  ],
+  "South Africa": [
+    { n:"Graeme Smith",      roles:["OPN"], season:90, prime:90 },
+    { n:"Hashim Amla",       roles:["OPN","BAT"], season:92, prime:92 },
+    { n:"Jacques Kallis",    roles:["BAT","AR"], season:94, prime:94 },
+    { n:"AB de Villiers",    roles:["BAT","WK"], season:96, prime:96 },
+    { n:"Heinrich Klaasen",  roles:["WK","FIN"], season:90, prime:90 },
+    { n:"Shaun Pollock",     roles:["AR","PAC"], season:90, prime:90 },
+    { n:"Lance Klusener",    roles:["AR","FIN"], season:88, prime:88 },
+    { n:"Dale Steyn",        roles:["PAC"], season:96, prime:96 },
+    { n:"Allan Donald",      roles:["PAC"], season:94, prime:94 },
+    { n:"Kagiso Rabada",     roles:["PAC"], season:92, prime:92 },
+    { n:"Keshav Maharaj",    roles:["SPN"], season:84, prime:84 }
+  ],
+  "West Indies": [
+    { n:"Gordon Greenidge",  roles:["OPN"], season:92, prime:92 },
+    { n:"Desmond Haynes",    roles:["OPN"], season:90, prime:90 },
+    { n:"Brian Lara",        roles:["BAT"], season:96, prime:96 },
+    { n:"Viv Richards",      roles:["BAT"], season:96, prime:96 },
+    { n:"Clive Lloyd",       roles:["BAT","FIN"], season:92, prime:92 },
+    { n:"Chris Gayle",       roles:["OPN","BAT"], season:92, prime:92 },
+    { n:"Jeff Dujon",        roles:["WK"], season:82, prime:82 },
+    { n:"Garry Sobers",      roles:["AR"], season:97, prime:97 },
+    { n:"Malcolm Marshall",  roles:["PAC"], season:96, prime:96 },
+    { n:"Michael Holding",   roles:["PAC"], season:96, prime:96 },
+    { n:"Curtly Ambrose",    roles:["PAC"], season:94, prime:94 }
+  ],
+  "Sri Lanka": [
+    { n:"Sanath Jayasuriya", roles:["OPN","AR"], season:94, prime:94 },
+    { n:"Marvan Atapattu",   roles:["OPN"], season:84, prime:84 },
+    { n:"Kumar Sangakkara",  roles:["WK","BAT"], season:94, prime:94 },
+    { n:"Mahela Jayawardene",roles:["BAT"], season:92, prime:92 },
+    { n:"Aravinda de Silva", roles:["BAT","AR"], season:94, prime:94 },
+    { n:"Arjuna Ranatunga",  roles:["BAT","FIN"], season:88, prime:88 },
+    { n:"Angelo Mathews",    roles:["AR","BAT"], season:86, prime:86 },
+    { n:"Muttiah Muralidaran",roles:["SPN"], season:97, prime:97 },
+    { n:"Rangana Herath",    roles:["SPN"], season:88, prime:88 },
+    { n:"Chaminda Vaas",     roles:["PAC"], season:90, prime:90 },
+    { n:"Lasith Malinga",    roles:["PAC"], season:92, prime:92 }
+  ]
+};
 
 const TOURNAMENTS = [
   { id:"wtc", name:"ICC World Test Championship", fmt:"wtc", icon:"🏆", rounds:["Final"], overs:90, base:380 },
@@ -725,22 +833,7 @@ function orderForBatting(players){
 }
 
 function buildOppXI(opp){
-  // Generate 11 generic players for the opponent at their team rating
-  const base = opp.r;
-  const make = (n, roles, mod=0) => ({ n, roles, season: base+mod, prime: base+mod });
-  return [
-    make(`${opp.n.slice(0,3).toUpperCase()} Opener-1`, ["OPN"], -2),
-    make(`${opp.n.slice(0,3).toUpperCase()} Opener-2`, ["OPN"], -4),
-    make(`${opp.n.slice(0,3).toUpperCase()} Bat-3`,    ["BAT"], 2),
-    make(`${opp.n.slice(0,3).toUpperCase()} Bat-4`,    ["BAT"], 0),
-    make(`${opp.n.slice(0,3).toUpperCase()} Keeper`,   ["WK","BAT"], -2),
-    make(`${opp.n.slice(0,3).toUpperCase()} Allrounder`,["AR"], 0),
-    make(`${opp.n.slice(0,3).toUpperCase()} Finisher`, ["FIN","BAT"], -2),
-    make(`${opp.n.slice(0,3).toUpperCase()} Spinner`,  ["SPN"], -2),
-    make(`${opp.n.slice(0,3).toUpperCase()} Pacer-1`,  ["PAC"], 0),
-    make(`${opp.n.slice(0,3).toUpperCase()} Pacer-2`,  ["PAC"], -3),
-    make(`${opp.n.slice(0,3).toUpperCase()} Pacer-3`,  ["PAC"], -5)
-  ];
+  return (OPP_XI[opp.n] || []).slice();
 }
 
 function avg(a){ return a.reduce((x,y)=>x+y,0)/a.length; }
