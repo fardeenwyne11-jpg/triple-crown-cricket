@@ -175,6 +175,50 @@
   .confetti{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
   .confetti i{position:absolute;width:8px;height:14px;top:-20px;animation:fall linear forwards}
   @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+  /* Order screen */
+  .order-list{display:flex;flex-direction:column;gap:6px}
+  .order-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;transition:all .15s ease}
+  .order-row .pos{font-weight:800;color:var(--gold);width:28px;font-size:16px;text-align:center}
+  .order-row .av{flex-shrink:0}
+  .order-row .nm{flex:1;min-width:0}
+  .order-row .nm b{display:block;font-size:14px}
+  .order-row .nm small{color:var(--muted);font-size:11px}
+  .order-row .ctrl{display:flex;gap:4px}
+  .order-row .ctrl button{padding:6px 10px;font-size:14px;min-width:36px;line-height:1}
+
+  /* Awards */
+  .awards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}
+  @media(max-width:760px){.awards{grid-template-columns:1fr}}
+  .award{background:linear-gradient(160deg,#1a2244,#11162a);border:1px solid var(--line);border-radius:14px;padding:22px 18px;text-align:center;animation:popIn .5s cubic-bezier(.18,1,.32,1)}
+  .award.motm{border-color:var(--gold);background:linear-gradient(160deg,#3a2a08,#1b2347);box-shadow:0 8px 32px rgba(245,196,81,.22)}
+  @keyframes popIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+  .award .lbl{font-size:10px;color:var(--muted);letter-spacing:1.8px;font-weight:800;text-transform:uppercase;margin-bottom:14px}
+  .award.motm .lbl{color:var(--gold)}
+  .avatar{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;color:#fff;position:relative;box-shadow:0 6px 20px rgba(0,0,0,.4);text-shadow:0 1px 3px rgba(0,0,0,.5)}
+  .avatar .flag{position:absolute;bottom:-4px;right:-4px;font-size:18px;background:#0a0e1a;border-radius:50%;padding:0 3px;border:2px solid #161c38;line-height:1.2}
+  .award .nm{font-weight:800;font-size:17px;margin-top:6px}
+  .award .from{color:var(--muted);font-size:11px;margin:2px 0 8px}
+  .award .fig{font-size:15px;font-weight:700;margin-top:8px;color:var(--ink);background:rgba(255,255,255,.04);padding:6px 10px;border-radius:8px;display:inline-block}
+  .award.motm .fig{color:var(--gold);background:rgba(245,196,81,.1)}
+  .award .roles{display:flex;gap:4px;justify-content:center;margin-top:8px}
+
+  /* Player career stats */
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px;margin-top:10px}
+  .stat-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12px}
+  .stat-card .h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px}
+  .stat-card .h b{font-size:13px}
+  .stat-card .h .av-mini{width:28px;height:28px;font-size:11px;flex-shrink:0}
+  .stat-card .h .info{flex:1;min-width:0}
+  .stat-card .h small{color:var(--muted);font-size:10px;display:block}
+  .stat-card .stats{display:flex;gap:12px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+  .stat-card .stats span{color:var(--muted);font-size:11px}
+  .stat-card .stats b{color:var(--ink);font-weight:700}
+  .stat-card.motm-card{border-color:var(--gold)}
+
+  /* Attempt badges */
+  .attempts-pill{display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800;background:rgba(245,196,81,.12);color:var(--gold);border:1px solid var(--gold);margin-left:6px;letter-spacing:.3px}
+  .attempts-pill.zero{background:rgba(255,93,115,.15);color:var(--red);border-color:var(--red)}
 </style>
 </head>
 <body>
@@ -1091,6 +1135,8 @@ function newSave(){
     squad: SLOTS.map(s => ({ id:s.id, label:s.label, player:null })),
     currentSpin:null,
     trophies:{ wtc:false, odi:false, t20:false },
+    attempts:{ wtc:2, odi:2, t20:2 },
+    playerStats:{},
     careerLog:[],
     tour:null,
     spinning:false
@@ -1120,11 +1166,126 @@ function roleTally(){
   return t;
 }
 
+const COUNTRY_FLAGS = {
+  "Australia":"🇦🇺", "India":"🇮🇳", "England":"🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+  "New Zealand":"🇳🇿", "Pakistan":"🇵🇰", "South Africa":"🇿🇦",
+  "West Indies":"🌴", "Sri Lanka":"🇱🇰",
+  "Bangladesh":"🇧🇩", "Afghanistan":"🇦🇫",
+  "Scotland":"🏴󠁧󠁢󠁳󠁣󠁴󠁿", "Netherlands":"🇳🇱"
+};
+const COUNTRY_GRAD = {
+  "Australia":"linear-gradient(135deg,#fdd700,#00674a)",
+  "India":"linear-gradient(135deg,#ff9933,#138808)",
+  "England":"linear-gradient(135deg,#012169,#c8102e)",
+  "New Zealand":"linear-gradient(135deg,#1a1a1a,#5c6770)",
+  "Pakistan":"linear-gradient(135deg,#01411c,#3aa959)",
+  "South Africa":"linear-gradient(135deg,#007a4d,#ffb612)",
+  "West Indies":"linear-gradient(135deg,#7b0828,#1a1a1a)",
+  "Sri Lanka":"linear-gradient(135deg,#00534e,#ffb700)",
+  "Bangladesh":"linear-gradient(135deg,#006a4e,#f42a41)",
+  "Afghanistan":"linear-gradient(135deg,#d32011,#1a1a1a)",
+  "Scotland":"linear-gradient(135deg,#0065bd,#5b8cc4)",
+  "Netherlands":"linear-gradient(135deg,#ae1c28,#21468b)"
+};
+function initials(name){
+  const parts = name.replace(/[^\w\s'-]/g,"").split(/\s+/).filter(Boolean);
+  if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+  return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
+}
+function avatarHTML(player, size=48){
+  const team = (player.from && player.from.team) || player.team || "";
+  const grad = COUNTRY_GRAD[team] || "linear-gradient(135deg,#5aa9ff,#3a89e0)";
+  const flag = COUNTRY_FLAGS[team] || "🏏";
+  const fs = Math.round(size*0.36);
+  return `<div class="avatar" style="width:${size}px;height:${size}px;font-size:${fs}px;background:${grad}"><span>${initials(player.n)}</span><span class="flag">${flag}</span></div>`;
+}
+
+function ensurePlayerStat(name){
+  if (!S.playerStats[name]) S.playerStats[name] = {
+    matches:0, runs:0, balls:0, fours:0, sixes:0,
+    wickets:0, ballsBowled:0, runsConceded:0, maidens:0, motm:0
+  };
+  return S.playerStats[name];
+}
+function updatePlayerStats(match){
+  match.innings.forEach(inn => {
+    if (inn.batTeam === "You"){
+      inn.batCard.forEach(b => {
+        if (b.balls > 0 || b.out){
+          const st = ensurePlayerStat(b.n);
+          st.runs += b.runs; st.balls += b.balls;
+          st.fours += b.fours; st.sixes += b.sixes;
+        }
+      });
+    }
+    if (inn.bowlTeam === "You"){
+      inn.bowlCard.forEach(b => {
+        if (b.balls > 0){
+          const st = ensurePlayerStat(b.n);
+          st.wickets += b.wickets; st.ballsBowled += b.balls;
+          st.runsConceded += b.runs; st.maidens += b.maidens;
+        }
+      });
+    }
+  });
+  squadPicks().forEach(s => ensurePlayerStat(s.player.n).matches++);
+}
+function computeAwards(match){
+  const allBat = [], allBowl = [];
+  match.innings.forEach(inn => {
+    inn.batCard.forEach(b => { if (b.balls>0 || b.out) allBat.push({...b, team: inn.batTeam}); });
+    inn.bowlCard.forEach(b => { if (b.balls>0) allBowl.push({...b, team: inn.bowlTeam}); });
+  });
+  const bestBat = allBat.slice().sort((a,b)=>b.runs-a.runs)[0];
+  const bestBowl = allBowl.slice().sort((a,b)=>{
+    if (b.wickets!==a.wickets) return b.wickets-a.wickets;
+    const ea = a.balls?a.runs/(a.balls/6):99, eb = b.balls?b.runs/(b.balls/6):99;
+    return ea-eb;
+  })[0];
+  const score = (b)=>(b.runs||0) + (b.wickets||0)*25 + ((b.fours||0)+(b.sixes||0))*2;
+  const winningTeam = match.won ? "You" : match.opp;
+  const all = {};
+  allBat.forEach(b=>{ all[b.n] = { n:b.n, team:b.team, roles:b.roles||[], runs:b.runs, balls:b.balls, fours:b.fours, sixes:b.sixes, wickets:0, ovBalls:0, runsConceded:0, batScore:score(b), bowlScore:0 }; });
+  allBowl.forEach(b=>{
+    if (all[b.n]){ all[b.n].wickets=b.wickets; all[b.n].ovBalls=b.balls; all[b.n].runsConceded=b.runs; all[b.n].bowlScore=score(b); }
+    else all[b.n] = { n:b.n, team:b.team, roles:b.roles||[], runs:0, balls:0, fours:0, sixes:0, wickets:b.wickets, ovBalls:b.balls, runsConceded:b.runs, batScore:0, bowlScore:score(b) };
+  });
+  const list = Object.values(all).map(p=>({...p, total:p.batScore+p.bowlScore, isWin:p.team===winningTeam}));
+  list.sort((a,b)=>{ if (a.isWin!==b.isWin) return a.isWin?-1:1; return b.total-a.total; });
+  return { motm: list[0], bestBat, bestBowl };
+}
+function findPlayerObj(name){
+  const s = S.squad.find(sl=>sl.player && sl.player.n===name);
+  if (s) return s.player;
+  for (const team in OPP_XI){
+    const p = OPP_XI[team].find(x=>x.n===name);
+    if (p) return { ...p, from:{ team, year:"All-time" } };
+  }
+  return { n:name, roles:[], from:{ team:"" } };
+}
+function awardFig(award, kind){
+  if (kind==="motm"){
+    const parts = [];
+    if (award.runs>0 || award.balls>0) parts.push(`${award.runs}(${award.balls})`);
+    if (award.wickets>0) parts.push(`${award.wickets}/${award.runsConceded}`);
+    return parts.join(" · ") || "—";
+  }
+  if (kind==="bat") return `${award.runs} (${award.balls}b, ${award.fours||0}×4, ${award.sixes||0}×6)`;
+  if (kind==="bowl"){
+    const ov = Math.floor(award.balls/6)+'.'+(award.balls%6);
+    return `${award.wickets}/${award.runs} (${ov} ov)`;
+  }
+  return "";
+}
+
 /* =========== DRAFT =========== */
 function startDraft(){
   const d = S.setup.difficulty;
   const rerolls = d==="easy"?3 : d==="hard"?0 : 1;
+  const attempts = d==="easy"?3 : d==="hard"?1 : 2;
   S.rerollsLeft = rerolls; S.rerollsTotal = rerolls;
+  S.attempts = { wtc:attempts, odi:attempts, t20:attempts };
+  S.playerStats = {};
   S.squad = SLOTS.map(s => ({ id:s.id, label:s.label, player:null }));
   S.trophies = { wtc:false, odi:false, t20:false };
   S.careerLog = []; S.currentSpin = null; S.tour = null;
@@ -1187,15 +1348,29 @@ function removeFromSlot(id){ const slot = S.squad.find(s=>s.id===id); slot.playe
 
 /* =========== TOURNAMENT =========== */
 function startTournament(tId){
+  if (S.attempts[tId] <= 0 || S.trophies[tId]) return;
   const t = TOURNAMENTS.find(x=>x.id===tId);
   const opps = shuffle(OPPONENTS.map(o=>({n:o.n, r:o[t.fmt]}))).slice(0, t.rounds.length).sort((a,b)=>a.r-b.r);
-  S.tour = { tId, fmt:t.fmt, roundIdx:0, opps, scorecards:[], live:false, speed:2 };
-  startMatch();
+  // Default batting order = auto-ordered by role
+  const auto = orderForBatting(squadPicks().map(s=>s.player)).map(p=>p.n);
+  S.tour = { tId, fmt:t.fmt, roundIdx:0, opps, scorecards:[], live:false, speed:2, battingOrder: auto };
+  S.screen = "order";
+  save(); render();
+}
+function moveOrder(idx, dir){
+  if (!S.tour) return;
+  const ord = S.tour.battingOrder;
+  const j = idx + dir;
+  if (j < 0 || j >= ord.length) return;
+  [ord[idx], ord[j]] = [ord[j], ord[idx]];
+  render();
 }
 function startMatch(){
   const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
   const opp = S.tour.opps[S.tour.roundIdx];
-  const players = squadPicks().map(s=>s.player);
+  const byName = {};
+  squadPicks().forEach(s=>{ byName[s.player.n] = s.player; });
+  const players = S.tour.battingOrder.map(n => byName[n]).filter(Boolean);
   const match = simulateMatch(t, players, opp);
   S.tour.currentMatch = match;
   S.tour.live = true;
@@ -1206,7 +1381,7 @@ function startMatch(){
 
 function simulateMatch(t, myPlayers, opp){
   const my = myPlayers.slice();
-  const myBat = orderForBatting(my);
+  const myBat = my.slice(); // user-defined batting order
   const myBowl = my.filter(isBowler).sort((a,b)=>bowlSkill(b)-bowlSkill(a)).slice(0,6);
   // If no bowlers picked, use bottom rated batters as part-timers
   if (myBowl.length < 4){
@@ -1414,15 +1589,25 @@ function flashScore(){
   }
 }
 function endMatch(match){
+  updatePlayerStats(match);
+  const awards = computeAwards(match);
+  if (awards.motm && awards.motm.team === "You") ensurePlayerStat(awards.motm.n).motm++;
+  S.tour.lastAwards = awards;
   S.tour.scorecards.push(match);
   S.tour.live = false;
   S.screen = "scorecard";
   render();
 }
 function continueAfterScorecard(){
+  // Show awards next
+  S.screen = "awards";
+  save(); render();
+}
+function continueAfterAwards(){
   const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
   const last = S.tour.scorecards[S.tour.scorecards.length-1];
   if (!last.won){
+    S.attempts[S.tour.tId]--;
     S.careerLog.unshift({ t:t.name, won:false, lines: S.tour.scorecards.map((m,i)=>`${t.rounds[i]} v ${m.opp}: L`) });
     S.tour = null; S.screen = "hub"; save(); render(); return;
   }
@@ -1435,7 +1620,9 @@ function continueAfterScorecard(){
     else S.screen = "hub";
     save(); render(); return;
   }
-  startMatch();
+  // Next round → order screen again so user can re-tweak XI order
+  S.screen = "order";
+  save(); render();
 }
 
 /* =========== RENDER =========== */
@@ -1449,8 +1636,10 @@ function render(){
   const main = document.createElement("div"); main.className="main";
   if (S.screen === "draft") main.append(renderDraft());
   else if (S.screen === "hub") main.append(renderHub());
+  else if (S.screen === "order") main.append(renderOrder());
   else if (S.screen === "live") main.append(renderLive());
   else if (S.screen === "scorecard") main.append(renderScorecard());
+  else if (S.screen === "awards") main.append(renderAwards());
   else if (S.screen === "win") main.append(renderWin());
   root.append(main);
 }
@@ -1620,16 +1809,53 @@ function renderHub(){
   const grid = el(`<div style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))"></div>`);
   TOURNAMENTS.forEach(t => {
     const r = avg(squadPicks().map(s=>ratingOf(s.player)));
+    const a = S.attempts[t.id];
+    const won = S.trophies[t.id];
+    const canPlay = !won && a > 0;
+    const btnText = won ? 'Already won' : (a === 0 ? 'No attempts left' : 'Play');
     const c = el(`<div class="spin-box" style="padding:18px;text-align:left">
       <div style="font-size:22px"><span style="font-size:28px">${t.icon}</span> <b>${t.name.replace('ICC ','')}</b></div>
       <div class="muted" style="font-size:12px;margin:4px 0 10px">${t.rounds.join(' → ')} · ${t.overs} overs</div>
-      <div style="font-size:13px;margin-bottom:12px">XI rating: <b style="color:var(--gold)">${r.toFixed(1)}</b></div>
-      <button class="primary" ${S.trophies[t.id]?'disabled':''} style="width:100%">${S.trophies[t.id]?'Already won':'Play'}</button>
+      <div style="font-size:13px;margin-bottom:8px">XI rating: <b style="color:var(--gold)">${r.toFixed(1)}</b></div>
+      <div style="font-size:12px;margin-bottom:12px">Attempts: <span class="attempts-pill ${a===0?'zero':''}">${a} left</span></div>
+      <button class="primary" ${!canPlay?'disabled':''} style="width:100%">${btnText}</button>
     </div>`);
     c.querySelector("button").onclick = () => startTournament(t.id);
     grid.append(c);
   });
   wrap.append(grid);
+
+  // Player career stats
+  const playedNames = Object.keys(S.playerStats).filter(n => S.playerStats[n].matches > 0 && S.squad.some(s=>s.player && s.player.n===n));
+  if (playedNames.length){
+    wrap.append(el(`<h2>Your XI — career stats</h2>`));
+    const sg = el(`<div class="stat-grid"></div>`);
+    playedNames
+      .map(n => ({ n, st: S.playerStats[n], p: findPlayerObj(n) }))
+      .sort((a,b) => (b.st.runs + b.st.wickets*20) - (a.st.runs + a.st.wickets*20))
+      .forEach(({n, st, p}) => {
+        const ov = Math.floor(st.ballsBowled/6)+'.'+(st.ballsBowled%6);
+        const econ = st.ballsBowled ? (st.runsConceded/(st.ballsBowled/6)).toFixed(2) : '—';
+        const sr = st.balls ? ((st.runs/st.balls)*100).toFixed(1) : '—';
+        const card = el(`<div class="stat-card ${st.motm?'motm-card':''}">
+          <div class="h">
+            ${avatarHTML(p, 28)}
+            <div class="info"><b>${n} ${st.motm?'🏅×'+st.motm:''}</b><small>${(p.from?.team)||''} · ${st.matches} match${st.matches===1?'':'es'}</small></div>
+          </div>
+          <div class="stats">
+            <span>Runs <b>${st.runs}</b></span>
+            <span>Balls <b>${st.balls}</b></span>
+            <span>SR <b>${sr}</b></span>
+            <span>4s <b>${st.fours}</b></span>
+            <span>6s <b>${st.sixes}</b></span>
+            ${st.ballsBowled?`<span>Wkts <b>${st.wickets}</b></span><span>Ov <b>${ov}</b></span><span>Econ <b>${econ}</b></span>`:''}
+          </div>
+        </div>`);
+        sg.append(card);
+      });
+    wrap.append(sg);
+  }
+
   if (S.careerLog.length){
     wrap.append(el(`<h2>Career log</h2>`));
     const lg = el(`<div class="log"></div>`);
@@ -1638,6 +1864,89 @@ function renderHub(){
     });
     wrap.append(lg);
   }
+  return wrap;
+}
+
+function renderOrder(){
+  const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
+  const opp = S.tour.opps[S.tour.roundIdx];
+  const wrap = el(`<div></div>`);
+  wrap.append(el(`<h1>${t.icon} ${t.rounds[S.tour.roundIdx]} <span class="muted" style="font-weight:400">vs</span> ${opp.n}</h1>`));
+  wrap.append(el(`<p class="muted">Set your batting order. Top of the list opens the innings. Bowling order is auto-managed.</p>`));
+  const list = el(`<div class="order-list"></div>`);
+  const byName = {};
+  squadPicks().forEach(s=>{ byName[s.player.n] = s.player; });
+  S.tour.battingOrder.forEach((name, i) => {
+    const p = byName[name];
+    if (!p) return;
+    const row = el(`<div class="order-row">
+      <div class="pos">${i+1}</div>
+      <div class="av">${avatarHTML(p, 36)}</div>
+      <div class="nm"><b>${p.n}</b><small>${p.from.team} ${p.from.year} · ${p.roles.join(' / ')}</small></div>
+      <div class="ctrl">
+        <button class="ghost" ${i===0?'disabled':''} title="Move up">▲</button>
+        <button class="ghost" ${i===S.tour.battingOrder.length-1?'disabled':''} title="Move down">▼</button>
+      </div>
+    </div>`);
+    const [up, down] = row.querySelectorAll('.ctrl button');
+    up.onclick = () => moveOrder(i, -1);
+    down.onclick = () => moveOrder(i, +1);
+    list.append(row);
+  });
+  wrap.append(list);
+  const row = el(`<div class="row" style="justify-content:space-between;margin-top:18px"></div>`);
+  const cancel = el(`<button class="ghost">← Cancel</button>`);
+  cancel.onclick = () => { S.tour=null; S.screen="hub"; save(); render(); };
+  const auto = el(`<button class="ghost">Auto-order</button>`);
+  auto.onclick = () => { S.tour.battingOrder = orderForBatting(squadPicks().map(s=>s.player)).map(p=>p.n); render(); };
+  const go = el(`<button class="primary">Start Match →</button>`);
+  go.onclick = () => startMatch();
+  row.append(cancel, auto, go);
+  wrap.append(row);
+  return wrap;
+}
+
+function renderAwards(){
+  const m = S.tour.scorecards[S.tour.scorecards.length-1];
+  const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
+  const opp = S.tour.opps[S.tour.roundIdx];
+  const aw = S.tour.lastAwards;
+  const wrap = el(`<div></div>`);
+  wrap.append(el(`<h1>🌟 Match Awards</h1>`));
+  wrap.append(el(`<p class="muted">${t.rounds[S.tour.roundIdx]} · ${t.name.replace('ICC ','')} · vs ${opp.n}</p>`));
+
+  const awards = el(`<div class="awards"></div>`);
+  const cards = [
+    { kind:"motm",  lbl:"🏅 Player of the Match", a:aw.motm, cls:"motm" },
+    { kind:"bat",   lbl:"🏏 Top Batter",          a:aw.bestBat, cls:"" },
+    { kind:"bowl",  lbl:"🎯 Top Bowler",          a:aw.bestBowl, cls:"" }
+  ];
+  cards.forEach(c => {
+    if (!c.a) return;
+    const p = findPlayerObj(c.a.n);
+    p.team = p.from?.team || c.a.team;
+    const tags = (p.roles||[]).map(r=>`<span class="tag t-${r}">${r}</span>`).join('');
+    const card = el(`<div class="award ${c.cls}">
+      <div class="lbl">${c.lbl}</div>
+      ${avatarHTML(p, 88)}
+      <div class="nm">${c.a.n}</div>
+      <div class="from">${c.a.team}${p.from && p.from.year && p.from.year !== "All-time" ? ' · '+p.from.year : ''}</div>
+      <div class="roles">${tags}</div>
+      <div class="fig">${awardFig(c.a, c.kind)}</div>
+    </div>`);
+    awards.append(card);
+  });
+  wrap.append(awards);
+
+  const row = el(`<div class="row" style="justify-content:space-between;margin-top:18px"></div>`);
+  const back = el(`<button class="ghost">View scorecard</button>`);
+  back.onclick = () => { S.screen="scorecard"; save(); render(); };
+  const won = m.won;
+  const nextLabel = !won ? "Back to Hub" : (S.tour.roundIdx+1 < t.rounds.length ? "Next round →" : "Lift the trophy 🏆");
+  const cont = el(`<button class="primary">${nextLabel}</button>`);
+  cont.onclick = continueAfterAwards;
+  row.append(back, cont);
+  wrap.append(row);
   return wrap;
 }
 
@@ -1714,9 +2023,9 @@ function renderScorecard(){
     wrap.append(bw);
   });
   const row = el(`<div class="row" style="justify-content:space-between;margin-top:24px"></div>`);
-  const back = el(`<button class="ghost">← Back to Hub</button>`);
-  back.onclick = () => { S.tour=null; S.screen="hub"; save(); render(); };
-  const cont = el(`<button class="primary">${m.won ? (S.tour.roundIdx+1<t.rounds.length?'Next round →':'Lift the trophy 🏆'):'Back to hub'}</button>`);
+  const back = el(`<button class="ghost">← Abandon tournament</button>`);
+  back.onclick = () => { if (!m.won) S.attempts[S.tour.tId]--; S.tour=null; S.screen="hub"; save(); render(); };
+  const cont = el(`<button class="primary">View awards →</button>`);
   cont.onclick = continueAfterScorecard;
   row.append(back, cont);
   wrap.append(row);
