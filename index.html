@@ -797,6 +797,72 @@ const TEAM_SEASONS = [
   ]},
 
   /* ============ SOUTH AFRICA ============ */
+  { team:"South Africa", year:1992, fmt:"odi", trophy:"ODI WC — Semi-Finalists", squad:[
+    { n:"Kepler Wessels",   roles:["OPN","BAT"], season:82, prime:84 },
+    { n:"Andrew Hudson",    roles:["OPN"], season:78, prime:80 },
+    { n:"Peter Kirsten",    roles:["BAT"], season:82, prime:84 },
+    { n:"Hansie Cronje",    roles:["BAT","AR"], season:78, prime:86 },
+    { n:"Jonty Rhodes",     roles:["BAT","FIN"], season:78, prime:82 },
+    { n:"Brian McMillan",   roles:["AR","PAC"], season:80, prime:84 },
+    { n:"Dave Richardson",  roles:["WK"], season:76, prime:78 },
+    { n:"Allan Donald",     roles:["PAC"], season:88, prime:94 },
+    { n:"Meyrick Pringle",  roles:["PAC"], season:76, prime:78 },
+    { n:"Tertius Bosch",    roles:["PAC"], season:72, prime:74 },
+    { n:"Adrian Kuiper",    roles:["AR"], season:76, prime:78 }
+  ]},
+  { team:"South Africa", year:2007, fmt:"odi", trophy:"ODI WC — Semi-Finalists", squad:[
+    { n:"Graeme Smith",     roles:["OPN"], season:88, prime:90 },
+    { n:"Herschelle Gibbs", roles:["OPN"], season:86, prime:88 },
+    { n:"Jacques Kallis",   roles:["BAT","AR"], season:92, prime:94 },
+    { n:"AB de Villiers",   roles:["BAT","WK"], season:84, prime:96 },
+    { n:"Justin Kemp",      roles:["AR","FIN"], season:78, prime:80 },
+    { n:"Mark Boucher",     roles:["WK","BAT"], season:82, prime:84 },
+    { n:"Shaun Pollock",    roles:["AR","PAC"], season:86, prime:90 },
+    { n:"Andrew Hall",      roles:["AR","PAC"], season:76, prime:78 },
+    { n:"Makhaya Ntini",    roles:["PAC"], season:84, prime:88 },
+    { n:"Charl Langeveldt", roles:["PAC"], season:78, prime:80 },
+    { n:"Robin Peterson",   roles:["SPN","AR"], season:74, prime:78 }
+  ]},
+  { team:"South Africa", year:2007, fmt:"t20", trophy:"T20 WC — Semi-Finalists", squad:[
+    { n:"Graeme Smith",     roles:["OPN"], season:86, prime:90 },
+    { n:"Herschelle Gibbs", roles:["OPN"], season:84, prime:88 },
+    { n:"Jacques Kallis",   roles:["BAT","AR"], season:88, prime:94 },
+    { n:"AB de Villiers",   roles:["BAT","WK"], season:82, prime:96 },
+    { n:"Justin Kemp",      roles:["AR","FIN"], season:80, prime:80 },
+    { n:"Mark Boucher",     roles:["WK","BAT"], season:80, prime:84 },
+    { n:"Shaun Pollock",    roles:["AR","PAC"], season:84, prime:90 },
+    { n:"Albie Morkel",     roles:["AR","FIN"], season:78, prime:82 },
+    { n:"Makhaya Ntini",    roles:["PAC"], season:84, prime:88 },
+    { n:"Vernon Philander", roles:["PAC","AR"], season:74, prime:86 },
+    { n:"Johan van der Wath",roles:["AR","PAC"], season:74, prime:76 }
+  ]},
+  { team:"South Africa", year:2011, fmt:"odi", trophy:"ODI WC — Quarter-Final", squad:[
+    { n:"Graeme Smith",     roles:["OPN"], season:88, prime:90 },
+    { n:"Hashim Amla",      roles:["OPN"], season:90, prime:92 },
+    { n:"Jacques Kallis",   roles:["BAT","AR"], season:90, prime:94 },
+    { n:"AB de Villiers",   roles:["BAT","WK","FIN"], season:92, prime:96 },
+    { n:"JP Duminy",        roles:["AR","BAT"], season:82, prime:84 },
+    { n:"Faf du Plessis",   roles:["BAT"], season:78, prime:88 },
+    { n:"Mark Boucher",     roles:["WK","BAT"], season:80, prime:84 },
+    { n:"Morne Morkel",     roles:["PAC"], season:86, prime:88 },
+    { n:"Dale Steyn",       roles:["PAC"], season:94, prime:96 },
+    { n:"Imran Tahir",      roles:["SPN"], season:82, prime:86 },
+    { n:"Robin Peterson",   roles:["SPN","AR"], season:74, prime:78 }
+  ]},
+  { team:"South Africa", year:2023, fmt:"odi", trophy:"ODI WC — Semi-Finalists", squad:[
+    { n:"Temba Bavuma",     roles:["OPN"], season:80, prime:82 },
+    { n:"Quinton de Kock",  roles:["WK","OPN"], season:92, prime:92 },
+    { n:"Rassie van der Dussen",roles:["BAT"], season:84, prime:86 },
+    { n:"Aiden Markram",    roles:["BAT","AR"], season:84, prime:86 },
+    { n:"Heinrich Klaasen", roles:["WK","FIN"], season:92, prime:92 },
+    { n:"David Miller",     roles:["FIN","BAT"], season:86, prime:88 },
+    { n:"Marco Jansen",     roles:["AR","PAC"], season:84, prime:84 },
+    { n:"Keshav Maharaj",   roles:["SPN"], season:82, prime:84 },
+    { n:"Tabraiz Shamsi",   roles:["SPN"], season:80, prime:82 },
+    { n:"Kagiso Rabada",    roles:["PAC"], season:90, prime:92 },
+    { n:"Gerald Coetzee",   roles:["PAC"], season:84, prime:86 },
+    { n:"Lungi Ngidi",      roles:["PAC"], season:82, prime:84 }
+  ]},
   { team:"South Africa", year:1999, fmt:"odi", trophy:"ODI WC — Semi-Finalists", squad:[
     { n:"Gary Kirsten",      roles:["OPN"], season:88, prime:90 },
     { n:"Herschelle Gibbs",  roles:["OPN"], season:84, prime:88 },
@@ -1509,7 +1575,6 @@ function simulateMatch(t, myPlayers, opp){
   const my = myPlayers.slice();
   const myBat = my.slice(); // user-defined batting order
   const myBowl = my.filter(isBowler).sort((a,b)=>bowlSkill(b)-bowlSkill(a)).slice(0,6);
-  // If no bowlers picked, use bottom rated batters as part-timers
   if (myBowl.length < 4){
     const tail = my.filter(p=>!myBowl.includes(p)).sort((a,b)=>ratingOf(a)-ratingOf(b)).slice(0,4-myBowl.length);
     tail.forEach(p=>myBowl.push(p));
@@ -1521,37 +1586,61 @@ function simulateMatch(t, myPlayers, opp){
   const tossWin = Math.random() < 0.5 ? "me" : "opp";
   const tossDecision = (Math.random()<0.5?"bat":"bowl");
   let firstBatTeam = (tossWin === "me" ? (tossDecision === "bat" ? "me":"opp") : (tossDecision === "bat" ? "opp":"me"));
+  const meBatFirst = firstBatTeam === "me";
 
-  const myTeamRating = avg(my.map(p=>ratingOf(p)));
-  const oppTeamRating = opp.r;
+  const myR = avg(my.map(p=>ratingOf(p)));
+  const oppR = opp.r;
 
-  const inn1 = simInnings({
+  // Helper to build innings config for a given side
+  const cfgFirst = () => ({
     fmt:t.fmt, overs:t.overs, base:t.base,
-    bat:firstBatTeam==="me"?myBat:oppBat,
-    bowl:firstBatTeam==="me"?oppBowl:myBowl,
-    batTeam:firstBatTeam==="me"?"You":opp.n,
-    bowlTeam:firstBatTeam==="me"?opp.n:"You",
-    batRating:firstBatTeam==="me"?myTeamRating:oppTeamRating,
-    bowlRating:firstBatTeam==="me"?oppTeamRating:myTeamRating
+    bat: meBatFirst?myBat:oppBat, bowl: meBatFirst?oppBowl:myBowl,
+    batTeam: meBatFirst?"You":opp.n, bowlTeam: meBatFirst?opp.n:"You",
+    batRating: meBatFirst?myR:oppR, bowlRating: meBatFirst?oppR:myR
   });
+  const cfgSecond = (chasing) => ({
+    fmt:t.fmt, overs:t.overs, base:t.base, chasing,
+    bat: meBatFirst?oppBat:myBat, bowl: meBatFirst?myBowl:oppBowl,
+    batTeam: meBatFirst?opp.n:"You", bowlTeam: meBatFirst?"You":opp.n,
+    batRating: meBatFirst?oppR:myR, bowlRating: meBatFirst?myR:oppR
+  });
+
+  if (t.fmt === "wtc"){
+    // 4-innings Test match
+    const innA1 = simInnings(cfgFirst());
+    const innB1 = simInnings(cfgSecond());            // no chase in 1st innings of B
+    // Reset chasing for innB1 — pass cfgSecond without chasing
+    // Actually we passed undefined-> ok
+    // 2nd innings of A (no chase)
+    const innA2 = simInnings(cfgFirst());
+    const target = innA1.runs + innA2.runs - innB1.runs + 1;
+    const innB2 = simInnings(cfgSecond(target));
+    let won;
+    if (target <= 0) {
+      // A leads by negative => B already won by innings, but we still play out
+      won = !meBatFirst;
+    } else if (innB2.runs >= target) {
+      won = !meBatFirst; // chaser won
+    } else {
+      won = meBatFirst; // first-bat team won
+    }
+    return { opp:opp.n, format:t.fmt, overs:t.overs,
+      toss:{ winner: tossWin==="me"?"You":opp.n, decision: tossDecision },
+      firstBatTeam:meBatFirst?"You":opp.n, target,
+      innings:[innA1, innB1, innA2, innB2], won };
+  }
+
+  // Limited-overs: 2 innings
+  const inn1 = simInnings(cfgFirst());
   const target = inn1.runs + 1;
-  const inn2 = simInnings({
-    fmt:t.fmt, overs:t.overs, base:t.base, chasing:target,
-    bat:firstBatTeam==="me"?oppBat:myBat,
-    bowl:firstBatTeam==="me"?myBowl:oppBowl,
-    batTeam:firstBatTeam==="me"?opp.n:"You",
-    bowlTeam:firstBatTeam==="me"?"You":opp.n,
-    batRating:firstBatTeam==="me"?oppTeamRating:myTeamRating,
-    bowlRating:firstBatTeam==="me"?myTeamRating:oppTeamRating
-  });
-
+  const inn2 = simInnings(cfgSecond(target));
   let won;
-  if (inn2.runs >= target) won = (firstBatTeam === "me") ? false : true;
-  else won = (firstBatTeam === "me") ? true : false;
-
+  if (inn2.runs >= target) won = !meBatFirst;
+  else won = meBatFirst;
   return { opp:opp.n, format:t.fmt, overs:t.overs,
-    toss:{ winner: tossWin === "me" ? "You" : opp.n, decision: tossDecision },
-    firstBatTeam, target, innings:[inn1, inn2], won };
+    toss:{ winner: tossWin==="me"?"You":opp.n, decision: tossDecision },
+    firstBatTeam:meBatFirst?"You":opp.n, target,
+    innings:[inn1, inn2], won };
 }
 
 function orderForBatting(players){
@@ -1691,6 +1780,7 @@ function animateInnings(match, innIdx){
   S.tour.currentInn = innIdx;
   S.tour.evtIdx = 0;
   S.tour.liveRuns = 0; S.tour.liveWkts = 0; S.tour.liveOver = "0.0";
+  S.tour.liveStriker = null; S.tour.liveBowler = null;
   render();
   step();
   function step(){
@@ -1698,7 +1788,8 @@ function animateInnings(match, innIdx){
     const inn = match.innings[innIdx];
     const ev = inn.events[S.tour.evtIdx];
     if (!ev){
-      if (innIdx === 0) animTimer = setTimeout(()=>animateInnings(match, 1), 1100);
+      if (innIdx < match.innings.length - 1)
+        animTimer = setTimeout(()=>animateInnings(match, innIdx+1), 1100);
       else endMatch(match);
       return;
     }
@@ -2162,7 +2253,20 @@ function renderLive(){
   const battingIsYou = inn.batTeam === "You";
   const wrap = el(`<div></div>`);
   wrap.append(el(`<h1>${t.icon} ${t.rounds[S.tour.roundIdx]} <span class="muted" style="font-weight:400">vs</span> ${opp.n}</h1>`));
-  wrap.append(el(`<p class="muted">${m.toss.winner} won the toss and chose to ${m.toss.decision}. Innings ${innIdx+1}/2${m.target&&innIdx===1?` · target ${m.target}`:''}</p>`));
+  const totalInn = m.innings.length;
+  const showTarget = m.target && innIdx === totalInn - 1;
+  let status = "";
+  if (m.format === "wtc" && innIdx >= 1){
+    const teamA = m.firstBatTeam;
+    const teamB = teamA === "You" ? opp.n : "You";
+    const a1 = m.innings[0], b1 = m.innings[1];
+    const a2 = innIdx >= 2 ? m.innings[2] : null;
+    if (innIdx === 1) status = `${teamA} ${a1.runs}/${a1.wickets} (${a1.overs})`;
+    else if (innIdx === 2) status = `${teamA} ${a1.runs} · ${teamB} ${b1.runs}/${b1.wickets} (${b1.overs})`;
+    else if (innIdx === 3) status = `${teamA} ${a1.runs} & ${a2.runs}/${a2.wickets} · ${teamB} ${b1.runs}`;
+  }
+  wrap.append(el(`<p class="muted">${m.toss.winner} won the toss and chose to ${m.toss.decision}. Innings ${innIdx+1}/${totalInn}${showTarget?` · target ${m.target}`:''}</p>`));
+  if (status) wrap.append(el(`<p class="muted" style="font-size:13px;color:var(--gold)">📋 ${status}</p>`));
   const sb = el(`<div class="scoreboard"></div>`);
   const teams = el(`<div class="sb-teams"></div>`);
   teams.append(el(`<div class="sb-team batting"><div class="nm">${inn.batTeam} ${battingIsYou?'(you)':''} — batting</div><div class="sc">${S.tour.liveRuns||0}/${S.tour.liveWkts||0}</div><div class="ov">${S.tour.liveOver||'0.0'} overs</div></div>`));
@@ -2199,13 +2303,16 @@ function renderLive(){
   const skip = el(`<button class="ghost">Skip to result →</button>`);
   skip.onclick = () => {
     if (animTimer) { clearTimeout(animTimer); animTimer = null; }
-    if (S.tour.currentInn === 0){
-      const inn0 = m.innings[0];
-      while (S.tour.evtIdx < inn0.events.length){ appendCommentary(inn0.events[S.tour.evtIdx]); S.tour.evtIdx++; }
-      S.tour.currentInn = 1; S.tour.evtIdx = 0;
+    // Fast-forward through all remaining innings
+    let i = S.tour.currentInn || 0;
+    while (i < m.innings.length){
+      const inn = m.innings[i];
+      const startEvt = (i === (S.tour.currentInn||0)) ? S.tour.evtIdx : 0;
+      for (let j = startEvt; j < inn.events.length; j++){
+        appendCommentary(inn.events[j]);
+      }
+      i++;
     }
-    const inn1 = m.innings[1];
-    while (S.tour.evtIdx < inn1.events.length){ appendCommentary(inn1.events[S.tour.evtIdx]); S.tour.evtIdx++; }
     endMatch(m);
   };
   row.append(speed, skip);
@@ -2256,6 +2363,11 @@ function renderScorecard(){
 }
 
 function computeMargin(m){
+  if (m.format === "wtc"){
+    const lastChase = m.innings[3];
+    if (lastChase.runs >= m.target) return `${10 - lastChase.wickets} wickets`;
+    return `${m.target - lastChase.runs - 1} runs`;
+  }
   const i0=m.innings[0], i1=m.innings[1];
   if (i1.runs >= (i0.runs+1)) return `${10 - i1.wickets} wickets`;
   return `${i0.runs - i1.runs} runs`;
