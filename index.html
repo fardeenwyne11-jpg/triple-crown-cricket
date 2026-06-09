@@ -1183,6 +1183,19 @@ OPPONENTS.forEach(o => {
   OPP_XI[o.n] = o.squad.slice();
 });
 
+// Reduce a league pool to ONE canonical entry per franchise (its most recent
+// edition; tie-break on rating). This guarantees every real participating team
+// shows up exactly once as a possible opponent — no franchise dropped just
+// because its title-winning season predates the latest edition.
+function canonicalLeagueTeams(pool){
+  const byTeam = {};
+  pool.forEach(o => {
+    const cur = byTeam[o.team];
+    if (!cur || o.year > cur.year || (o.year === cur.year && o.t20 > cur.t20)) byTeam[o.team] = o;
+  });
+  return Object.values(byTeam);
+}
+
 const TOURNAMENTS = [
   { id:"ipl", name:"IPL", fmt:"t20", icon:"🏏", rounds:["Qualifier 1","Qualifier 2","Final"], overs:20, base:170, leagues:["ipl"] },
   { id:"psl", name:"PSL", fmt:"t20", icon:"🏆", rounds:["Qualifier","Eliminator","Final"], overs:20, base:170, leagues:["psl"] },
@@ -1657,13 +1670,9 @@ function startTournament(tId){
   let pool = OPPONENTS.filter(o => t.leagues.includes(o.league));
   if (tId === "cl") {
     pool = pool.filter(o => CL_POOL.includes(o.team));
-  } else {
-    // For league tournaments: use teams from the MOST RECENT edition only
-    const maxYear = Math.max(...pool.map(o=>o.year));
-    const recent = pool.filter(o => o.year === maxYear);
-    // Need at least t.rounds.length opponents; if not enough, fall back to broader pool
-    pool = recent.length >= t.rounds.length ? recent : pool.filter(o => o.year >= maxYear - 2);
   }
+  // One entry per franchise — every real participating team is available.
+  pool = canonicalLeagueTeams(pool);
   // Opponent difficulty modifier
   const mod = S.setup.oppDifficulty === "easy" ? -8 : S.setup.oppDifficulty === "legend" ? +4 : 0;
   let candidates = pool.map(o=>({ n:o.n, team:o.team, year:o.year, r: Math.max(60, Math.min(98, o[t.fmt] + mod)) }));
@@ -2578,21 +2587,20 @@ let _leagueInt = null;
 function startLeagueSim(){
   const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
   let pool = OPPONENTS.filter(o => t.leagues.includes(o.league));
-  // Most recent edition
-  const maxYear = Math.max(...pool.map(o=>o.year));
-  let teams = pool.filter(o => o.year === maxYear);
-  if (teams.length < 4) teams = pool.filter(o => o.year >= maxYear - 1);
-  teams = teams.slice(0, 6); // cap at 6 teams for manageable round-robin
+  // Every real franchise in this league participates (one canonical edition each).
+  let teams = canonicalLeagueTeams(pool);
   const mod = S.setup.oppDifficulty === "easy" ? -8 : S.setup.oppDifficulty === "legend" ? +4 : 0;
   const allTeams = [
     { n:"Your XI", r: avg(squadPicks().map(s=>ratingOf(s.player))), isMe:true },
     ...teams.map(o => ({ n:o.n, r: Math.max(60, Math.min(98, o.t20 + mod)), isMe:false }))
   ];
-  // Build double round-robin (each pair plays twice for ~10 games per team)
+  // Round-robin. Small leagues play home/away (double) for ~10 games each; larger
+  // leagues (e.g. IPL's 10 franchises) play a single round-robin so the season
+  // stays a manageable length while still featuring every team.
+  const passes = allTeams.length <= 7 ? 2 : 1;
   const fixtures = [];
   let gw = 0;
-  // Two passes for home/away
-  for (let pass=0; pass<2; pass++){
+  for (let pass=0; pass<passes; pass++){
     const teamsR = pass===0 ? allTeams.slice() : allTeams.slice().reverse();
     for (let i=0; i<teamsR.length; i++){
       for (let j=i+1; j<teamsR.length; j++){
@@ -2633,8 +2641,9 @@ function scheduleNextLeagueMatch(){
   // Look ahead: is the NEXT match involving the user?
   const nextF = lg.fixtures[lg.fixtureIdx];
   const isUserMatch = nextF.home.isMe || nextF.away.isMe;
-  // Build suspense — slower delay for user matches
-  const delay = isUserMatch ? 1400 : 600;
+  // Build suspense — slower delay for the user's own matches; hidden AI-vs-AI
+  // matches resolve quickly since nothing is shown for them.
+  const delay = isUserMatch ? 1400 : 300;
   _leagueInt = setTimeout(()=>{
     playLeagueMatch();
     scheduleNextLeagueMatch();
@@ -2662,33 +2671,45 @@ function playLeagueMatch(){
     if (b.pts !== a.pts) return b.pts - a.pts;
     return ((b.F-b.A)/Math.max(1,b.P)) - ((a.F-a.A)/Math.max(1,a.P));
   });
-  appendLeagueResult(f, r);
+  // Only surface the user's own fixtures in the results feed; AI-vs-AI matches
+  // are still simulated (they shape the standings) but stay hidden.
+  if (f.home.isMe || f.away.isMe) appendLeagueResult(f, r);
   updateStandingsTable();
   updateLeagueProgress();
 }
 function finishLeagueSim(){
   const lg = S.tour.league;
+  if (!lg) return;
   lg.done = true;
   const myPos = lg.standings.findIndex(s => s.team.isMe) + 1;
   lg.myFinish = myPos;
   S.tour.leagueFinish = myPos;
-  // Pause so user sees final table
-  setTimeout(()=>{
-    if (S.screen !== "leaguesim" || !S.tour) return;
-    if (myPos > 4){
-      // Eliminated in league — go straight to summary
-      S.tour.summary = buildTournamentSummary(false);
-      S.lives--;
-      S.screen = "summary";
-      save(); render(); return;
-    }
-    // Build playoff opponents = other top 3 by standings
-    const top4 = lg.standings.slice(0,4).filter(s=>!s.team.isMe).map(s=>({ n:s.team.n, r:s.team.r }));
-    S.tour.opps = top4;
-    S.tour.roundIdx = 0;
-    S.screen = "watch-choice";
-    save(); render();
-  }, 2400);
+  // Pause so user sees final table, then enter the playoffs once.
+  setTimeout(enterPlayoffs, 2400);
+}
+// Transition from the finished league table into the playoff bracket. Guarded so
+// it can only run once per tournament — both the auto-advance timer and the
+// "Continue to playoffs" button funnel through here without double-seeding the
+// bracket or replaying a round.
+function enterPlayoffs(){
+  if (!S.tour || !S.tour.league || S.tour._inPlayoffs) return;
+  if (S.screen !== "leaguesim") return;
+  S.tour._inPlayoffs = true;
+  const lg = S.tour.league;
+  const myPos = lg.myFinish;
+  if (myPos > 4){
+    // Eliminated in league — go straight to summary
+    S.tour.summary = buildTournamentSummary(false);
+    S.lives--;
+    S.screen = "summary";
+    save(); render(); return;
+  }
+  // Build playoff opponents = the other top-3 finishers by standings
+  const top4 = lg.standings.slice(0,4).filter(s=>!s.team.isMe).map(s=>({ n:s.team.n, r:s.team.r }));
+  S.tour.opps = top4;
+  S.tour.roundIdx = 0;
+  S.screen = "watch-choice";
+  save(); render();
 }
 function stripYear(name){ return name.replace(/\s+\d{4}(-\d{2})?$/,'').replace(/\s+20\d{2}$/,''); }
 function appendLeagueResult(f, r){
@@ -2750,7 +2771,7 @@ function renderLeagueSim(){
   </div>`));
   const grid = el(`<div class="league-grid"></div>`);
   const results = el(`<div class="league-results">
-    <h3>Recent Results</h3>
+    <h3>Your Matches</h3>
     <div class="lg-feed" id="lgFeed"></div>
   </div>`);
   const table = el(`<div class="league-table"><h3>Standings</h3><div id="lgStandings">${renderStandingsHTML()}</div></div>`);
@@ -2759,7 +2780,7 @@ function renderLeagueSim(){
   const lg = S.tour.league;
   if (lg && lg.done){
     const row = el(`<div class="row" style="justify-content:center;margin-top:14px"><button class="primary" id="contPlayoffs">Continue to playoffs →</button></div>`);
-    row.querySelector('#contPlayoffs').onclick = () => finishLeagueSim();
+    row.querySelector('#contPlayoffs').onclick = () => enterPlayoffs();
     wrap.append(row);
   }
   // Skip button
@@ -3013,8 +3034,11 @@ function renderOrder(){
   auto.onclick = () => { S.tour.battingOrder = orderForBatting(squadPicks().map(s=>s.player)).map(p=>p.n); render(); };
   const go = el(`<button class="primary">Confirm XI →</button>`);
   go.onclick = () => {
-    // Champions League stays knockout-only; league tournaments run the full season sim first
+    // Champions League stays knockout-only. League tournaments run the full season
+    // sim ONCE; afterwards (during the playoff rounds) the league is already done,
+    // so go straight to the next knockout match instead of re-running the season.
     if (S.tour.tId === "cl"){ S.screen = "watch-choice"; }
+    else if (S.tour.league && S.tour.league.done){ S.screen = "watch-choice"; }
     else { startLeagueSim(); return; }
     save(); render();
   };
