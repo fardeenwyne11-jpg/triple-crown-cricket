@@ -173,6 +173,22 @@
   .big-stat .v.b{color:var(--blue)}
   .big-stat .l{font-size:11px;color:var(--muted);letter-spacing:1.2px;margin-top:4px;text-transform:uppercase;font-weight:700}
 
+  /* Splash screen (intro animation) */
+  #splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .6s ease}
+  #splash.fade{opacity:0;pointer-events:none}
+  .splash-inner{text-align:center;animation:splashIn .9s cubic-bezier(.18,1,.32,1)}
+  .splash-logo{font-size:88px;font-weight:900;letter-spacing:8px;line-height:1;background:linear-gradient(180deg,#fff,var(--green));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:splashBeat 1.6s ease-in-out infinite;text-shadow:0 0 40px rgba(61,220,151,.15)}
+  .splash-tagline{color:var(--muted);font-size:12px;letter-spacing:6px;text-transform:uppercase;margin-top:14px;font-weight:800}
+  .splash-ball{width:50px;height:50px;border-radius:50%;background:radial-gradient(circle at 30% 28%,#e5777f,#c8102e 50%,#7a0a18);margin:30px auto 0;position:relative;animation:splashSpin 1.5s linear infinite;box-shadow:0 8px 30px rgba(200,16,46,.45),inset 0 -3px 8px rgba(0,0,0,.35)}
+  .splash-ball::before,.splash-ball::after{content:"";position:absolute;left:15%;right:15%;height:2px;background:#fff8e1;opacity:.6;border-radius:1px}
+  .splash-ball::before{top:42%}
+  .splash-ball::after{top:58%}
+  .splash-bat{font-size:32px;margin-top:14px;animation:splashWobble 1.2s ease-in-out infinite;display:inline-block}
+  @keyframes splashIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+  @keyframes splashBeat{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.04);filter:brightness(1.15)}}
+  @keyframes splashSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes splashWobble{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+
   /* Mobile squad mini (visible only on mobile during draft/auction) */
   .mobile-squad-mini{display:none;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px}
   .mobile-squad-mini .msm-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
@@ -737,6 +753,58 @@ const TEAM_SEASONS = [
     { n:"Yash Dayal",        roles:["PAC"], season:78, prime:82 },
     { n:"Alzarri Joseph",    roles:["PAC"], season:82, prime:84 }
   ]},
+  { team:"Delhi Capitals", year:2020, fmt:"t20", league:"ipl", trophy:"IPL — Finalists", squad:[
+    { n:"Prithvi Shaw",      roles:["OPN"], season:80, prime:82 },
+    { n:"Shikhar Dhawan",    roles:["OPN"], season:84, prime:88 },
+    { n:"Ajinkya Rahane",    roles:["BAT"], season:80, prime:86 },
+    { n:"Shreyas Iyer",      roles:["BAT"], season:84, prime:88 },
+    { n:"Rishabh Pant",      roles:["WK","BAT"], season:82, prime:88 },
+    { n:"Marcus Stoinis",    roles:["AR","FIN"], season:80, prime:82 },
+    { n:"Axar Patel",        roles:["AR","SPN"], season:82, prime:84 },
+    { n:"Ravichandran Ashwin",roles:["SPN","AR"], season:84, prime:90 },
+    { n:"Kagiso Rabada",     roles:["PAC"], season:90, prime:92 },
+    { n:"Anrich Nortje",     roles:["PAC"], season:86, prime:90 },
+    { n:"Tushar Deshpande",  roles:["PAC"], season:76, prime:78 }
+  ]},
+  { team:"Punjab Kings", year:2014, fmt:"t20", league:"ipl", trophy:"IPL — Finalists", squad:[
+    { n:"Virender Sehwag",   roles:["OPN"], season:84, prime:92 },
+    { n:"Wriddhiman Saha",   roles:["WK","BAT"], season:80, prime:82 },
+    { n:"Manan Vohra",       roles:["OPN","BAT"], season:74, prime:76 },
+    { n:"Glenn Maxwell",     roles:["AR","BAT"], season:90, prime:88 },
+    { n:"David Miller",      roles:["FIN","BAT"], season:86, prime:86 },
+    { n:"George Bailey",     roles:["BAT"], season:82, prime:82 },
+    { n:"Akshar Patel",      roles:["AR","SPN"], season:80, prime:84 },
+    { n:"Mitchell Johnson",  roles:["PAC"], season:88, prime:90 },
+    { n:"Sandeep Sharma",    roles:["PAC"], season:78, prime:80 },
+    { n:"Lakshmipathy Balaji",roles:["PAC"], season:78, prime:82 },
+    { n:"Karanveer Singh",   roles:["SPN"], season:76, prime:76 }
+  ]},
+  { team:"Lucknow Super Giants", year:2023, fmt:"t20", league:"ipl", trophy:"IPL — Group Stage", squad:[
+    { n:"KL Rahul",          roles:["OPN","BAT"], season:86, prime:88 },
+    { n:"Quinton de Kock",   roles:["OPN","WK"], season:86, prime:90 },
+    { n:"Kyle Mayers",       roles:["OPN","AR"], season:80, prime:82 },
+    { n:"Marcus Stoinis",    roles:["AR","FIN"], season:80, prime:82 },
+    { n:"Nicholas Pooran",   roles:["WK","FIN"], season:84, prime:86 },
+    { n:"Krunal Pandya",     roles:["AR","SPN"], season:78, prime:80 },
+    { n:"Deepak Hooda",      roles:["AR","BAT"], season:76, prime:78 },
+    { n:"Avesh Khan",        roles:["PAC"], season:80, prime:82 },
+    { n:"Mark Wood",         roles:["PAC"], season:84, prime:88 },
+    { n:"Ravi Bishnoi",      roles:["SPN"], season:80, prime:82 },
+    { n:"Naveen-ul-Haq",     roles:["PAC"], season:78, prime:84 }
+  ]},
+  { team:"Royal Challengers Bangalore", year:2011, fmt:"t20", league:"ipl", trophy:"IPL — Finalists", squad:[
+    { n:"Chris Gayle",       roles:["OPN"], season:92, prime:96 },
+    { n:"Virat Kohli",       roles:["OPN","BAT"], season:80, prime:95 },
+    { n:"Tillakaratne Dilshan",roles:["OPN"], season:84, prime:88 },
+    { n:"AB de Villiers",    roles:["BAT","WK"], season:90, prime:96 },
+    { n:"Saurabh Tiwary",    roles:["BAT"], season:76, prime:78 },
+    { n:"Daniel Vettori",    roles:["SPN","AR"], season:84, prime:88 },
+    { n:"Mohammad Kaif",     roles:["BAT","FIN"], season:76, prime:80 },
+    { n:"Sreenath Aravind",  roles:["PAC"], season:78, prime:78 },
+    { n:"Zaheer Khan",       roles:["PAC"], season:86, prime:88 },
+    { n:"S Aravind",         roles:["PAC"], season:76, prime:76 },
+    { n:"Cheteshwar Pujara", roles:["BAT"], season:74, prime:84 }
+  ]},
 
   /* ============ PSL ============ */
   { team:"Islamabad United", year:2018, fmt:"t20", league:"psl", trophy:"PSL — Champions", squad:[
@@ -816,6 +884,19 @@ const TEAM_SEASONS = [
     { n:"Arshad Iqbal",      roles:["PAC"], season:76, prime:78 },
     { n:"Mohammad Nabi",     roles:["AR"], season:82, prime:86 },
     { n:"Aamer Yamin",       roles:["AR"], season:76, prime:76 }
+  ]},
+  { team:"Quetta Gladiators", year:2019, fmt:"t20", league:"psl", trophy:"PSL — Champions", squad:[
+    { n:"Shane Watson",      roles:["OPN","AR"], season:84, prime:88 },
+    { n:"Ahmed Shehzad",     roles:["OPN"], season:78, prime:82 },
+    { n:"Rilee Rossouw",     roles:["BAT"], season:82, prime:84 },
+    { n:"Sarfaraz Ahmed",    roles:["WK","BAT"], season:80, prime:84 },
+    { n:"Umar Akmal",        roles:["BAT","WK"], season:78, prime:80 },
+    { n:"Mohammad Nawaz",    roles:["AR","SPN"], season:78, prime:80 },
+    { n:"Ben Cutting",       roles:["AR","FIN"], season:78, prime:82 },
+    { n:"Sohail Tanvir",     roles:["PAC","AR"], season:80, prime:84 },
+    { n:"Mohammad Hasnain",  roles:["PAC"], season:78, prime:80 },
+    { n:"Anwar Ali",         roles:["PAC"], season:76, prime:78 },
+    { n:"Naseem Shah",       roles:["PAC"], season:80, prime:90 }
   ]},
   { team:"Islamabad United", year:2024, fmt:"t20", league:"psl", trophy:"PSL — Champions", squad:[
     { n:"Alex Hales",        roles:["OPN"], season:84, prime:88 },
@@ -974,6 +1055,32 @@ const TEAM_SEASONS = [
     { n:"Cameron Boyce",     roles:["SPN"], season:80, prime:82 },
     { n:"Rashid Khan",       roles:["AR","SPN"], season:88, prime:92 },
     { n:"Lance Morris",      roles:["PAC"], season:80, prime:82 }
+  ]},
+  { team:"Sydney Thunder", year:2016, fmt:"t20", league:"bbl", trophy:"BBL — Champions", squad:[
+    { n:"Usman Khawaja",     roles:["OPN"], season:84, prime:88 },
+    { n:"Aiden Blizzard",    roles:["OPN"], season:78, prime:80 },
+    { n:"Jacques Kallis",    roles:["BAT","AR"], season:88, prime:94 },
+    { n:"Shane Watson",      roles:["BAT","AR"], season:86, prime:88 },
+    { n:"Mike Hussey",       roles:["BAT","FIN"], season:84, prime:90 },
+    { n:"Ryan Carters",      roles:["WK","BAT"], season:76, prime:78 },
+    { n:"Pat Cummins",       roles:["PAC"], season:84, prime:92 },
+    { n:"Andre Russell",     roles:["AR","FIN"], season:84, prime:92 },
+    { n:"Clint McKay",       roles:["PAC"], season:80, prime:82 },
+    { n:"Chris Green",       roles:["AR","SPN"], season:76, prime:80 },
+    { n:"Fawad Ahmed",       roles:["SPN"], season:80, prime:82 }
+  ]},
+  { team:"Melbourne Stars", year:2016, fmt:"t20", league:"bbl", trophy:"BBL — Finalists", squad:[
+    { n:"David Hussey",      roles:["OPN"], season:80, prime:84 },
+    { n:"Luke Wright",       roles:["OPN","AR"], season:78, prime:80 },
+    { n:"Kevin Pietersen",   roles:["BAT"], season:88, prime:92 },
+    { n:"Glenn Maxwell",     roles:["AR","BAT"], season:88, prime:88 },
+    { n:"Marcus Stoinis",    roles:["AR","FIN"], season:80, prime:82 },
+    { n:"Peter Handscomb",   roles:["WK","BAT"], season:80, prime:84 },
+    { n:"Daniel Worrall",    roles:["PAC"], season:78, prime:80 },
+    { n:"John Hastings",     roles:["AR","PAC"], season:80, prime:82 },
+    { n:"Adam Zampa",        roles:["SPN"], season:82, prime:86 },
+    { n:"Michael Beer",      roles:["SPN"], season:74, prime:76 },
+    { n:"Ben Hilfenhaus",    roles:["PAC"], season:80, prime:82 }
   ]},
 
   /* ============ CARIBBEAN PREMIER LEAGUE (for CL) ============ */
@@ -1175,6 +1282,7 @@ function avatarHTML(player, size=48){
 }
 
 // Player photos removed — initials avatars only for cleaner shareability
+const LEAGUE_NAMES = { ipl:"IPL", psl:"PSL", bbl:"BIG BASH", cpl:"CPL", blast:"T20 BLAST" };
 const COUNTRY_CODES = {
   "Australia":"AUS","India":"IND","England":"ENG","New Zealand":"NZL",
   "Pakistan":"PAK","South Africa":"SAF","West Indies":"WIN","Sri Lanka":"SRI",
@@ -1505,7 +1613,7 @@ function animateSpin(finalIdx){
   items.push(finalIdx);
   reel.innerHTML = items.map(i=>{
     const ts = TEAM_SEASONS[i];
-    return `<div class="reel-item"><div class="t">${ts.team}</div><div class="y">${ts.year}</div><div class="f">${ts.fmt.toUpperCase()} WC</div></div>`;
+    return `<div class="reel-item"><div class="t">${ts.team}</div><div class="y">${ts.year}</div><div class="f">${LEAGUE_NAMES[ts.league]||""}</div></div>`;
   }).join("");
   const totalY = (N-1)*90;
   const duration = 2400;
@@ -2311,7 +2419,7 @@ function renderDraft(){
   const ts = TEAM_SEASONS[S.currentSpin.teamSeasonIdx];
   const reveal = el(`<div class="spin-box">
     <div class="lbl">${S.spinning?'SPINNING…':'SQUAD SPUN'}</div>
-    <div class="reel"><div class="reel-track"><div class="reel-item"><div class="t">${ts.team}</div><div class="y">${ts.year}</div><div class="f">${ts.fmt.toUpperCase()} WC</div></div></div></div>
+    <div class="reel"><div class="reel-track"><div class="reel-item"><div class="t">${ts.team}</div><div class="y">${ts.year}</div><div class="f">${LEAGUE_NAMES[ts.league]||""}</div></div></div></div>
     ${!S.spinning && ts.trophy ? `<div class="trophy-label">${ts.trophy}</div>` : ''}
     ${!S.spinning ? `<div class="reroll">Rerolls left: <b>${S.rerollsLeft}</b> ${S.rerollsLeft>0?'· <a id="rr">Reroll squad</a>':''}</div>` : ''}
   </div>`);
@@ -3215,6 +3323,32 @@ function renderWin(){
 }
 
 if (S.tour && !S.tour.speed) S.tour.speed = 2;
+
+function showSplash(){
+  const sp = document.createElement('div');
+  sp.id = "splash";
+  sp.innerHTML = `<div class="splash-inner">
+    <div class="splash-logo">11–0</div>
+    <div class="splash-tagline">Cricket Squad Draft</div>
+    <div class="splash-ball"></div>
+    <div class="splash-bat">🏏</div>
+  </div>`;
+  document.body.appendChild(sp);
+  // Allow tap to skip
+  sp.onclick = () => fadeSplash(sp);
+  setTimeout(()=>fadeSplash(sp), 1800);
+}
+function fadeSplash(sp){
+  if (!sp || sp._fading) return;
+  sp._fading = true;
+  sp.classList.add("fade");
+  setTimeout(()=>sp.remove(), 700);
+}
+// Show splash on first visit per session (skip if user came in mid-flow via reload)
+if (!window.sessionStorage.getItem("splashShown")){
+  window.sessionStorage.setItem("splashShown", "1");
+  showSplash();
+}
 render();
 </script>
 </body>
