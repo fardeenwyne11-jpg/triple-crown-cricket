@@ -7,27 +7,28 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 <style>
   :root{
-    --bg:#0a2818;             /* dark forest pitch */
-    --bg-alt:#11321f;
-    --panel:#1a3d29;          /* mid green panel */
-    --panel2:#244f35;
-    --line:#3a7a4d;           /* mid-bright pitch */
-    --line-soft:#2a5a39;
-    --ink:#eaf5da;            /* cream text */
-    --ink-soft:#c4d5b0;
-    --muted:#8aa890;
-    --gold:#e0c478;
-    --gold-bright:#f0d278;
+    --bg:#0a1410;             /* near-black with green undertone */
+    --bg-alt:#101c16;
+    --panel:#16241c;          /* dark panel */
+    --panel2:#1f3328;
+    --line:#2d4a39;           /* subtle green border */
+    --line-soft:#1f3328;
+    --ink:#f0f5ea;            /* off-white text */
+    --ink-soft:#c4d0bd;
+    --muted:#7a8a7d;
+    --gold:#e8c478;
+    --gold-bright:#f5d384;
     --gold-deep:#c8a55e;
-    --green:#4ca850;
-    --green-deep:#6dc56f;
-    --green-light:#8dd17f;
-    --green-soft:#2a5a39;
-    --red:#e8606f;            /* lighter red for dark bg */
+    --green:#3ddc97;          /* vivid mint (38-0 style) */
+    --green-deep:#2eb47a;
+    --green-light:#6dffb4;
+    --green-soft:#1a3328;
+    --red:#ff5d73;            /* coral red */
     --red-deep:#c8102e;
     --red-light:#ff8a99;
     --blue:#5a99ff;
     --teal:#2dd4bf; --purple:#a578f0;
+    --label:#c4d0bd;          /* section heading color (was red) */
   }
   *{box-sizing:border-box}
   html,body{margin:0;background:repeating-linear-gradient(135deg,transparent 0,transparent 80px,rgba(255,255,255,.025) 80px,rgba(255,255,255,.025) 81px),var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;min-height:100%}
@@ -40,7 +41,7 @@
   .main{padding:30px 28px;max-width:1100px;margin:0 auto;width:100%}
 
   h1{font-size:30px;margin:0 0 4px;letter-spacing:.5px;color:var(--ink);font-weight:900}
-  h2{font-size:13px;margin:18px 0 10px;color:var(--red);text-transform:uppercase;letter-spacing:1.8px;font-weight:900}
+  h2{font-size:12px;margin:18px 0 10px;color:var(--label);text-transform:uppercase;letter-spacing:2.5px;font-weight:800}
   h3{font-size:16px;margin:0 0 8px;color:var(--ink);font-weight:800}
   .muted{color:var(--muted)}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -116,15 +117,61 @@
 
   /* Spin */
   .spin-box{background:linear-gradient(135deg,rgba(45,122,77,.04),transparent 60%),var(--panel);border:2px solid var(--line);border-radius:16px;padding:36px 30px;text-align:center;margin:14px 0;position:relative;box-shadow:0 2px 0 var(--line-soft)}
-  .spin-box .lbl{color:var(--red);font-size:11px;letter-spacing:2.5px;font-weight:900;margin-bottom:8px}
+  .spin-box .lbl{color:var(--label);font-size:11px;letter-spacing:2.5px;font-weight:800;margin-bottom:8px}
   .pos-left{color:var(--muted);font-size:13px;margin-bottom:22px;font-weight:600}
 
-  /* Cricket ball spin button */
-  .spin-btn{background:radial-gradient(circle at 30% 28%,#e5777f 0%,#c8102e 50%,#7a0a18 100%);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4);border:0;padding:16px 36px;border-radius:14px;font-weight:900;font-size:16px;cursor:pointer;letter-spacing:1px;box-shadow:0 8px 24px rgba(200,16,46,.4),inset 0 -4px 12px rgba(0,0,0,.35),inset 0 3px 6px rgba(255,255,255,.22);position:relative;transition:all .2s ease}
-  .spin-btn::before,.spin-btn::after{content:"";position:absolute;left:14%;right:14%;height:2px;background:linear-gradient(90deg,transparent 0%,#fff8e1 18%,#fff8e1 82%,transparent 100%);opacity:.6;border-radius:1px;pointer-events:none}
-  .spin-btn::before{top:34%}
-  .spin-btn::after{bottom:34%}
-  .spin-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(200,16,46,.5),inset 0 -4px 12px rgba(0,0,0,.35),inset 0 3px 6px rgba(255,255,255,.22)}
+  /* Green spin button (38-0 style) */
+  .spin-btn{background:var(--green);color:#053a26;border:0;padding:16px 36px;border-radius:12px;font-weight:900;font-size:16px;cursor:pointer;letter-spacing:.5px;box-shadow:0 6px 20px rgba(61,220,151,.3);position:relative;transition:all .2s ease;display:inline-flex;align-items:center;gap:10px}
+  .spin-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(61,220,151,.45)}
+  .spin-btn:active{transform:translateY(0)}
+  .spin-tap-hint{font-size:11px;color:var(--muted);letter-spacing:.5px;margin-top:10px;font-weight:600}
+
+  /* CLUB | SEASON visualisation boxes */
+  .spin-boxes{display:inline-flex;align-items:center;gap:12px;margin:14px 0 22px}
+  .spin-box-stub{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px 28px;min-width:130px;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+  .spin-box-stub .lbl-mini{position:absolute;top:-9px;background:var(--panel);padding:0 8px;font-size:9px;color:var(--muted);font-weight:800;letter-spacing:1.6px}
+  .spin-box-stub .val{font-size:14px;font-weight:800;color:var(--ink);text-align:center}
+  .spin-x{color:var(--muted);font-weight:700;font-size:14px}
+
+  /* Expected odds screen */
+  .odds-box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px}
+  .odds-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:14px;flex-wrap:wrap}
+  .odds-row .ttl{font-size:10px;color:var(--muted);letter-spacing:1.8px;font-weight:800;text-transform:uppercase}
+  .odds-row .val{font-size:32px;font-weight:900;color:var(--ink);font-variant-numeric:tabular-nums}
+  .odds-row .val.green{color:var(--green)}
+  .odds-bars{margin-top:14px;display:flex;flex-direction:column;gap:12px}
+  .odds-bar{display:flex;flex-direction:column;gap:4px}
+  .odds-bar .hd{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:var(--ink)}
+  .odds-bar .hd .pct{color:var(--ink);font-weight:900;font-variant-numeric:tabular-nums}
+  .odds-bar .track{height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+  .odds-bar .track > i{display:block;height:100%;border-radius:3px;transition:width .8s ease}
+  .odds-bar.gold .track > i{background:linear-gradient(90deg,#f0b94a,#e8c478)}
+  .odds-bar.green .track > i{background:var(--green)}
+  .odds-bar.blue .track > i{background:var(--blue)}
+  .odds-bar.purple .track > i{background:var(--purple)}
+  .odds-bar.red .track > i{background:var(--red)}
+
+  /* Tournament summary */
+  .verdict-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+  @media(max-width:600px){.verdict-row{grid-template-columns:1fr 1fr}}
+  .verdict-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+  .verdict-card .ttl{font-size:9px;color:var(--muted);letter-spacing:1.6px;font-weight:800;text-transform:uppercase;margin-bottom:6px}
+  .verdict-card .val{font-size:28px;font-weight:900;color:var(--ink)}
+  .verdict-card.dim .val{color:var(--muted)}
+  .verdict-card.outcome .val{font-size:14px;color:var(--gold-bright);font-weight:900;letter-spacing:1px}
+  .narrative{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+  .narrative h3{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);margin-bottom:8px;font-weight:900}
+  .narrative p{margin:0;color:var(--ink-soft);font-size:14px;line-height:1.5}
+  .narrative .epi{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;font-style:italic}
+  .big-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+  @media(max-width:520px){.big-stats{grid-template-columns:1fr 1fr}}
+  .big-stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center}
+  .big-stat .v{font-size:34px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+  .big-stat .v.g{color:var(--green)}
+  .big-stat .v.y{color:var(--gold-bright)}
+  .big-stat .v.r{color:var(--red)}
+  .big-stat .v.b{color:var(--blue)}
+  .big-stat .l{font-size:11px;color:var(--muted);letter-spacing:1.2px;margin-top:4px;text-transform:uppercase;font-weight:700}
   .spin-btn:active{transform:translateY(0)}
 
   .reel{height:90px;display:block;position:relative;overflow:hidden;margin:8px 0 4px;border-radius:10px;background:var(--bg-alt);border:1px solid var(--line)}
@@ -293,7 +340,7 @@
   .live-info{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
   @media(max-width:520px){.live-info{grid-template-columns:1fr}}
   .live-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12px}
-  .live-box .h{color:var(--red);font-size:10px;letter-spacing:1.2px;font-weight:900;text-transform:uppercase;margin-bottom:6px}
+  .live-box .h{color:var(--label);font-size:10px;letter-spacing:1.6px;font-weight:800;text-transform:uppercase;margin-bottom:6px}
   .live-box .p{display:flex;justify-content:space-between;align-items:center;padding:3px 0;gap:8px}
   .live-box .p.on{color:var(--gold-deep);font-weight:800}
   .live-box .p b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
@@ -1159,18 +1206,44 @@ function startTournament(tId){
   const t = TOURNAMENTS.find(x=>x.id===tId);
   // Filter opponents by league(s) belonging to this tournament
   let pool = OPPONENTS.filter(o => t.leagues.includes(o.league));
-  // Champions League: only top teams from each league (CL_POOL)
   if (tId === "cl") {
     pool = pool.filter(o => CL_POOL.includes(o.team));
+  } else {
+    // For league tournaments: use teams from the MOST RECENT edition only
+    const maxYear = Math.max(...pool.map(o=>o.year));
+    const recent = pool.filter(o => o.year === maxYear);
+    // Need at least t.rounds.length opponents; if not enough, fall back to broader pool
+    pool = recent.length >= t.rounds.length ? recent : pool.filter(o => o.year >= maxYear - 2);
   }
   // Opponent difficulty modifier
   const mod = S.setup.oppDifficulty === "easy" ? -8 : S.setup.oppDifficulty === "legend" ? +4 : 0;
-  let candidates = pool.map(o=>({ n:o.n, r: Math.max(60, Math.min(98, o[t.fmt] + mod)) }));
+  let candidates = pool.map(o=>({ n:o.n, team:o.team, year:o.year, r: Math.max(60, Math.min(98, o[t.fmt] + mod)) }));
   const opps = shuffle(candidates).slice(0, t.rounds.length).sort((a,b)=>a.r-b.r);
   const auto = orderForBatting(squadPicks().map(s=>s.player)).map(p=>p.n);
-  S.tour = { tId, fmt:t.fmt, roundIdx:0, opps, scorecards:[], live:false, speed:2, battingOrder: auto };
-  S.screen = "order";
+  S.tour = { tId, fmt:t.fmt, roundIdx:0, opps, scorecards:[], live:false, speed:2, battingOrder: auto, oppPool: pool.map(o=>o.n) };
+  // Show pre-season odds first
+  S.screen = "odds";
   save(); render();
+}
+
+function computeOdds(){
+  if (!S.tour) return null;
+  const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
+  const myR = avg(squadPicks().map(s=>ratingOf(s.player)));
+  // Opponent ratings average
+  const oppRs = S.tour.opps.map(o=>o.r);
+  const fieldAvg = avg(oppRs);
+  // win prob: simplistic — based on diff
+  const diff = myR - fieldAvg;
+  const winLeague = Math.max(2, Math.min(85, 28 + diff*4));
+  const top4 = Math.max(20, Math.min(98, 55 + diff*3.5));
+  // Project finish (1..N teams)
+  const N = S.tour.opps.length + 1;
+  let projected = 1;
+  for (const o of S.tour.opps) if (o.r > myR + 1) projected++;
+  const expPts = Math.round(50 + diff*4 + Math.random()*6);
+  const eliminated = Math.max(0.5, Math.min(60, 30 - diff*3));
+  return { myR, fieldAvg, projected, expPts, winLeague, top4, eliminated };
 }
 function moveOrder(idx, dir){
   if (!S.tour) return;
@@ -1517,17 +1590,20 @@ function continueAfterAwards(){
   if (!last.won){
     S.careerLog.unshift({ t:t.name, won:false, lines: S.tour.scorecards.map((m,i)=>`${t.rounds[i]} v ${m.opp}: L`) });
     S.lives--;
-    S.tour = null;
-    if (S.lives < 0){ S.screen = "gameover"; save(); render(); return; }
-    S.screen = "hub"; save(); render(); return;
+    if (S.lives < 0){ S.tour.summary = buildTournamentSummary(false); S.screen = "summary"; save(); render(); return; }
+    S.tour.summary = buildTournamentSummary(false);
+    S.screen = "summary"; save(); render(); return;
   }
   S.tour.roundIdx++;
   if (S.tour.roundIdx >= t.rounds.length){
     S.trophies[t.id] = true;
     S.careerLog.unshift({ t:t.name, won:true, lines: S.tour.scorecards.map((m,i)=>`${t.rounds[i]} v ${m.opp}: W`) });
-    S.tour = null;
-    if (S.trophies.ipl && S.trophies.psl && S.trophies.bbl && S.trophies.cl) S.screen = "win";
-    else S.screen = "hub";
+    S.tour.summary = buildTournamentSummary(true);
+    if (S.trophies.ipl && S.trophies.psl && S.trophies.bbl && S.trophies.cl) {
+      // Set summary screen first, then user can navigate to win
+      S.screen = "summary"; save(); render(); return;
+    }
+    S.screen = "summary";
     save(); render(); return;
   }
   S.screen = "order";
@@ -1555,6 +1631,8 @@ function render(){
   const main = document.createElement("div"); main.className="main";
   if (S.screen === "draft") main.append(renderDraft());
   else if (S.screen === "hub") main.append(renderHub());
+  else if (S.screen === "odds") main.append(renderOdds());
+  else if (S.screen === "summary") main.append(renderSummary());
   else if (S.screen === "order") main.append(renderOrder());
   else if (S.screen === "watch-choice") main.append(renderWatchChoice());
   else if (S.screen === "live") main.append(renderLive());
@@ -1795,13 +1873,20 @@ function renderDraft(){
     const remaining = picksRemaining();
     const wkAlert = !hasKeeper() && remaining===1;
     const box = el(`<div class="spin-box">
-      <div class="lbl">SPIN FOR A WORLD CUP SQUAD</div>
-      <div class="pos-left">${remaining} position${remaining===1?'':'s'} left ${wkAlert?'<span style="color:var(--gold)">· Must pick a keeper</span>':''}</div>
-      <button class="spin-btn">Spin the Wheel</button>
+      <div class="lbl">SPIN FOR A SQUAD</div>
+      <div class="pos-left"><b style="color:var(--ink)">${remaining} position${remaining===1?'':'s'} left to fill</b> ${wkAlert?'<span style="color:var(--gold)">· Must pick a keeper</span>':''}</div>
+      <div class="spin-boxes">
+        <div class="spin-box-stub"><span class="lbl-mini">CLUB</span><div class="val">—</div></div>
+        <span class="spin-x">×</span>
+        <div class="spin-box-stub"><span class="lbl-mini">SEASON</span><div class="val">—</div></div>
+      </div>
+      <div><button class="spin-btn">🏧 Spin the Wheel</button></div>
+      <div class="spin-tap-hint">or tap anywhere to spin</div>
     </div>`);
-    box.querySelector("button").onclick = spin;
+    box.querySelector(".spin-btn").onclick = spin;
+    box.style.cursor = "pointer";
+    box.onclick = (e)=>{ if (e.target === box || e.target.classList.contains('spin-box-stub') || e.target.classList.contains('spin-tap-hint') || e.target.classList.contains('val') || e.target.classList.contains('lbl-mini') || e.target.classList.contains('spin-x') || e.target.classList.contains('lbl') || e.target.classList.contains('pos-left') || e.target.classList.contains('spin-boxes')) spin(); };
     wrap.append(box);
-    wrap.append(el(`<p class="muted" style="text-align:center;font-size:13px">Each spin reveals a national team's World Cup squad. Pick any player to add to your XI.</p>`));
     return wrap;
   }
 
@@ -1960,6 +2045,176 @@ function renderHub(){
     wrap.append(lg);
   }
   return wrap;
+}
+
+function renderOdds(){
+  const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
+  const o = computeOdds();
+  const wrap = el(`<div></div>`);
+  wrap.append(el(`<div style="text-align:center;margin-bottom:18px">
+    <div style="font-size:46px;line-height:1">${t.icon}</div>
+    <h1 style="margin-top:8px">Squad Locked In</h1>
+    <p class="muted" style="margin:6px 0 0">Pre-season odds for the <b style="color:var(--ink)">${t.name}</b>. Simulate the season and chase the impossible.</p>
+  </div>`));
+  const teams = S.tour.oppPool.length + 1;
+  const box = el(`<div class="odds-box">
+    <div class="odds-row">
+      <div class="ttl">Pre-season odds</div>
+      <div class="ttl" style="text-align:right">Based on ${teams} teams · XI ${o.myR.toFixed(1)}</div>
+    </div>
+    <div class="odds-row">
+      <div><div class="ttl">Projected finish</div><div class="val">${ordinal(o.projected)}</div></div>
+      <div style="text-align:right"><div class="ttl">Expected points</div><div class="val green">${o.expPts}</div></div>
+    </div>
+    <div class="odds-bars">
+      <div class="odds-bar gold"><div class="hd"><span>Win the league</span><span class="pct">${o.winLeague.toFixed(1)}%</span></div><div class="track"><i style="width:${o.winLeague}%"></i></div></div>
+      <div class="odds-bar green"><div class="hd"><span>Top 4</span><span class="pct">${o.top4.toFixed(0)}%</span></div><div class="track"><i style="width:${o.top4}%"></i></div></div>
+      <div class="odds-bar blue"><div class="hd"><span>Reach the final</span><span class="pct">${Math.min(99,(o.top4*0.55)).toFixed(1)}%</span></div><div class="track"><i style="width:${Math.min(99,(o.top4*0.55))}%"></i></div></div>
+      <div class="odds-bar purple"><div class="hd"><span>Make playoffs</span><span class="pct">${Math.min(99,o.top4*1.08).toFixed(1)}%</span></div><div class="track"><i style="width:${Math.min(99,o.top4*1.08)}%"></i></div></div>
+      <div class="odds-bar red"><div class="hd"><span>Group stage exit</span><span class="pct">${o.eliminated.toFixed(1)}%</span></div><div class="track"><i style="width:${o.eliminated}%"></i></div></div>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:14px">What your overall ${o.myR.toFixed(0)} rating <i>should</i> produce. Simulate to see if you beat it.</p>
+  </div>`);
+  wrap.append(box);
+  const row = el(`<div class="row" style="justify-content:space-between;gap:8px"></div>`);
+  const back = el(`<button class="ghost">← Cancel</button>`);
+  back.onclick = () => { S.tour=null; S.screen="hub"; save(); render(); };
+  const go = el(`<button class="primary" style="flex:1;padding:14px;font-size:15px">Simulate Season →</button>`);
+  go.onclick = () => { S.screen = "order"; save(); render(); };
+  row.append(back, go);
+  wrap.append(row);
+  return wrap;
+}
+function ordinal(n){
+  const s=["th","st","nd","rd"], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]);
+}
+
+function renderSummary(){
+  // Aggregate stats across all scorecards (the just-completed tournament)
+  const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
+  const summary = S.tour.summary;
+  const wrap = el(`<div></div>`);
+
+  wrap.append(el(`<div class="verdict-row">
+    <div class="verdict-card"><div class="ttl">Finished</div><div class="val">${ordinal(summary.finish)}</div></div>
+    <div class="verdict-card dim"><div class="ttl">Projected</div><div class="val">${ordinal(summary.projected)}</div></div>
+    <div class="verdict-card outcome"><div class="ttl">Verdict</div><div class="val">${summary.verdictTag}</div></div>
+  </div>`));
+
+  wrap.append(el(`<div class="narrative">
+    <h3>${summary.title}</h3>
+    <p>${summary.body}</p>
+    ${summary.epilogue ? `<p class="epi">${summary.epilogue}</p>` : ''}
+  </div>`));
+
+  wrap.append(el(`<div class="big-stats">
+    <div class="big-stat"><div class="v g">${summary.wins}</div><div class="l">Wins</div></div>
+    <div class="big-stat"><div class="v y">${summary.draws}</div><div class="l">Draws</div></div>
+    <div class="big-stat"><div class="v r">${summary.losses}</div><div class="l">Losses</div></div>
+  </div>`));
+  wrap.append(el(`<div class="big-stats">
+    <div class="big-stat"><div class="v">${summary.points}</div><div class="l">Points</div></div>
+    <div class="big-stat"><div class="v g">${summary.runsScored}</div><div class="l">Runs For</div></div>
+    <div class="big-stat"><div class="v r">${summary.runsConceded}</div><div class="l">Runs Against</div></div>
+  </div>`));
+
+  // Player awards
+  if (summary.awards){
+    wrap.append(el(`<h2 style="margin-top:20px">Season Awards</h2>`));
+    const a = summary.awards;
+    const grid = el(`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>`);
+    if (a.topRun) grid.append(el(`<div class="stat-card motm-card"><div class="h"><b>🏏 Top Run-scorer</b></div><div style="margin-top:4px"><b>${a.topRun.n}</b> — ${a.topRun.runs} runs (SR ${a.topRun.sr.toFixed(1)})</div></div>`));
+    if (a.topWkt) grid.append(el(`<div class="stat-card motm-card"><div class="h"><b>🎯 Top Wicket-taker</b></div><div style="margin-top:4px"><b>${a.topWkt.n}</b> — ${a.topWkt.wickets} wkts (Econ ${a.topWkt.econ.toFixed(2)})</div></div>`));
+    if (a.motm) grid.append(el(`<div class="stat-card motm-card"><div class="h"><b>🏅 Player of the Tournament</b></div><div style="margin-top:4px"><b>${a.motm.n}</b></div></div>`));
+    wrap.append(grid);
+  }
+
+  const row = el(`<div class="row" style="justify-content:space-between;gap:8px;margin-top:18px"></div>`);
+  const share = el(`<button class="share-btn">📸 Share season</button>`);
+  share.onclick = () => {
+    shareResult({
+      title:t.name, subtitle: summary.won ? "CHAMPIONS" : `Finished ${ordinal(summary.finish)}`,
+      trophyEmoji: summary.won ? "🏆" : (summary.finish<=2?"🥈":"🏏"),
+      headline: summary.title,
+      body: `${summary.wins}W ${summary.draws}D ${summary.losses}L · ${summary.points} pts`,
+      shareText: `${summary.title} in 11-0 Cricket ${t.name}. Beat me?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
+    });
+  };
+  const cont = el(`<button class="primary" style="flex:1">Back to hub →</button>`);
+  cont.onclick = () => {
+    S.tour=null;
+    if (S.lives < 0) S.screen = "gameover";
+    else if (S.trophies.ipl && S.trophies.psl && S.trophies.bbl && S.trophies.cl) S.screen = "win";
+    else S.screen = "hub";
+    save(); render();
+  };
+  row.append(share, cont);
+  wrap.append(row);
+  return wrap;
+}
+
+function buildTournamentSummary(won){
+  const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
+  const scs = S.tour.scorecards;
+  const wins = scs.filter(m=>m.won).length;
+  const losses = scs.length - wins;
+  const draws = 0; // T20 has no draws
+  const points = wins*2 + draws;
+  const finish = won ? 1 : Math.max(2, Math.min(S.tour.opps.length + 1, S.tour.roundIdx + 2));
+  const o = computeOdds() || { projected: 4, expPts: 50 };
+  // Runs aggregate
+  let runsScored=0, runsConceded=0;
+  scs.forEach(m => m.innings.forEach(inn => {
+    if (inn.batTeam === "You") runsScored += inn.runs;
+    else runsConceded += inn.runs;
+  }));
+  // Top stats across scorecards
+  const playerStats = {};
+  scs.forEach(m => m.innings.forEach(inn => {
+    if (inn.batTeam === "You") inn.batCard.forEach(b => {
+      if (!playerStats[b.n]) playerStats[b.n] = { n:b.n, runs:0, balls:0, fours:0, sixes:0, wickets:0, runsConceded:0, overs:0 };
+      const p = playerStats[b.n];
+      p.runs += b.runs; p.balls += b.balls; p.fours += b.fours; p.sixes += b.sixes;
+    });
+    if (inn.bowlTeam === "You") inn.bowlCard.forEach(b => {
+      if (!playerStats[b.n]) playerStats[b.n] = { n:b.n, runs:0, balls:0, fours:0, sixes:0, wickets:0, runsConceded:0, overs:0 };
+      const p = playerStats[b.n];
+      p.wickets += b.wickets; p.runsConceded += b.runs; p.overs += b.balls/6;
+    });
+  }));
+  const all = Object.values(playerStats);
+  const topRun = all.slice().sort((a,b)=>b.runs-a.runs)[0];
+  if (topRun) topRun.sr = topRun.balls ? (topRun.runs/topRun.balls)*100 : 0;
+  const topWkt = all.filter(p=>p.wickets>0).slice().sort((a,b)=>b.wickets-a.wickets || (a.runsConceded/Math.max(a.overs,1))-(b.runsConceded/Math.max(b.overs,1)))[0];
+  if (topWkt) topWkt.econ = topWkt.overs ? topWkt.runsConceded/topWkt.overs : 0;
+  const motmCounts = {};
+  scs.forEach(m=>{ if(m.lastAwards && m.lastAwards.motm){ motmCounts[m.lastAwards.motm.n]=(motmCounts[m.lastAwards.motm.n]||0)+1; }});
+  const motm = Object.entries(motmCounts).sort((a,b)=>b[1]-a[1])[0];
+  // Narrative
+  let title, body, epilogue = "", verdictTag = "";
+  if (won) {
+    title = "🏆 CHAMPIONS!"; verdictTag = "GLORY";
+    body = `${wins} wins, ${points} points. Lifted the ${t.name} trophy with style. ${runsScored} runs scored, ${runsConceded} conceded — a season for the history books.`;
+    if (topRun) epilogue = `${topRun.n} ran the show with ${topRun.runs} runs. Different gravy.`;
+  } else if (finish === 2) {
+    title = "NEARLY MEN"; verdictTag = "SO CLOSE";
+    body = `${wins} wins, ${points} points, runners-up. Title race fell short, but nobody can call that a failure of a season.`;
+    if (topRun) epilogue = `${topRun.n} carried the batting. Just didn't have enough in the tank.`;
+  } else if (finish <= 4) {
+    title = "PLAYOFF EXIT"; verdictTag = "BUILD ON IT";
+    body = `${wins} wins, ${points} points, finished ${ordinal(finish)}. Got to the business end, ran out of fuel.`;
+  } else {
+    title = "ROUGH SEASON"; verdictTag = "REBUILD";
+    body = `${wins} wins, ${losses} losses. Couldn't get the wheels turning. There's a squad here — just needs unlocking.`;
+  }
+  if (finish < o.projected) verdictTag = "OVER-DELIVERED";
+  else if (finish > o.projected + 1) verdictTag = "UNDERWHELMED";
+  else if (finish === o.projected) verdictTag = "AS EXPECTED";
+  return {
+    won, finish, projected: o.projected, wins, draws, losses, points,
+    runsScored, runsConceded, title, body, epilogue, verdictTag,
+    awards: { topRun, topWkt, motm: motm ? { n: motm[0] } : null }
+  };
 }
 
 function renderOrder(){
