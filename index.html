@@ -173,6 +173,33 @@
   .big-stat .v.b{color:var(--blue)}
   .big-stat .l{font-size:11px;color:var(--muted);letter-spacing:1.2px;margin-top:4px;text-transform:uppercase;font-weight:700}
 
+  /* League sim */
+  .league-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:14px;margin-bottom:16px}
+  @media(max-width:760px){.league-grid{grid-template-columns:1fr}}
+  .league-results,.league-table{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .league-results h3,.league-table h3{font-size:11px;color:var(--label);letter-spacing:1.8px;font-weight:800;text-transform:uppercase;margin-bottom:10px}
+  .lg-feed{max-height:340px;overflow:auto;display:flex;flex-direction:column;gap:6px}
+  .lg-match{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;animation:cIn .4s ease}
+  .lg-match .gw{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:800;margin-bottom:4px}
+  .lg-match .ms{display:flex;justify-content:space-between;align-items:center;gap:6px}
+  .lg-match .t{flex:1;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lg-match .t.me{color:var(--gold-bright)}
+  .lg-match .t.w{color:var(--green)}
+  .lg-match .s{font-variant-numeric:tabular-nums;font-weight:800;color:var(--muted);font-size:13px}
+  .lg-tab{width:100%;border-collapse:collapse;font-size:12px}
+  .lg-tab th{text-align:left;padding:6px 8px;color:var(--muted);font-size:10px;letter-spacing:1px;border-bottom:1px solid var(--line);font-weight:700}
+  .lg-tab th.r{text-align:right}
+  .lg-tab td{padding:6px 8px;border-bottom:1px solid var(--line-soft);font-variant-numeric:tabular-nums;color:var(--ink)}
+  .lg-tab td.r{text-align:right;font-weight:700}
+  .lg-tab tr.me td{background:rgba(232,196,120,.08);color:var(--gold-bright);font-weight:800}
+  .lg-tab tr.qual td{border-left:2px solid var(--green)}
+  .lg-tab tr.qual td:first-child{border-left:none}
+  .lg-tab tr.qual td.pos{color:var(--green)}
+  .league-header{text-align:center;margin-bottom:14px}
+  .league-header .gw-display{font-size:14px;color:var(--label);letter-spacing:2px;font-weight:800;text-transform:uppercase}
+  .league-progress{height:6px;background:var(--panel);border:1px solid var(--line);border-radius:3px;overflow:hidden;margin:8px auto;max-width:400px}
+  .league-progress > i{display:block;height:100%;background:var(--green);transition:width .3s ease}
+
   /* Auction */
   .auction-status{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:14px;flex-wrap:wrap;gap:12px}
   .auction-status .it{display:flex;flex-direction:column}
@@ -194,6 +221,10 @@
   .auction-lot .pricetag .c{font-size:13px;color:var(--gold);font-weight:700}
   .auction-actions{display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap}
   .auction-actions button{padding:14px 28px;font-size:14px;min-width:140px}
+  .auction-timer{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .auction-timer-bar{flex:1;height:8px;background:var(--bg);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+  .auction-timer-bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--gold-bright),var(--red));transition:width 1s linear}
+  .auction-timer-num{font-size:14px;font-weight:900;color:var(--gold-bright);font-variant-numeric:tabular-nums;min-width:36px;text-align:right}
   .spin-btn:active{transform:translateY(0)}
 
   .reel{height:90px;display:block;position:relative;overflow:hidden;margin:8px 0 4px;border-radius:10px;background:var(--bg-alt);border:1px solid var(--line)}
@@ -1049,7 +1080,7 @@ const CL_POOL = [
 ];
 
 /* =========== STATE =========== */
-const SAVE_KEY = "tc_cricket_v6";
+const SAVE_KEY = "tc_cricket_v7";
 let S = load() || newSave();
 let animTimer = null;
 const SQUAD_SIZE = 11;
@@ -1207,6 +1238,37 @@ function findPlayerObj(name){
 }
 function toggleDrawer(){ S.drawerOpen = !S.drawerOpen; render(); }
 
+/* =========== SOUND =========== */
+let _audioCtx = null;
+function audioCtx(){
+  if (_audioCtx) return _audioCtx;
+  try { _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
+  return _audioCtx;
+}
+function beep(freq, dur, vol, type){
+  const ctx = audioCtx(); if (!ctx) return;
+  if (ctx.state === "suspended") ctx.resume();
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = type || "sine";
+  o.frequency.setValueAtTime(freq, ctx.currentTime);
+  o.connect(g); g.connect(ctx.destination);
+  g.gain.setValueAtTime(vol||0.05, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + (dur||0.1));
+  o.start(); o.stop(ctx.currentTime + (dur||0.1));
+}
+function sfx(kind){
+  if (S.setup && S.setup.soundMuted) return;
+  if (kind === "tick")   beep(700, 0.04, 0.03);
+  else if (kind === "buy")    { beep(660, 0.08, 0.07, "triangle"); setTimeout(()=>beep(880, 0.18, 0.08, "triangle"), 80); }
+  else if (kind === "pass")   beep(220, 0.12, 0.04, "sawtooth");
+  else if (kind === "wicket") { beep(180, 0.16, 0.08, "square"); setTimeout(()=>beep(140, 0.18, 0.07, "square"), 100); }
+  else if (kind === "four")   { beep(523, 0.08, 0.05); setTimeout(()=>beep(659, 0.1, 0.05), 50); }
+  else if (kind === "six")    { beep(523, 0.06, 0.06); setTimeout(()=>beep(659, 0.06, 0.06), 60); setTimeout(()=>beep(880, 0.16, 0.07), 120); }
+  else if (kind === "win")    { beep(523, 0.1, 0.07); setTimeout(()=>beep(659, 0.1, 0.07), 110); setTimeout(()=>beep(784, 0.24, 0.08), 230); }
+  else if (kind === "timer")  beep(950, 0.05, 0.04);
+  else if (kind === "warning")beep(440, 0.18, 0.06, "square");
+}
+
 const COMMENTARY = {
   six: [
     "SIX! {p} smashes it over long-on!",
@@ -1316,80 +1378,99 @@ function startDraft(){
 }
 
 /* ============ AUCTION ============ */
+const AUCTION_BUDGET = 200;
+const AUCTION_TIMER_SECS = 15;
+const AUCTION_MIN_PRICE = 2;
+
 function playerPrice(p){
   const r = ratingOf(p);
-  // 60 → 5 credits, 96 → 45 credits, smooth curve
-  return Math.max(5, Math.round((r - 55) * 1.15));
+  // 60→2, 70→9, 80→16, 90→23, 96→27 — much cheaper, lets you grab more players
+  return Math.max(AUCTION_MIN_PRICE, Math.round((r - 60) * 0.7 + 2));
 }
+
+let _auctionTimerInt = null;
+function clearAuctionTimer(){ if (_auctionTimerInt){ clearInterval(_auctionTimerInt); _auctionTimerInt = null; } }
+
 function startAuction(){
-  // Build flat pool of {seasonIdx, playerIdx} from filtered seasons
   const seasons = filteredSeasons();
   const pool = [];
-  seasons.forEach(ts => {
-    ts.squad.forEach(p => pool.push({ team: ts.team, year: ts.year, fmt: ts.fmt, p }));
-  });
-  // De-duplicate by player name (keep highest prime)
+  seasons.forEach(ts => ts.squad.forEach(p => pool.push({ team: ts.team, year: ts.year, fmt: ts.fmt, p })));
   const seen = {};
-  pool.forEach(x => {
-    if (!seen[x.p.n] || ratingOf(seen[x.p.n].p) < ratingOf(x.p)) seen[x.p.n] = x;
-  });
+  pool.forEach(x => { if (!seen[x.p.n] || ratingOf(seen[x.p.n].p) < ratingOf(x.p)) seen[x.p.n] = x; });
   S.auctionQueue = shuffle(Object.values(seen));
-  S.auctionBudget = 250;     // total credits
+  S.auctionBudget = AUCTION_BUDGET;
   S.auctionCurrent = null;
-  S.auctionSkipped = 0;
+  S.auctionFireSale = false;
   S.screen = "auction";
-  nextAuctionLot();
+  save(); nextAuctionLot();
 }
 function nextAuctionLot(){
-  if (!S.auctionQueue || picksRemaining() === 0){
-    if (picksRemaining() === 0) { S.screen = "hub"; save(); render(); return; }
+  clearAuctionTimer();
+  if (picksRemaining() === 0){ S.screen = "hub"; save(); render(); return; }
+  const slotsLeft = picksRemaining();
+  // FIRE SALE when budget can't cover one more pick
+  if (S.auctionBudget < slotsLeft * AUCTION_MIN_PRICE) {
+    S.auctionFireSale = true;
+    S.auctionBudget = Math.max(S.auctionBudget, slotsLeft * AUCTION_MIN_PRICE);
+    sfx("warning");
   }
-  // If running out of pool, reshuffle skipped
-  if (!S.auctionQueue || S.auctionQueue.length === 0){
-    S.auctionQueue = shuffle(Object.values(window._auctionAll || {}));
+  // Refill queue if empty
+  if (S.auctionQueue.length < 3){
+    const seasons = filteredSeasons();
+    const refill = [];
+    seasons.forEach(ts => ts.squad.forEach(p => {
+      if (!alreadyPicked(p.n)) refill.push({ team: ts.team, year: ts.year, fmt: ts.fmt, p });
+    }));
+    S.auctionQueue = S.auctionQueue.concat(shuffle(refill));
   }
-  // Force-WK constraint on last pick
   let candidate = null;
-  if (picksRemaining() === 1 && !hasKeeper()){
+  if (slotsLeft === 1 && !hasKeeper()){
     const wkIdx = S.auctionQueue.findIndex(x => x.p.roles.includes("WK") && !alreadyPicked(x.p.n));
-    if (wkIdx >= 0) { candidate = S.auctionQueue.splice(wkIdx,1)[0]; }
+    if (wkIdx >= 0) candidate = S.auctionQueue.splice(wkIdx,1)[0];
   }
   if (!candidate){
     while (S.auctionQueue.length && alreadyPicked(S.auctionQueue[0].p.n)) S.auctionQueue.shift();
     candidate = S.auctionQueue.shift();
   }
-  if (!candidate) { S.screen = "hub"; save(); render(); return; }
+  if (!candidate){ S.screen = "hub"; save(); render(); return; }
   S.auctionCurrent = candidate;
+  S.auctionTimeLeft = AUCTION_TIMER_SECS;
   save(); render();
+  startAuctionTimer();
+}
+function startAuctionTimer(){
+  clearAuctionTimer();
+  _auctionTimerInt = setInterval(() => {
+    if (!S.auctionCurrent || S.screen !== "auction") { clearAuctionTimer(); return; }
+    S.auctionTimeLeft--;
+    if (S.auctionTimeLeft > 0 && S.auctionTimeLeft <= 5) sfx("tick");
+    if (S.auctionTimeLeft <= 0){ passAuctionLot(); return; }
+    const tBar = document.getElementById('auctionTimerBar');
+    const tNum = document.getElementById('auctionTimerNum');
+    if (tBar) tBar.style.width = (S.auctionTimeLeft/AUCTION_TIMER_SECS*100)+"%";
+    if (tNum) tNum.textContent = S.auctionTimeLeft+"s";
+  }, 1000);
 }
 function buyAuctionLot(){
   if (!S.auctionCurrent) return;
+  clearAuctionTimer();
   const lot = S.auctionCurrent;
-  const price = playerPrice(lot.p);
-  if (S.auctionBudget < price) return;
-  // Check if enough budget for remaining picks (each remaining at least 5 credits)
-  const slotsLeft = picksRemaining();
-  const minNeeded = (slotsLeft - 1) * 5;
-  if (S.auctionBudget - price < minNeeded) {
-    alert("Not enough budget left for remaining picks (min 5 each).");
-    return;
-  }
+  const price = S.auctionFireSale ? AUCTION_MIN_PRICE : playerPrice(lot.p);
+  if (S.auctionBudget < price) { sfx("warning"); return; }
   S.auctionBudget -= price;
   const emptySlot = S.squad.find(s => !s.player);
   emptySlot.player = { ...lot.p, from: { team: lot.team, year: lot.year, fmt: lot.fmt } };
   S.auctionCurrent = null;
+  sfx("buy");
   if (picksRemaining() === 0) { S.screen = "hub"; save(); render(); return; }
   nextAuctionLot();
 }
 function passAuctionLot(){
   if (!S.auctionCurrent) return;
-  S.auctionSkipped++;
-  // Put at the back of the queue with a chance — once
-  if (!S.auctionCurrent.requeued) {
-    S.auctionCurrent.requeued = true;
-    S.auctionQueue.push(S.auctionCurrent);
-  }
+  clearAuctionTimer();
+  if (!S.auctionCurrent.requeued) { S.auctionCurrent.requeued = true; S.auctionQueue.push(S.auctionCurrent); }
   S.auctionCurrent = null;
+  sfx("pass");
   nextAuctionLot();
 }
 function spin(){
@@ -1772,6 +1853,10 @@ function appendCommentary(ev){
   d.textContent = ev.txt;
   box.appendChild(d);
   box.scrollTop = box.scrollHeight;
+  // Sound effects on commentary events
+  if (ev.k === "W") sfx("wicket");
+  else if (ev.k === "6") sfx("six");
+  else if (ev.k === "4") sfx("four");
 }
 function flashScore(){
   const sc = document.querySelector(".sb-team.batting .sc");
@@ -1881,6 +1966,7 @@ function render(){
   else if (S.screen === "hub") main.append(renderHub());
   else if (S.screen === "odds") main.append(renderOdds());
   else if (S.screen === "summary") main.append(renderSummary());
+  else if (S.screen === "leaguesim") main.append(renderLeagueSim());
   else if (S.screen === "order") main.append(renderOrder());
   else if (S.screen === "watch-choice") main.append(renderWatchChoice());
   else if (S.screen === "live") main.append(renderLive());
@@ -2129,30 +2215,35 @@ function renderAuction(){
   const filled = squadPicks().length;
   const slotsLeft = picksRemaining();
   const status = el(`<div class="auction-status">
-    <div class="it"><small>Budget</small><b class="gold">${S.auctionBudget} c</b></div>
+    <div class="it"><small>Budget</small><b class="${S.auctionFireSale?'red':'gold'}">${S.auctionBudget} c${S.auctionFireSale?' 🔥':''}</b></div>
     <div class="it"><small>Squad</small><b class="green">${filled}/${SQUAD_SIZE}</b></div>
     <div class="it"><small>Avg/pick</small><b>${slotsLeft?Math.floor(S.auctionBudget/slotsLeft):0} c</b></div>
     ${!hasKeeper()?`<div class="it"><small>Status</small><b class="red">Need WK</b></div>`:''}
   </div>`);
   wrap.append(status);
+  if (S.auctionFireSale){
+    wrap.append(el(`<div style="background:rgba(255,93,115,.12);border:1px solid var(--red);border-radius:10px;padding:10px 14px;margin-bottom:12px;text-align:center;font-size:13px;color:var(--red);font-weight:700">🔥 FIRE SALE — Every remaining player just ${AUCTION_MIN_PRICE} credits each. Pick wisely or get stuck with bargain bin.</div>`));
+  }
 
   if (!S.auctionCurrent){
     const done = picksRemaining() === 0;
     const box = el(`<div class="auction-lot">
       <h2 class="nm">${done?'Auction complete!':'No more lots'}</h2>
-      <p class="muted">${done?'You filled your XI. Heading to hub…':'Use the queue or build the squad again.'}</p>
+      <p class="muted">${done?'You filled your XI. Heading to hub…':'Loading next lot…'}</p>
     </div>`);
     wrap.append(box);
     return wrap;
   }
 
   const lot = S.auctionCurrent;
-  const price = playerPrice(lot.p);
+  const price = S.auctionFireSale ? AUCTION_MIN_PRICE : playerPrice(lot.p);
   const canAfford = S.auctionBudget >= price;
-  const slotsAfter = slotsLeft - 1;
-  const budgetAfter = S.auctionBudget - price;
-  const wouldStarve = slotsAfter > 0 && budgetAfter < slotsAfter * 5;
+  const timeLeft = S.auctionTimeLeft || AUCTION_TIMER_SECS;
   const lotEl = el(`<div class="auction-lot">
+    <div class="auction-timer">
+      <div class="auction-timer-bar"><i id="auctionTimerBar" style="width:${(timeLeft/AUCTION_TIMER_SECS*100)}%"></i></div>
+      <div class="auction-timer-num" id="auctionTimerNum">${timeLeft}s</div>
+    </div>
     <div class="lot-no">LOT · ${filled+1}/${SQUAD_SIZE}</div>
     <div class="auction-avatar">${avatarHTML({...lot.p, from:{team:lot.team}}, 88)}</div>
     <h2 class="nm">${lot.p.n}</h2>
@@ -2161,8 +2252,8 @@ function renderAuction(){
     ${S.setup.showRatings?`<div style="margin:6px 0;color:var(--muted);font-size:13px">Rating <b style="color:var(--ink)">${ratingOf(lot.p)}</b></div>`:''}
     <div class="pricetag"><span class="lbl">PRICE</span><span class="px">${price}</span><span class="c">c</span></div>
     <div class="auction-actions">
-      <button class="ghost" id="passBtn">Pass</button>
-      <button class="primary" id="buyBtn" ${(!canAfford||wouldStarve)?'disabled':''}>${canAfford?(wouldStarve?'Would starve budget':'Buy at '+price+' c'):'Over budget'}</button>
+      <button class="ghost" id="passBtn">⏭ Pass</button>
+      <button class="primary" id="buyBtn" ${!canAfford?'disabled':''}>${canAfford?('💰 Buy at '+price+' c'):'Over budget'}</button>
     </div>
   </div>`);
   lotEl.querySelector('#passBtn').onclick = passAuctionLot;
@@ -2347,6 +2438,212 @@ function renderHub(){
       lg.append(el(`<div><b>${e.t}</b> — <span class="${e.won?'w':'l'}">${e.won?'WON':'lost'}</span><br>${e.lines.join(' · ')}</div>${i<S.careerLog.length-1?'<hr/>':''}`));
     });
     wrap.append(lg);
+  }
+  return wrap;
+}
+
+/* ============ FULL SEASON SIMULATION ============ */
+let _leagueInt = null;
+function startLeagueSim(){
+  const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
+  let pool = OPPONENTS.filter(o => t.leagues.includes(o.league));
+  // Most recent edition
+  const maxYear = Math.max(...pool.map(o=>o.year));
+  let teams = pool.filter(o => o.year === maxYear);
+  if (teams.length < 4) teams = pool.filter(o => o.year >= maxYear - 1);
+  teams = teams.slice(0, 6); // cap at 6 teams for manageable round-robin
+  const mod = S.setup.oppDifficulty === "easy" ? -8 : S.setup.oppDifficulty === "legend" ? +4 : 0;
+  const allTeams = [
+    { n:"Your XI", r: avg(squadPicks().map(s=>ratingOf(s.player))), isMe:true },
+    ...teams.map(o => ({ n:o.n, r: Math.max(60, Math.min(98, o.t20 + mod)), isMe:false }))
+  ];
+  // Build double round-robin (each pair plays twice for ~10 games per team)
+  const fixtures = [];
+  let gw = 0;
+  // Two passes for home/away
+  for (let pass=0; pass<2; pass++){
+    const teamsR = pass===0 ? allTeams.slice() : allTeams.slice().reverse();
+    for (let i=0; i<teamsR.length; i++){
+      for (let j=i+1; j<teamsR.length; j++){
+        fixtures.push({ home: teamsR[i], away: teamsR[j], result:null, gw: Math.floor(fixtures.length / Math.max(1, Math.floor(teamsR.length/2))) + 1 });
+      }
+    }
+  }
+  // Renumber game weeks: 1 per round of teams.length/2 matches
+  const perGw = Math.max(1, Math.floor(allTeams.length / 2));
+  fixtures.forEach((f,i)=>{ f.gw = Math.floor(i/perGw) + 1; });
+  const standings = allTeams.map(t => ({ team:t, P:0, W:0, L:0, F:0, A:0, pts:0, nrr:0 }));
+  S.tour.league = { fixtures, standings, fixtureIdx:0, teams: allTeams, perGw, done:false };
+  S.screen = "leaguesim";
+  save(); render();
+  startLeagueAnim();
+}
+function simSingleLeagueMatch(home, away){
+  // Two-innings T20 single-match outcome (compressed)
+  const base = 170;
+  let hScore = base * Math.pow(home.r/85, 1.0) * Math.pow(85/away.r, 0.4) + (Math.random()-0.5)*40;
+  let aScore = base * Math.pow(away.r/85, 1.0) * Math.pow(85/home.r, 0.4) + (Math.random()-0.5)*40;
+  hScore = Math.min(250, Math.max(60, Math.round(hScore)));
+  aScore = Math.min(250, Math.max(60, Math.round(aScore)));
+  return { homeScore:hScore, awayScore:aScore, winner: hScore >= aScore ? "home" : "away" };
+}
+function startLeagueAnim(){
+  if (_leagueInt) clearInterval(_leagueInt);
+  const lg = S.tour.league;
+  _leagueInt = setInterval(()=>{
+    if (S.screen !== "leaguesim" || !S.tour || !lg){ clearInterval(_leagueInt); _leagueInt=null; return; }
+    if (lg.fixtureIdx >= lg.fixtures.length){
+      clearInterval(_leagueInt); _leagueInt=null;
+      finishLeagueSim();
+      return;
+    }
+    const f = lg.fixtures[lg.fixtureIdx];
+    const r = simSingleLeagueMatch(f.home, f.away);
+    f.result = r;
+    const hs = lg.standings.find(s => s.team.n === f.home.n);
+    const as = lg.standings.find(s => s.team.n === f.away.n);
+    hs.P++; as.P++;
+    hs.F += r.homeScore; hs.A += r.awayScore;
+    as.F += r.awayScore; as.A += r.homeScore;
+    if (r.winner === "home"){ hs.W++; hs.pts+=2; as.L++; }
+    else { as.W++; as.pts+=2; hs.L++; }
+    if (f.home.isMe || f.away.isMe){
+      if ((f.home.isMe && r.winner==="home") || (f.away.isMe && r.winner==="away")) sfx("four");
+      else sfx("wicket");
+    }
+    lg.fixtureIdx++;
+    // Re-sort standings
+    lg.standings.sort((a,b)=>{
+      if (b.pts !== a.pts) return b.pts - a.pts;
+      return ((b.F-b.A)/Math.max(1,b.P)) - ((a.F-a.A)/Math.max(1,a.P));
+    });
+    appendLeagueResult(f, r);
+    updateStandingsTable();
+    updateLeagueProgress();
+  }, 260);
+}
+function finishLeagueSim(){
+  const lg = S.tour.league;
+  lg.done = true;
+  const myPos = lg.standings.findIndex(s => s.team.isMe) + 1;
+  lg.myFinish = myPos;
+  S.tour.leagueFinish = myPos;
+  // Pause so user sees final table
+  setTimeout(()=>{
+    if (S.screen !== "leaguesim" || !S.tour) return;
+    if (myPos > 4){
+      S.tour.summary = buildTournamentSummary(false);
+      S.tour.summary.finish = myPos;
+      S.tour.summary.projected = Math.min(4, S.tour.summary.projected || myPos);
+      S.tour.summary.body = `Finished ${ordinal(myPos)} in the group. Couldn't crack the top 4. ${S.tour.summary.body}`;
+      S.lives--;
+      S.screen = "summary";
+      if (S.lives < 0) S.screen = "summary"; // still show summary then gameover
+      save(); render(); return;
+    }
+    // Build playoff opponents = other top 3 by standings
+    const top4 = lg.standings.slice(0,4).filter(s=>!s.team.isMe).map(s=>({ n:s.team.n, r:s.team.r }));
+    S.tour.opps = top4;
+    S.tour.roundIdx = 0;
+    S.screen = "watch-choice";
+    save(); render();
+  }, 2400);
+}
+function appendLeagueResult(f, r){
+  const feed = document.getElementById("lgFeed");
+  if (!feed) return;
+  const d = document.createElement("div");
+  d.className = "lg-match";
+  const meHome = f.home.isMe, meAway = f.away.isMe;
+  const homeWon = r.winner === "home";
+  d.innerHTML = `
+    <div class="gw">Game Week ${f.gw}</div>
+    <div class="ms">
+      <span class="t ${meHome?'me':''} ${homeWon?'w':''}">${f.home.n}</span>
+      <span class="s">${r.homeScore}</span>
+      <span style="color:var(--muted);font-size:11px">vs</span>
+      <span class="s">${r.awayScore}</span>
+      <span class="t ${meAway?'me':''} ${!homeWon?'w':''}" style="text-align:right">${f.away.n}</span>
+    </div>`;
+  feed.insertBefore(d, feed.firstChild);
+  while (feed.childNodes.length > 30) feed.removeChild(feed.lastChild);
+}
+function updateStandingsTable(){
+  const t = document.getElementById("lgStandings");
+  if (!t || !S.tour || !S.tour.league) return;
+  t.innerHTML = renderStandingsHTML();
+}
+function renderStandingsHTML(){
+  const lg = S.tour.league;
+  return `<table class="lg-tab"><thead><tr><th>#</th><th>Team</th><th class="r">P</th><th class="r">W</th><th class="r">L</th><th class="r">NRR</th><th class="r">Pts</th></tr></thead><tbody>${
+    lg.standings.map((s,i)=>{
+      const nrr = s.P ? ((s.F-s.A)/s.P).toFixed(2) : '0.00';
+      return `<tr class="${s.team.isMe?'me ':''}${i<4?'qual ':''}"><td class="pos">${i+1}</td><td>${s.team.n}</td><td class="r">${s.P}</td><td class="r">${s.W}</td><td class="r">${s.L}</td><td class="r">${nrr}</td><td class="r">${s.pts}</td></tr>`;
+    }).join("")
+  }</tbody></table>`;
+}
+function updateLeagueProgress(){
+  const bar = document.getElementById("lgProgress");
+  const gwLbl = document.getElementById("lgGwLbl");
+  if (!S.tour || !S.tour.league) return;
+  const lg = S.tour.league;
+  const pct = (lg.fixtureIdx / lg.fixtures.length) * 100;
+  if (bar) bar.style.width = pct + "%";
+  if (gwLbl){
+    const currentGw = lg.fixtureIdx < lg.fixtures.length ? lg.fixtures[lg.fixtureIdx].gw : lg.fixtures[lg.fixtures.length-1].gw;
+    gwLbl.textContent = lg.done ? "FINAL STANDINGS" : `GAME WEEK ${currentGw}`;
+  }
+}
+
+function renderLeagueSim(){
+  const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
+  const wrap = el(`<div></div>`);
+  wrap.append(el(`<h1>${t.icon} ${t.name} — Season Simulation</h1>`));
+  wrap.append(el(`<p class="muted">Watch the season unfold. Top 4 advance to the playoffs.</p>`));
+  wrap.append(el(`<div class="league-header">
+    <div class="gw-display" id="lgGwLbl">GAME WEEK 1</div>
+    <div class="league-progress"><i id="lgProgress" style="width:0%"></i></div>
+  </div>`));
+  const grid = el(`<div class="league-grid"></div>`);
+  const results = el(`<div class="league-results">
+    <h3>Recent Results</h3>
+    <div class="lg-feed" id="lgFeed"></div>
+  </div>`);
+  const table = el(`<div class="league-table"><h3>Standings</h3><div id="lgStandings">${renderStandingsHTML()}</div></div>`);
+  grid.append(results, table);
+  wrap.append(grid);
+  const lg = S.tour.league;
+  if (lg && lg.done){
+    const row = el(`<div class="row" style="justify-content:center;margin-top:14px"><button class="primary" id="contPlayoffs">Continue to playoffs →</button></div>`);
+    row.querySelector('#contPlayoffs').onclick = () => finishLeagueSim();
+    wrap.append(row);
+  }
+  // Skip button
+  if (!lg.done){
+    const sk = el(`<div class="row" style="justify-content:center;margin-top:14px"><button class="ghost" id="skipLeague">⏭ Skip to final table</button></div>`);
+    sk.querySelector('#skipLeague').onclick = () => {
+      if (_leagueInt) { clearInterval(_leagueInt); _leagueInt = null; }
+      while (S.tour.league.fixtureIdx < S.tour.league.fixtures.length){
+        const f = S.tour.league.fixtures[S.tour.league.fixtureIdx];
+        const r = simSingleLeagueMatch(f.home, f.away);
+        f.result = r;
+        const lgg = S.tour.league;
+        const hs = lgg.standings.find(s => s.team.n === f.home.n);
+        const as = lgg.standings.find(s => s.team.n === f.away.n);
+        hs.P++; as.P++;
+        hs.F += r.homeScore; hs.A += r.awayScore;
+        as.F += r.awayScore; as.A += r.homeScore;
+        if (r.winner === "home"){ hs.W++; hs.pts+=2; as.L++; }
+        else { as.W++; as.pts+=2; hs.L++; }
+        lgg.fixtureIdx++;
+      }
+      S.tour.league.standings.sort((a,b)=>{
+        if (b.pts !== a.pts) return b.pts - a.pts;
+        return ((b.F-b.A)/Math.max(1,b.P)) - ((a.F-a.A)/Math.max(1,a.P));
+      });
+      finishLeagueSim();
+    };
+    wrap.append(sk);
   }
   return wrap;
 }
@@ -2554,7 +2851,12 @@ function renderOrder(){
   const auto = el(`<button class="ghost">Auto-order</button>`);
   auto.onclick = () => { S.tour.battingOrder = orderForBatting(squadPicks().map(s=>s.player)).map(p=>p.n); render(); };
   const go = el(`<button class="primary">Confirm XI →</button>`);
-  go.onclick = () => { S.screen = "watch-choice"; save(); render(); };
+  go.onclick = () => {
+    // Champions League stays knockout-only; league tournaments run the full season sim first
+    if (S.tour.tId === "cl"){ S.screen = "watch-choice"; }
+    else { startLeagueSim(); return; }
+    save(); render();
+  };
   row.append(cancel, auto, go);
   wrap.append(row);
   return wrap;
