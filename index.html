@@ -7,30 +7,30 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 <style>
   :root{
-    --bg:#e8f0d6;             /* light pitch */
-    --bg-alt:#f0f6e4;
-    --panel:#fafdf2;          /* near-white with green hint */
-    --panel2:#e5eed3;
-    --line:#a8c98a;           /* light pitch-green border */
-    --line-soft:#cce0b8;
-    --ink:#1a2a18;
-    --ink-soft:#2d3a2a;
-    --muted:#6b7d60;
-    --gold:#b8a050;           /* muted gold (used sparingly) */
-    --gold-bright:#d4b860;
-    --gold-deep:#8a7530;
-    --green:#4ca850;          /* cricket pitch */
-    --green-deep:#2d7a4d;
+    --bg:#0a2818;             /* dark forest pitch */
+    --bg-alt:#11321f;
+    --panel:#1a3d29;          /* mid green panel */
+    --panel2:#244f35;
+    --line:#3a7a4d;           /* mid-bright pitch */
+    --line-soft:#2a5a39;
+    --ink:#eaf5da;            /* cream text */
+    --ink-soft:#c4d5b0;
+    --muted:#8aa890;
+    --gold:#e0c478;
+    --gold-bright:#f0d278;
+    --gold-deep:#c8a55e;
+    --green:#4ca850;
+    --green-deep:#6dc56f;
     --green-light:#8dd17f;
-    --green-soft:#d4ecbf;
-    --red:#c8102e;            /* cricket ball */
-    --red-deep:#8a0a1f;
-    --red-light:#e8606f;
-    --blue:#2a6fc8;
+    --green-soft:#2a5a39;
+    --red:#e8606f;            /* lighter red for dark bg */
+    --red-deep:#c8102e;
+    --red-light:#ff8a99;
+    --blue:#5a99ff;
     --teal:#2dd4bf; --purple:#a578f0;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:repeating-linear-gradient(135deg,transparent 0,transparent 60px,rgba(168,201,138,.18) 60px,rgba(168,201,138,.18) 61px),var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;min-height:100%}
+  html,body{margin:0;background:repeating-linear-gradient(135deg,transparent 0,transparent 80px,rgba(255,255,255,.025) 80px,rgba(255,255,255,.025) 81px),var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;min-height:100%}
   ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}::-webkit-scrollbar-track{background:transparent}
 
   .app{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
@@ -67,7 +67,7 @@
   .opts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
 
   /* Country code flag chip */
-  .cc{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:2px 6px;font-size:10px;font-weight:800;color:var(--ink);letter-spacing:.5px;line-height:1;vertical-align:middle}
+  .cc{display:inline-flex;align-items:center;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:2px 6px;font-size:10px;font-weight:800;color:var(--ink);letter-spacing:.5px;line-height:1;vertical-align:middle}
   .cc-flag{font-size:13px;line-height:1}
   .cc-code{font-size:9px;letter-spacing:.6px;color:var(--ink)}
 
@@ -148,11 +148,11 @@
   .picker .head .h{font-size:18px;font-weight:900;color:var(--ink)}
   .picker .head .h .y{color:var(--gold-deep)}
 
-  .player{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;background:#fff;border:2px solid transparent;margin-bottom:6px;cursor:pointer;transition:all .15s ease;box-shadow:0 1px 0 var(--line-soft)}
+  .player{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;background:var(--panel);border:2px solid transparent;margin-bottom:6px;cursor:pointer;transition:all .15s ease;box-shadow:0 1px 0 var(--line-soft)}
   .player:hover{border-color:var(--gold);transform:translateX(2px)}
   .player.disabled{opacity:.4;cursor:not-allowed}
-  .player.disabled:hover{border-color:transparent;background:#fff;transform:none}
-  .player.wk-needed{border-color:var(--gold-bright);background:#fff5d1}
+  .player.disabled:hover{border-color:transparent;background:var(--panel);transform:none}
+  .player.wk-needed{border-color:var(--gold-bright);background:var(--panel2)}
   .player .r{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0;box-shadow:0 2px 4px rgba(168,122,14,.2)}
   .r-90{background:linear-gradient(135deg,#f5c451,#d4a435);color:#1a1300}
   .r-85{background:linear-gradient(135deg,#3ddc97,#2eb47a);color:#053a26}
@@ -169,14 +169,14 @@
   .modal{position:fixed;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;animation:fadeIn .2s ease;backdrop-filter:blur(3px)}
   .modal-box{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:22px;max-width:480px;width:100%;max-height:80vh;overflow:auto;animation:popIn .25s ease;box-shadow:0 8px 32px rgba(168,122,14,.25)}
   @keyframes popIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
-  .slot-opt{padding:12px 14px;background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .15s ease}
+  .slot-opt{padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .15s ease}
   .slot-opt:hover{border-color:var(--gold);transform:translateX(3px)}
   .slot-opt small{color:var(--muted);font-size:11px}
 
   /* Trophies */
   .trophies{display:flex;gap:12px;flex-wrap:wrap}
-  .trophy{padding:18px;border-radius:14px;background:#fff;border:2px solid var(--line);min-width:140px;text-align:center;flex:1;transition:all .25s ease;box-shadow:0 2px 0 var(--line-soft)}
-  .trophy.won{background:linear-gradient(160deg,#fff5d1,#f8e7a7);border-color:var(--gold-bright);box-shadow:0 6px 24px rgba(245,196,81,.4),0 2px 0 var(--gold-deep)}
+  .trophy{padding:18px;border-radius:14px;background:var(--panel);border:2px solid var(--line);min-width:140px;text-align:center;flex:1;transition:all .25s ease;box-shadow:0 2px 0 var(--line-soft)}
+  .trophy.won{background:linear-gradient(160deg,#3a4f25,#2a4520);border-color:var(--gold-bright);box-shadow:0 6px 24px rgba(245,196,81,.4),0 2px 0 var(--gold-deep)}
   .trophy.won .ic{animation:trophyBob 2.5s ease-in-out infinite}
   @keyframes trophyBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-4px) rotate(2deg)}}
   .trophy .ic{font-size:42px;line-height:1}
@@ -189,8 +189,8 @@
   a{color:var(--red);text-decoration:none;font-weight:600}
 
   /* Live match */
-  .scoreboard{background:linear-gradient(135deg,#d4ecd6,#fff5d1);border:2px solid var(--green);border-radius:14px;padding:18px;margin-bottom:14px;position:relative;box-shadow:0 2px 0 var(--line-soft)}
-  .scoreboard::before{content:"🏏";position:absolute;top:10px;right:14px;font-size:14px;opacity:.55}
+  .scoreboard{background:linear-gradient(135deg,var(--panel),var(--panel2));border:2px solid var(--green);border-radius:14px;padding:18px;margin-bottom:14px;position:relative;box-shadow:0 2px 0 var(--line-soft)}
+  .scoreboard::before{content:"🏏";position:absolute;top:10px;right:14px;font-size:14px;opacity:.7}
   .sb-teams{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
   .sb-team{flex:1;min-width:160px}
   .sb-team .nm{font-size:13px;color:var(--muted);letter-spacing:.5px;font-weight:800;text-transform:uppercase}
@@ -199,10 +199,10 @@
   @keyframes flash{0%{transform:scale(1.06);color:var(--gold-deep)}100%{transform:scale(1)}}
   .sb-team .ov{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;font-weight:600}
   .sb-vs{font-size:13px;color:var(--red);letter-spacing:1px;font-weight:900}
-  .sb-bar{height:6px;background:#fff;border:1px solid var(--line);border-radius:3px;margin-top:10px;overflow:hidden}
+  .sb-bar{height:6px;background:var(--panel);border:1px solid var(--line);border-radius:3px;margin-top:10px;overflow:hidden}
   .sb-bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .25s ease}
 
-  .commentary{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;height:280px;overflow:auto;font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.7;color:var(--ink)}
+  .commentary{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;height:280px;overflow:auto;font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.7;color:var(--ink)}
   .commentary div{padding:2px 0;animation:cIn .25s ease}
   @keyframes cIn{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:translateX(0)}}
   .c-4{color:var(--green-deep);font-weight:800}
@@ -211,7 +211,7 @@
   .c-ov{color:var(--muted);border-top:1px dashed var(--line);margin-top:6px;padding-top:6px;font-style:italic}
 
   /* Scorecard table */
-  .card-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 0 var(--line-soft);border:1px solid var(--line)}
+  .card-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;background:var(--panel);border-radius:8px;overflow:hidden;box-shadow:0 1px 0 var(--line-soft);border:1px solid var(--line)}
   .card-table th{text-align:left;padding:10px 12px;color:#fff;background:var(--green-deep);font-weight:800;font-size:11px;letter-spacing:.7px;text-transform:uppercase}
   .card-table th.r{text-align:right}
   .card-table td{padding:9px 12px;border-bottom:1px solid var(--line-soft);font-variant-numeric:tabular-nums;color:var(--ink)}
@@ -226,7 +226,7 @@
 
   /* Order screen */
   .order-list{display:flex;flex-direction:column;gap:6px}
-  .order-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:2px solid var(--line);border-left:5px solid var(--green);border-radius:10px;transition:all .15s ease;box-shadow:0 1px 0 var(--line-soft)}
+  .order-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--panel);border:2px solid var(--line);border-left:5px solid var(--green);border-radius:10px;transition:all .15s ease;box-shadow:0 1px 0 var(--line-soft)}
   .order-row .pos{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#e8f6d6,var(--green) 75%);color:#fff;font-weight:900;font-size:14px;text-align:center;flex-shrink:0;text-shadow:0 1px 2px rgba(0,0,0,.25)}
   .order-row .av{flex-shrink:0}
   .order-row .nm{flex:1;min-width:0}
@@ -238,21 +238,21 @@
   /* Awards */
   .awards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}
   @media(max-width:760px){.awards{grid-template-columns:1fr}}
-  .award{background:linear-gradient(180deg,#fff,var(--panel));border:2px solid var(--line);border-radius:14px;padding:22px 18px;text-align:center;animation:popIn .5s cubic-bezier(.18,1,.32,1);box-shadow:0 2px 0 var(--line-soft)}
-  .award.motm{border-color:var(--gold-bright);background:linear-gradient(160deg,#fff5d1,#fef8e1);box-shadow:0 8px 32px rgba(245,196,81,.35),0 2px 0 var(--gold-deep)}
+  .award{background:linear-gradient(180deg,var(--panel2),var(--panel));border:2px solid var(--line);border-radius:14px;padding:22px 18px;text-align:center;animation:popIn .5s cubic-bezier(.18,1,.32,1);box-shadow:0 2px 0 var(--line-soft)}
+  .award.motm{border-color:var(--gold-bright);background:linear-gradient(160deg,#3a4520,#2a3818);box-shadow:0 8px 32px rgba(245,196,81,.35),0 2px 0 var(--gold-deep)}
   .award .lbl{font-size:10px;color:var(--red);letter-spacing:1.8px;font-weight:900;text-transform:uppercase;margin-bottom:14px}
   .award.motm .lbl{color:var(--gold-deep)}
   .avatar{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;color:#fff;position:relative;box-shadow:0 4px 12px rgba(0,0,0,.18);text-shadow:0 1px 2px rgba(0,0,0,.4);border:3px solid #fff}
-  .avatar .flag{position:absolute;bottom:-4px;right:-4px;font-size:18px;background:#fff;border-radius:50%;padding:0 3px;border:2px solid var(--gold);line-height:1.2}
+  .avatar .flag{position:absolute;bottom:-4px;right:-4px;font-size:18px;background:var(--panel);border-radius:50%;padding:0 3px;border:2px solid var(--gold);line-height:1.2}
   .award .nm{font-weight:900;font-size:18px;color:var(--ink);margin-top:8px}
   .award .from{color:var(--muted);font-size:11px;margin:2px 0 8px;font-weight:700}
-  .award .fig{font-size:15px;font-weight:800;margin-top:8px;color:var(--ink);background:#fff;padding:6px 10px;border-radius:8px;display:inline-block;border:1px solid var(--line)}
+  .award .fig{font-size:15px;font-weight:800;margin-top:8px;color:var(--ink);background:var(--panel);padding:6px 10px;border-radius:8px;display:inline-block;border:1px solid var(--line)}
   .award.motm .fig{color:var(--gold-deep);background:#fef8e1;border-color:var(--gold-bright)}
   .award .roles{display:flex;gap:4px;justify-content:center;margin-top:8px;flex-wrap:wrap}
 
   /* Stat cards */
   .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px;margin-top:10px}
-  .stat-card{background:#fff;border:2px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12px;box-shadow:0 1px 0 var(--line-soft)}
+  .stat-card{background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12px;box-shadow:0 1px 0 var(--line-soft)}
   .stat-card .h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px}
   .stat-card .h b{font-size:13px;color:var(--ink)}
   .stat-card .h .av-mini{width:28px;height:28px;font-size:11px;flex-shrink:0;border-width:2px}
@@ -261,16 +261,16 @@
   .stat-card .stats{display:flex;gap:12px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
   .stat-card .stats span{color:var(--muted);font-size:11px;font-weight:600}
   .stat-card .stats b{color:var(--ink);font-weight:800}
-  .stat-card.motm-card{border-color:var(--gold-bright);background:#fff5d1}
+  .stat-card.motm-card{border-color:var(--gold-bright);background:var(--panel2)}
 
   /* Attempt badges */
-  .attempts-pill{display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800;background:#fff5d1;color:var(--gold-deep);border:1px solid var(--gold-bright);margin-left:6px;letter-spacing:.3px}
+  .attempts-pill{display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800;background:var(--panel2);color:var(--gold-deep);border:1px solid var(--gold-bright);margin-left:6px;letter-spacing:.3px}
   .attempts-pill.zero{background:#f8d7da;color:var(--red);border-color:var(--red)}
 
   /* Lives (red cricket balls) */
   .lives{display:inline-flex;gap:5px;align-items:center}
   .heart{display:inline-block;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#e5777f 0%,#c8102e 55%,#7a0a18 100%);box-shadow:inset 0 -2px 3px rgba(0,0,0,.4),0 0 0 1px rgba(0,0,0,.3),0 2px 4px rgba(200,16,46,.3);position:relative;font-size:0;color:transparent;animation:beat 1.6s ease-in-out infinite}
-  .heart::before,.heart::after{content:"";position:absolute;left:18%;right:18%;height:1px;background:#fff8e1;opacity:.8;border-radius:1px}
+  .heart::before,.heart::after{content:"";position:absolute;left:18%;right:18%;height:1px;background:var(--panel);opacity:.8;border-radius:1px}
   .heart::before{top:42%}
   .heart::after{top:58%}
   .heart.lost{background:#d4c896;animation:none;opacity:.45;box-shadow:none}
@@ -292,7 +292,7 @@
   /* Live batters/bowler panel */
   .live-info{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
   @media(max-width:520px){.live-info{grid-template-columns:1fr}}
-  .live-box{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12px}
+  .live-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12px}
   .live-box .h{color:var(--red);font-size:10px;letter-spacing:1.2px;font-weight:900;text-transform:uppercase;margin-bottom:6px}
   .live-box .p{display:flex;justify-content:space-between;align-items:center;padding:3px 0;gap:8px}
   .live-box .p.on{color:var(--gold-deep);font-weight:800}
@@ -301,16 +301,16 @@
   .live-box .p.on .fig{color:var(--gold-deep)}
 
   /* Game over */
-  .gameover{text-align:center;padding:50px 20px;background:#fff5d1;border-radius:16px;border:2px solid var(--red);box-shadow:0 2px 0 var(--line-soft)}
+  .gameover{text-align:center;padding:50px 20px;background:var(--panel2);border-radius:16px;border:2px solid var(--red);box-shadow:0 2px 0 var(--line-soft)}
   .gameover h1{font-size:48px;color:var(--red);letter-spacing:2px;margin-bottom:10px;text-shadow:2px 2px 0 #fff}
   .gameover p{color:var(--muted);margin:0 0 18px;font-size:15px}
 
-  .tour-diff{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:8px;padding:2px;margin-left:8px}
+  .tour-diff{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:2px;margin-left:8px}
   .tour-diff button{padding:4px 10px;font-size:11px;border:0;background:transparent;border-radius:5px;color:var(--muted);font-weight:800;cursor:pointer;box-shadow:none}
   .tour-diff button.active{background:var(--green);color:#fff}
 
   /* Chase tracker */
-  .chase-box{background:linear-gradient(135deg,#fff5d1,#fff);border:2px solid var(--red);border-radius:12px;padding:12px 16px;margin:10px 0;display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between;align-items:center;box-shadow:0 2px 0 var(--line-soft)}
+  .chase-box{background:linear-gradient(135deg,var(--panel2),var(--panel));border:2px solid var(--red);border-radius:12px;padding:12px 16px;margin:10px 0;display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between;align-items:center;box-shadow:0 2px 0 var(--line-soft)}
   .chase-box .it{display:flex;flex-direction:column}
   .chase-box .it small{font-size:10px;color:var(--muted);letter-spacing:1px;font-weight:800;text-transform:uppercase}
   .chase-box .it b{font-size:18px;font-variant-numeric:tabular-nums;color:var(--ink);margin-top:2px;font-weight:900}
@@ -319,7 +319,7 @@
   .chase-box .it b.green{color:var(--green-deep)}
 
   /* Watch/skip choice cards */
-  .choice-card{background:linear-gradient(180deg,#fff,var(--panel));border:2px solid var(--line);border-radius:14px;padding:28px 22px;text-align:center;cursor:pointer;transition:all .2s ease;animation:popIn .4s ease;box-shadow:0 2px 0 var(--line-soft)}
+  .choice-card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:2px solid var(--line);border-radius:14px;padding:28px 22px;text-align:center;cursor:pointer;transition:all .2s ease;animation:popIn .4s ease;box-shadow:0 2px 0 var(--line-soft)}
   .choice-card:hover{border-color:var(--green);transform:translateY(-3px);box-shadow:0 10px 30px rgba(76,168,80,.18),0 2px 0 var(--green-deep)}
   .choice-card .ic{margin-bottom:14px}
   .choice-card .title{font-size:22px;font-weight:900;margin-bottom:8px;color:var(--ink)}
@@ -338,11 +338,11 @@
   .share-card .sc-head{text-align:center;margin-bottom:18px;padding-bottom:14px;border-bottom:3px dashed var(--green-light)}
   .share-card .sc-head h1{font-size:48px;letter-spacing:3px;color:var(--green-deep);text-shadow:3px 3px 0 var(--gold-bright);margin:0;font-weight:900}
   .share-card .sc-head .sub{font-size:14px;color:var(--muted);margin-top:6px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
-  .share-card .sc-trophy{text-align:center;padding:18px;background:linear-gradient(160deg,#fff5d1,#fef8e1);border:3px solid var(--gold-bright);border-radius:16px;margin-bottom:18px}
+  .share-card .sc-trophy{text-align:center;padding:18px;background:linear-gradient(160deg,#3a4520,#2a3818);border:3px solid var(--gold-bright);border-radius:16px;margin-bottom:18px}
   .share-card .sc-trophy .big{font-size:80px;line-height:1}
   .share-card .sc-trophy h2{font-size:24px;color:var(--gold-deep);margin:6px 0;font-weight:900;text-transform:none;letter-spacing:0}
   .share-card .sc-trophy .res{font-size:14px;color:var(--ink);font-weight:700}
-  .share-card .sc-xi{background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+  .share-card .sc-xi{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
   .share-card .sc-xi .row{display:flex;align-items:center;gap:8px;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line-soft)}
   .share-card .sc-xi .row:last-child{border-bottom:0}
   .share-card .sc-xi .num{width:22px;color:var(--green-deep);font-weight:900;text-align:center}
@@ -354,7 +354,7 @@
 
   /* Feedback modal */
   .fb-form{display:flex;flex-direction:column;gap:10px;margin-top:10px}
-  .fb-form select,.fb-form textarea{width:100%;padding:10px 12px;border:2px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font-family:inherit;font-size:13px}
+  .fb-form select,.fb-form textarea{width:100%;padding:10px 12px;border:2px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);font-family:inherit;font-size:13px}
   .fb-form textarea{min-height:120px;resize:vertical}
   .fb-form select:focus,.fb-form textarea:focus{border-color:var(--green);outline:0}
   .fb-status{font-size:12px;margin-top:6px;font-weight:700}
@@ -375,959 +375,469 @@ const SLOTS = Array.from({length:11}, (_,i)=>({ id:`p${i+1}`, label:`#${i+1}`, a
    fmt: "odi" or "t20"; label notes the WC result/edition
    ========================================================= */
 const TEAM_SEASONS = [
-  /* ============ AUSTRALIA ============ */
-  { team:"Australia", year:1987, fmt:"odi", trophy:"ODI WC — Champions", squad:[
-    { n:"Allan Border",      roles:["BAT"], season:88, prime:90 },
-    { n:"David Boon",        roles:["OPN"], season:84, prime:86 },
-    { n:"Geoff Marsh",       roles:["OPN"], season:80, prime:82 },
-    { n:"Dean Jones",        roles:["BAT"], season:86, prime:88 },
-    { n:"Steve Waugh",       roles:["AR","BAT"], season:80, prime:90 },
-    { n:"Mike Veletta",      roles:["BAT","FIN"], season:74, prime:76 },
-    { n:"Greg Dyer",         roles:["WK"], season:72, prime:74 },
-    { n:"Craig McDermott",   roles:["PAC"], season:84, prime:88 },
-    { n:"Bruce Reid",        roles:["PAC"], season:82, prime:84 },
-    { n:"Tim May",           roles:["SPN"], season:74, prime:80 },
-    { n:"Peter Taylor",      roles:["SPN","AR"], season:76, prime:78 }
-  ]},
-  { team:"Australia", year:1999, fmt:"odi", trophy:"ODI WC — Champions", squad:[
-    { n:"Adam Gilchrist",    roles:["WK","OPN"], season:86, prime:92 },
-    { n:"Mark Waugh",        roles:["OPN","BAT"], season:84, prime:88 },
-    { n:"Ricky Ponting",     roles:["BAT"], season:80, prime:94 },
-    { n:"Steve Waugh",       roles:["BAT","AR"], season:88, prime:90 },
-    { n:"Damien Martyn",     roles:["BAT"], season:75, prime:86 },
-    { n:"Michael Bevan",     roles:["FIN","BAT"], season:90, prime:91 },
-    { n:"Tom Moody",         roles:["AR"], season:78, prime:80 },
-    { n:"Shane Warne",       roles:["SPN"], season:92, prime:96 },
-    { n:"Damien Fleming",    roles:["PAC"], season:82, prime:84 },
-    { n:"Glenn McGrath",     roles:["PAC"], season:90, prime:96 },
-    { n:"Paul Reiffel",      roles:["PAC"], season:78, prime:82 },
-    { n:"Andrew Symonds",    roles:["AR"], season:74, prime:86 }
-  ]},
-  { team:"Australia", year:2003, fmt:"odi", trophy:"ODI WC — Champions", squad:[
-    { n:"Adam Gilchrist",    roles:["WK","OPN"], season:90, prime:92 },
-    { n:"Matthew Hayden",    roles:["OPN"], season:92, prime:93 },
-    { n:"Ricky Ponting",     roles:["BAT"], season:93, prime:94 },
-    { n:"Damien Martyn",     roles:["BAT"], season:86, prime:86 },
-    { n:"Darren Lehmann",    roles:["BAT","SPN"], season:80, prime:84 },
-    { n:"Michael Bevan",     roles:["FIN"], season:88, prime:91 },
-    { n:"Andrew Symonds",    roles:["AR"], season:84, prime:86 },
-    { n:"Brad Hogg",         roles:["SPN"], season:80, prime:82 },
-    { n:"Brett Lee",         roles:["PAC"], season:88, prime:93 },
-    { n:"Jason Gillespie",   roles:["PAC"], season:86, prime:88 },
-    { n:"Andy Bichel",       roles:["PAC","AR"], season:84, prime:84 },
-    { n:"Glenn McGrath",     roles:["PAC"], season:92, prime:96 }
-  ]},
-  { team:"Australia", year:2007, fmt:"odi", trophy:"ODI WC — Champions", squad:[
-    { n:"Adam Gilchrist",    roles:["WK","OPN"], season:91, prime:92 },
-    { n:"Matthew Hayden",    roles:["OPN"], season:93, prime:93 },
-    { n:"Ricky Ponting",     roles:["BAT"], season:94, prime:94 },
-    { n:"Michael Clarke",    roles:["BAT","SPN"], season:85, prime:90 },
-    { n:"Andrew Symonds",    roles:["AR"], season:86, prime:86 },
-    { n:"Michael Hussey",    roles:["BAT","FIN"], season:88, prime:90 },
-    { n:"Shane Watson",      roles:["AR"], season:78, prime:86 },
-    { n:"Brad Hogg",         roles:["SPN"], season:82, prime:82 },
-    { n:"Brett Lee",         roles:["PAC"], season:91, prime:93 },
-    { n:"Glenn McGrath",     roles:["PAC"], season:90, prime:96 },
-    { n:"Nathan Bracken",    roles:["PAC"], season:84, prime:86 },
-    { n:"Stuart Clark",      roles:["PAC"], season:84, prime:86 },
-    { n:"Shaun Tait",        roles:["PAC"], season:80, prime:82 }
-  ]},
-  { team:"Australia", year:2011, fmt:"odi", trophy:"ODI WC — Quarter-Final", squad:[
-    { n:"Shane Watson",      roles:["OPN","AR"], season:88, prime:88 },
-    { n:"Brad Haddin",       roles:["WK","OPN"], season:80, prime:82 },
-    { n:"Ricky Ponting",     roles:["BAT"], season:84, prime:94 },
-    { n:"Michael Clarke",    roles:["BAT"], season:86, prime:90 },
-    { n:"Michael Hussey",    roles:["BAT","FIN"], season:86, prime:90 },
-    { n:"Cameron White",     roles:["BAT","SPN"], season:78, prime:80 },
-    { n:"David Hussey",      roles:["BAT","AR"], season:78, prime:82 },
-    { n:"Mitchell Johnson",  roles:["PAC"], season:84, prime:90 },
-    { n:"Brett Lee",         roles:["PAC"], season:84, prime:93 },
-    { n:"Shaun Tait",        roles:["PAC"], season:82, prime:82 },
-    { n:"Jason Krejza",      roles:["SPN"], season:74, prime:76 }
-  ]},
-  { team:"Australia", year:2015, fmt:"odi", trophy:"ODI WC — Champions", squad:[
-    { n:"David Warner",      roles:["OPN"], season:88, prime:91 },
-    { n:"Aaron Finch",       roles:["OPN"], season:84, prime:86 },
-    { n:"Steve Smith",       roles:["BAT"], season:90, prime:94 },
-    { n:"Shane Watson",      roles:["AR"], season:82, prime:86 },
-    { n:"Michael Clarke",    roles:["BAT"], season:84, prime:90 },
-    { n:"Glenn Maxwell",     roles:["AR","BAT"], season:84, prime:88 },
-    { n:"Brad Haddin",       roles:["WK","BAT"], season:80, prime:82 },
-    { n:"James Faulkner",    roles:["AR","FIN"], season:84, prime:86 },
-    { n:"Mitchell Johnson",  roles:["PAC"], season:88, prime:90 },
-    { n:"Mitchell Starc",    roles:["PAC"], season:90, prime:92 },
-    { n:"Josh Hazlewood",    roles:["PAC"], season:86, prime:90 },
-    { n:"Pat Cummins",       roles:["PAC"], season:80, prime:92 }
-  ]},
-  { team:"Australia", year:2021, fmt:"t20", trophy:"T20 WC — Champions", squad:[
-    { n:"David Warner",      roles:["OPN"], season:90, prime:91 },
-    { n:"Aaron Finch",       roles:["OPN"], season:84, prime:86 },
-    { n:"Mitchell Marsh",    roles:["BAT","AR"], season:86, prime:86 },
-    { n:"Steve Smith",       roles:["BAT"], season:86, prime:94 },
-    { n:"Glenn Maxwell",     roles:["AR"], season:86, prime:88 },
-    { n:"Marcus Stoinis",    roles:["AR","FIN"], season:80, prime:82 },
-    { n:"Matthew Wade",      roles:["WK","FIN"], season:82, prime:82 },
-    { n:"Pat Cummins",       roles:["PAC"], season:88, prime:92 },
-    { n:"Mitchell Starc",    roles:["PAC"], season:88, prime:92 },
-    { n:"Josh Hazlewood",    roles:["PAC"], season:88, prime:90 },
-    { n:"Adam Zampa",        roles:["SPN"], season:86, prime:86 }
-  ]},
-  { team:"Australia", year:2023, fmt:"odi", trophy:"ODI WC — Champions", squad:[
-    { n:"David Warner",      roles:["OPN"], season:86, prime:91 },
-    { n:"Travis Head",       roles:["OPN","BAT"], season:88, prime:88 },
-    { n:"Mitchell Marsh",    roles:["AR","BAT"], season:84, prime:84 },
-    { n:"Steve Smith",       roles:["BAT"], season:86, prime:94 },
-    { n:"Marnus Labuschagne",roles:["BAT"], season:80, prime:86 },
-    { n:"Glenn Maxwell",     roles:["AR"], season:88, prime:88 },
-    { n:"Josh Inglis",       roles:["WK","BAT"], season:78, prime:80 },
-    { n:"Pat Cummins",       roles:["PAC"], season:90, prime:92 },
-    { n:"Mitchell Starc",    roles:["PAC"], season:88, prime:92 },
-    { n:"Josh Hazlewood",    roles:["PAC"], season:88, prime:90 },
-    { n:"Adam Zampa",        roles:["SPN"], season:86, prime:86 },
-    { n:"Marcus Stoinis",    roles:["AR","FIN"], season:78, prime:82 }
-  ]},
-
-  /* ============ INDIA ============ */
-  { team:"India", year:1983, fmt:"odi", trophy:"ODI WC — Champions", squad:[
-    { n:"Sunil Gavaskar",    roles:["OPN"], season:88, prime:92 },
-    { n:"Krishnamachari Srikkanth",roles:["OPN"], season:80, prime:84 },
-    { n:"Mohinder Amarnath", roles:["AR","BAT"], season:84, prime:86 },
-    { n:"Yashpal Sharma",    roles:["BAT"], season:78, prime:80 },
-    { n:"Sandeep Patil",     roles:["BAT","FIN"], season:80, prime:82 },
-    { n:"Kapil Dev",         roles:["AR","PAC"], season:90, prime:92 },
-    { n:"Kirti Azad",        roles:["AR","SPN"], season:74, prime:76 },
-    { n:"Roger Binny",       roles:["AR","PAC"], season:78, prime:80 },
-    { n:"Madan Lal",         roles:["AR","PAC"], season:76, prime:78 },
-    { n:"Syed Kirmani",      roles:["WK"], season:80, prime:82 },
-    { n:"Balwinder Sandhu",  roles:["PAC"], season:74, prime:76 }
-  ]},
-  { team:"India", year:1992, fmt:"odi", trophy:"ODI WC — Group Stage", squad:[
-    { n:"Krishnamachari Srikkanth",roles:["OPN"], season:78, prime:84 },
-    { n:"Sachin Tendulkar",  roles:["OPN","BAT"], season:84, prime:96 },
-    { n:"Mohammad Azharuddin",roles:["BAT"], season:88, prime:90 },
-    { n:"Vinod Kambli",      roles:["BAT"], season:78, prime:82 },
-    { n:"Sanjay Manjrekar",  roles:["BAT"], season:80, prime:82 },
-    { n:"Kapil Dev",         roles:["AR","PAC"], season:86, prime:92 },
-    { n:"Praveen Amre",      roles:["BAT"], season:76, prime:78 },
-    { n:"Manoj Prabhakar",   roles:["AR","PAC"], season:80, prime:82 },
-    { n:"Kiran More",        roles:["WK"], season:78, prime:80 },
-    { n:"Javagal Srinath",   roles:["PAC"], season:80, prime:88 },
-    { n:"Venkatapathy Raju", roles:["SPN"], season:74, prime:76 }
-  ]},
-  { team:"India", year:2003, fmt:"odi", trophy:"ODI WC — Finalists", squad:[
-    { n:"Sachin Tendulkar",  roles:["OPN","BAT"], season:94, prime:96 },
-    { n:"Virender Sehwag",   roles:["OPN"], season:88, prime:92 },
-    { n:"Sourav Ganguly",    roles:["BAT"], season:88, prime:88 },
-    { n:"Rahul Dravid",      roles:["BAT","WK"], season:90, prime:92 },
-    { n:"Mohammad Kaif",     roles:["BAT","FIN"], season:80, prime:82 },
-    { n:"Yuvraj Singh",      roles:["AR","BAT"], season:84, prime:92 },
-    { n:"Dinesh Mongia",     roles:["AR","BAT"], season:74, prime:76 },
-    { n:"Harbhajan Singh",   roles:["SPN"], season:86, prime:88 },
-    { n:"Anil Kumble",       roles:["SPN"], season:86, prime:90 },
-    { n:"Zaheer Khan",       roles:["PAC"], season:84, prime:88 },
-    { n:"Javagal Srinath",   roles:["PAC"], season:84, prime:88 },
-    { n:"Ashish Nehra",      roles:["PAC"], season:80, prime:82 }
-  ]},
-  { team:"India", year:2007, fmt:"t20", trophy:"T20 WC — Champions (inaugural)", squad:[
-    { n:"Virender Sehwag",   roles:["OPN"], season:88, prime:92 },
-    { n:"Gautam Gambhir",    roles:["OPN"], season:84, prime:88 },
-    { n:"Robin Uthappa",     roles:["BAT","OPN"], season:78, prime:80 },
-    { n:"Yuvraj Singh",      roles:["AR","BAT"], season:90, prime:92 },
-    { n:"MS Dhoni",          roles:["WK","FIN"], season:86, prime:90 },
-    { n:"Rohit Sharma",      roles:["BAT"], season:74, prime:90 },
-    { n:"Dinesh Karthik",    roles:["WK","BAT"], season:76, prime:80 },
-    { n:"Irfan Pathan",      roles:["AR","PAC"], season:80, prime:84 },
-    { n:"RP Singh",          roles:["PAC"], season:82, prime:84 },
-    { n:"Sreesanth",         roles:["PAC"], season:80, prime:80 },
-    { n:"Harbhajan Singh",   roles:["SPN"], season:82, prime:88 },
-    { n:"Joginder Sharma",   roles:["PAC","AR"], season:72, prime:74 }
-  ]},
-  { team:"India", year:2011, fmt:"odi", trophy:"ODI WC — Champions", squad:[
-    { n:"Virender Sehwag",   roles:["OPN"], season:88, prime:92 },
-    { n:"Sachin Tendulkar",  roles:["OPN","BAT"], season:90, prime:96 },
-    { n:"Gautam Gambhir",    roles:["OPN","BAT"], season:86, prime:88 },
-    { n:"Virat Kohli",       roles:["BAT"], season:78, prime:95 },
-    { n:"Yuvraj Singh",      roles:["AR","BAT"], season:92, prime:92 },
-    { n:"MS Dhoni",          roles:["WK","FIN"], season:88, prime:90 },
-    { n:"Suresh Raina",      roles:["BAT","AR"], season:80, prime:82 },
-    { n:"Harbhajan Singh",   roles:["SPN"], season:84, prime:88 },
-    { n:"Zaheer Khan",       roles:["PAC"], season:88, prime:88 },
-    { n:"Ashish Nehra",      roles:["PAC"], season:80, prime:82 },
-    { n:"Munaf Patel",       roles:["PAC"], season:76, prime:78 },
-    { n:"R Ashwin",          roles:["SPN","AR"], season:78, prime:90 }
-  ]},
-  { team:"India", year:2015, fmt:"odi", trophy:"ODI WC — Semi-Finalists", squad:[
-    { n:"Shikhar Dhawan",    roles:["OPN"], season:86, prime:88 },
-    { n:"Rohit Sharma",      roles:["OPN"], season:86, prime:90 },
-    { n:"Virat Kohli",       roles:["BAT"], season:90, prime:95 },
-    { n:"Ajinkya Rahane",    roles:["BAT"], season:82, prime:86 },
-    { n:"Suresh Raina",      roles:["BAT","AR"], season:82, prime:82 },
-    { n:"MS Dhoni",          roles:["WK","FIN"], season:86, prime:90 },
-    { n:"Ravichandran Ashwin",roles:["SPN","AR"], season:84, prime:90 },
-    { n:"Ravindra Jadeja",   roles:["AR","SPN"], season:84, prime:88 },
-    { n:"Mohit Sharma",      roles:["PAC"], season:78, prime:80 },
-    { n:"Umesh Yadav",       roles:["PAC"], season:80, prime:84 },
-    { n:"Mohammed Shami",    roles:["PAC"], season:84, prime:90 }
-  ]},
-  { team:"India", year:2019, fmt:"odi", trophy:"ODI WC — Semi-Finalists", squad:[
-    { n:"Rohit Sharma",      roles:["OPN"], season:92, prime:90 },
-    { n:"Shikhar Dhawan",    roles:["OPN"], season:84, prime:88 },
-    { n:"KL Rahul",          roles:["OPN","BAT"], season:84, prime:88 },
-    { n:"Virat Kohli",       roles:["BAT"], season:94, prime:95 },
-    { n:"Rishabh Pant",      roles:["WK","BAT"], season:82, prime:88 },
-    { n:"MS Dhoni",          roles:["WK","FIN"], season:82, prime:90 },
-    { n:"Hardik Pandya",     roles:["AR"], season:84, prime:88 },
-    { n:"Ravindra Jadeja",   roles:["AR","SPN"], season:84, prime:88 },
-    { n:"Jasprit Bumrah",    roles:["PAC"], season:94, prime:96 },
-    { n:"Mohammed Shami",    roles:["PAC"], season:88, prime:90 },
-    { n:"Bhuvneshwar Kumar", roles:["PAC"], season:82, prime:86 },
-    { n:"Yuzvendra Chahal",  roles:["SPN"], season:82, prime:84 }
-  ]},
-  { team:"India", year:2023, fmt:"odi", trophy:"ODI WC — Finalists", squad:[
-    { n:"Rohit Sharma",      roles:["OPN"], season:90, prime:90 },
-    { n:"Shubman Gill",      roles:["OPN"], season:86, prime:88 },
-    { n:"Virat Kohli",       roles:["BAT"], season:94, prime:95 },
-    { n:"Shreyas Iyer",      roles:["BAT"], season:84, prime:86 },
-    { n:"KL Rahul",          roles:["WK","BAT"], season:86, prime:88 },
-    { n:"Suryakumar Yadav",  roles:["BAT","FIN"], season:84, prime:92 },
-    { n:"Ravindra Jadeja",   roles:["AR","SPN"], season:84, prime:88 },
-    { n:"Hardik Pandya",     roles:["AR"], season:82, prime:88 },
-    { n:"Mohammed Shami",    roles:["PAC"], season:92, prime:90 },
-    { n:"Jasprit Bumrah",    roles:["PAC"], season:94, prime:96 },
-    { n:"Kuldeep Yadav",     roles:["SPN"], season:86, prime:86 },
-    { n:"Mohammed Siraj",    roles:["PAC"], season:84, prime:86 }
-  ]},
-  { team:"India", year:2024, fmt:"t20", trophy:"T20 WC — Champions", squad:[
+  /* ============ IPL ============ */
+  { team:"Mumbai Indians", year:2019, fmt:"t20", league:"ipl", trophy:"IPL — Champions", squad:[
     { n:"Rohit Sharma",      roles:["OPN"], season:88, prime:90 },
-    { n:"Virat Kohli",       roles:["OPN","BAT"], season:84, prime:95 },
-    { n:"Yashasvi Jaiswal",  roles:["OPN"], season:86, prime:86 },
-    { n:"Suryakumar Yadav",  roles:["BAT","FIN"], season:92, prime:92 },
-    { n:"Rishabh Pant",      roles:["WK","BAT"], season:86, prime:88 },
-    { n:"Hardik Pandya",     roles:["AR"], season:86, prime:88 },
-    { n:"Shivam Dube",       roles:["AR","BAT"], season:80, prime:80 },
-    { n:"Ravindra Jadeja",   roles:["AR","SPN"], season:84, prime:88 },
-    { n:"Axar Patel",        roles:["AR","SPN"], season:84, prime:84 },
-    { n:"Kuldeep Yadav",     roles:["SPN"], season:86, prime:86 },
-    { n:"Jasprit Bumrah",    roles:["PAC"], season:96, prime:96 },
-    { n:"Arshdeep Singh",    roles:["PAC"], season:84, prime:84 }
+    { n:"Quinton de Kock",   roles:["OPN","WK"], season:88, prime:90 },
+    { n:"Suryakumar Yadav",  roles:["BAT","FIN"], season:84, prime:92 },
+    { n:"Ishan Kishan",      roles:["WK","BAT"], season:82, prime:88 },
+    { n:"Hardik Pandya",     roles:["AR","FIN"], season:86, prime:88 },
+    { n:"Krunal Pandya",     roles:["AR","SPN"], season:78, prime:80 },
+    { n:"Kieron Pollard",    roles:["AR","FIN"], season:88, prime:90 },
+    { n:"Lasith Malinga",    roles:["PAC"], season:88, prime:92 },
+    { n:"Jasprit Bumrah",    roles:["PAC"], season:92, prime:96 },
+    { n:"Mitchell McClenaghan",roles:["PAC"], season:82, prime:82 },
+    { n:"Rahul Chahar",      roles:["SPN"], season:78, prime:80 }
   ]},
-
-  /* ============ ENGLAND ============ */
-  { team:"England", year:1992, fmt:"odi", trophy:"ODI WC — Finalists", squad:[
-    { n:"Graham Gooch",      roles:["OPN"], season:88, prime:90 },
-    { n:"Ian Botham",        roles:["AR","PAC"], season:80, prime:92 },
-    { n:"Robin Smith",       roles:["BAT"], season:84, prime:86 },
-    { n:"Graeme Hick",       roles:["BAT"], season:80, prime:82 },
-    { n:"Neil Fairbrother",  roles:["BAT","FIN"], season:80, prime:82 },
-    { n:"Alec Stewart",      roles:["WK","OPN"], season:80, prime:88 },
-    { n:"Chris Lewis",       roles:["AR","PAC"], season:78, prime:80 },
-    { n:"Derek Pringle",     roles:["AR","PAC"], season:76, prime:78 },
-    { n:"Phil DeFreitas",    roles:["AR","PAC"], season:78, prime:80 },
-    { n:"Gladstone Small",   roles:["PAC"], season:76, prime:78 },
-    { n:"Richard Illingworth",roles:["SPN"], season:74, prime:76 }
+  { team:"Mumbai Indians", year:2020, fmt:"t20", league:"ipl", trophy:"IPL — Champions", squad:[
+    { n:"Rohit Sharma",      roles:["OPN"], season:88, prime:90 },
+    { n:"Quinton de Kock",   roles:["OPN","WK"], season:90, prime:90 },
+    { n:"Suryakumar Yadav",  roles:["BAT","FIN"], season:88, prime:92 },
+    { n:"Ishan Kishan",      roles:["WK","BAT"], season:86, prime:88 },
+    { n:"Hardik Pandya",     roles:["AR","FIN"], season:84, prime:88 },
+    { n:"Krunal Pandya",     roles:["AR","SPN"], season:76, prime:80 },
+    { n:"Kieron Pollard",    roles:["AR","FIN"], season:86, prime:90 },
+    { n:"Trent Boult",       roles:["PAC"], season:88, prime:90 },
+    { n:"Jasprit Bumrah",    roles:["PAC"], season:94, prime:96 },
+    { n:"James Pattinson",   roles:["PAC"], season:82, prime:84 },
+    { n:"Rahul Chahar",      roles:["SPN"], season:80, prime:80 }
   ]},
-  { team:"England", year:2010, fmt:"t20", trophy:"T20 WC — Champions", squad:[
-    { n:"Craig Kieswetter",  roles:["WK","OPN"], season:80, prime:80 },
-    { n:"Michael Lumb",      roles:["OPN"], season:76, prime:78 },
-    { n:"Kevin Pietersen",   roles:["BAT"], season:90, prime:92 },
-    { n:"Paul Collingwood",  roles:["BAT","AR"], season:82, prime:84 },
-    { n:"Eoin Morgan",       roles:["BAT","FIN"], season:84, prime:90 },
-    { n:"Luke Wright",       roles:["AR"], season:74, prime:76 },
-    { n:"Tim Bresnan",       roles:["AR","PAC"], season:78, prime:80 },
-    { n:"Michael Yardy",     roles:["SPN","AR"], season:74, prime:76 },
-    { n:"Graeme Swann",      roles:["SPN"], season:90, prime:92 },
-    { n:"Stuart Broad",      roles:["PAC","AR"], season:82, prime:90 },
-    { n:"Ryan Sidebottom",   roles:["PAC"], season:80, prime:84 }
+  { team:"Chennai Super Kings", year:2010, fmt:"t20", league:"ipl", trophy:"IPL — Champions", squad:[
+    { n:"Murali Vijay",      roles:["OPN"], season:84, prime:86 },
+    { n:"Matthew Hayden",    roles:["OPN"], season:90, prime:93 },
+    { n:"Suresh Raina",      roles:["BAT","FIN"], season:86, prime:84 },
+    { n:"S Badrinath",       roles:["BAT"], season:80, prime:80 },
+    { n:"MS Dhoni",          roles:["WK","FIN"], season:88, prime:90 },
+    { n:"Albie Morkel",      roles:["AR","FIN"], season:82, prime:84 },
+    { n:"Ravichandran Ashwin",roles:["SPN","AR"], season:84, prime:90 },
+    { n:"Doug Bollinger",    roles:["PAC"], season:84, prime:84 },
+    { n:"Muthiah Muralitharan",roles:["SPN"], season:90, prime:97 },
+    { n:"Lakshmipathy Balaji",roles:["PAC"], season:80, prime:82 },
+    { n:"Shadab Jakati",     roles:["SPN","AR"], season:74, prime:76 }
   ]},
-  { team:"England", year:2019, fmt:"odi", trophy:"ODI WC — Champions", squad:[
-    { n:"Jason Roy",         roles:["OPN"], season:86, prime:88 },
-    { n:"Jonny Bairstow",    roles:["OPN","WK"], season:88, prime:90 },
-    { n:"Joe Root",          roles:["BAT"], season:88, prime:92 },
-    { n:"Eoin Morgan",       roles:["BAT","FIN"], season:88, prime:90 },
-    { n:"Ben Stokes",        roles:["AR"], season:90, prime:92 },
-    { n:"Jos Buttler",       roles:["WK","FIN"], season:90, prime:92 },
-    { n:"Chris Woakes",      roles:["AR","PAC"], season:84, prime:86 },
-    { n:"Liam Plunkett",     roles:["PAC"], season:80, prime:82 },
-    { n:"Jofra Archer",      roles:["PAC"], season:90, prime:92 },
-    { n:"Mark Wood",         roles:["PAC"], season:84, prime:88 },
-    { n:"Adil Rashid",       roles:["SPN"], season:84, prime:86 },
-    { n:"Moeen Ali",         roles:["AR","SPN"], season:78, prime:84 }
+  { team:"Chennai Super Kings", year:2018, fmt:"t20", league:"ipl", trophy:"IPL — Champions", squad:[
+    { n:"Shane Watson",      roles:["OPN","AR"], season:86, prime:88 },
+    { n:"Faf du Plessis",    roles:["BAT"], season:88, prime:88 },
+    { n:"Ambati Rayudu",     roles:["BAT","WK"], season:84, prime:82 },
+    { n:"Suresh Raina",      roles:["BAT","AR"], season:84, prime:84 },
+    { n:"MS Dhoni",          roles:["WK","FIN"], season:88, prime:90 },
+    { n:"Dwayne Bravo",      roles:["AR","FIN"], season:84, prime:88 },
+    { n:"Ravindra Jadeja",   roles:["AR","SPN"], season:86, prime:88 },
+    { n:"Deepak Chahar",     roles:["PAC"], season:82, prime:84 },
+    { n:"Shardul Thakur",    roles:["PAC"], season:80, prime:82 },
+    { n:"Imran Tahir",       roles:["SPN"], season:88, prime:88 },
+    { n:"Karn Sharma",       roles:["SPN"], season:76, prime:78 }
   ]},
-  { team:"England", year:2022, fmt:"t20", trophy:"T20 WC — Champions", squad:[
-    { n:"Jos Buttler",       roles:["WK","OPN","FIN"], season:92, prime:92 },
-    { n:"Alex Hales",        roles:["OPN"], season:86, prime:88 },
-    { n:"Phil Salt",         roles:["OPN","WK"], season:82, prime:86 },
-    { n:"Dawid Malan",       roles:["BAT"], season:86, prime:88 },
-    { n:"Ben Stokes",        roles:["AR"], season:86, prime:92 },
-    { n:"Harry Brook",       roles:["BAT"], season:84, prime:90 },
-    { n:"Liam Livingstone",  roles:["AR","BAT"], season:82, prime:86 },
-    { n:"Moeen Ali",         roles:["AR","SPN"], season:80, prime:84 },
-    { n:"Sam Curran",        roles:["AR","PAC"], season:86, prime:88 },
-    { n:"Chris Jordan",      roles:["PAC"], season:80, prime:82 },
-    { n:"Mark Wood",         roles:["PAC"], season:86, prime:88 },
-    { n:"Adil Rashid",       roles:["SPN"], season:84, prime:86 }
+  { team:"Chennai Super Kings", year:2023, fmt:"t20", league:"ipl", trophy:"IPL — Champions", squad:[
+    { n:"Ruturaj Gaikwad",   roles:["OPN"], season:86, prime:88 },
+    { n:"Devon Conway",      roles:["OPN"], season:88, prime:86 },
+    { n:"Ajinkya Rahane",    roles:["BAT"], season:82, prime:86 },
+    { n:"Shivam Dube",       roles:["AR","BAT"], season:82, prime:82 },
+    { n:"MS Dhoni",          roles:["WK","FIN"], season:82, prime:90 },
+    { n:"Ravindra Jadeja",   roles:["AR","SPN"], season:88, prime:88 },
+    { n:"Moeen Ali",         roles:["AR","SPN"], season:82, prime:84 },
+    { n:"Deepak Chahar",     roles:["PAC"], season:82, prime:84 },
+    { n:"Tushar Deshpande",  roles:["PAC"], season:78, prime:80 },
+    { n:"Matheesha Pathirana",roles:["PAC"], season:84, prime:86 },
+    { n:"Maheesh Theekshana",roles:["SPN"], season:82, prime:84 }
   ]},
-
-  /* ============ PAKISTAN ============ */
-  { team:"Pakistan", year:1992, fmt:"odi", trophy:"ODI WC — Champions", squad:[
-    { n:"Aamer Sohail",      roles:["OPN"], season:82, prime:84 },
-    { n:"Rameez Raja",       roles:["OPN"], season:80, prime:82 },
-    { n:"Inzamam-ul-Haq",    roles:["BAT"], season:84, prime:92 },
-    { n:"Javed Miandad",     roles:["BAT"], season:90, prime:94 },
-    { n:"Saleem Malik",      roles:["BAT"], season:84, prime:86 },
-    { n:"Imran Khan",        roles:["AR"], season:90, prime:96 },
-    { n:"Wasim Akram",       roles:["AR","PAC"], season:92, prime:96 },
-    { n:"Moin Khan",         roles:["WK","BAT"], season:78, prime:82 },
-    { n:"Ijaz Ahmed",        roles:["BAT"], season:76, prime:80 },
-    { n:"Mushtaq Ahmed",     roles:["SPN"], season:86, prime:90 },
-    { n:"Aaqib Javed",       roles:["PAC"], season:82, prime:84 }
-  ]},
-  { team:"Pakistan", year:1999, fmt:"odi", trophy:"ODI WC — Finalists", squad:[
-    { n:"Saeed Anwar",       roles:["OPN"], season:90, prime:92 },
-    { n:"Shahid Afridi",     roles:["OPN","AR"], season:82, prime:90 },
-    { n:"Ijaz Ahmed",        roles:["BAT"], season:80, prime:82 },
-    { n:"Inzamam-ul-Haq",    roles:["BAT"], season:88, prime:92 },
-    { n:"Yousuf Youhana",    roles:["BAT"], season:84, prime:92 },
-    { n:"Moin Khan",         roles:["WK","FIN"], season:80, prime:82 },
-    { n:"Azhar Mahmood",     roles:["AR","PAC"], season:78, prime:82 },
-    { n:"Wasim Akram",       roles:["AR","PAC"], season:90, prime:96 },
-    { n:"Waqar Younis",      roles:["PAC"], season:88, prime:94 },
-    { n:"Shoaib Akhtar",     roles:["PAC"], season:88, prime:92 },
-    { n:"Saqlain Mushtaq",   roles:["SPN"], season:86, prime:90 }
-  ]},
-  { team:"Pakistan", year:2009, fmt:"t20", trophy:"T20 WC — Champions", squad:[
-    { n:"Kamran Akmal",      roles:["WK","OPN"], season:80, prime:84 },
-    { n:"Shahzaib Hasan",    roles:["OPN"], season:72, prime:74 },
-    { n:"Younis Khan",       roles:["BAT"], season:86, prime:88 },
-    { n:"Misbah-ul-Haq",     roles:["BAT","FIN"], season:84, prime:88 },
-    { n:"Shahid Afridi",     roles:["AR"], season:88, prime:90 },
-    { n:"Shoaib Malik",      roles:["AR","BAT"], season:82, prime:86 },
-    { n:"Abdul Razzaq",      roles:["AR"], season:82, prime:86 },
-    { n:"Umar Akmal",        roles:["BAT"], season:76, prime:80 },
-    { n:"Mohammad Aamer",    roles:["PAC"], season:84, prime:90 },
-    { n:"Umar Gul",          roles:["PAC"], season:88, prime:90 },
-    { n:"Saeed Ajmal",       roles:["SPN"], season:84, prime:92 }
-  ]},
-  { team:"Pakistan", year:2022, fmt:"t20", trophy:"T20 WC — Finalists", squad:[
-    { n:"Babar Azam",        roles:["OPN"], season:90, prime:92 },
-    { n:"Mohammad Rizwan",   roles:["WK","OPN"], season:88, prime:90 },
-    { n:"Iftikhar Ahmed",    roles:["BAT","AR"], season:80, prime:82 },
-    { n:"Shan Masood",       roles:["BAT"], season:78, prime:82 },
-    { n:"Mohammad Haris",    roles:["WK","BAT"], season:76, prime:78 },
-    { n:"Shadab Khan",       roles:["AR","SPN"], season:84, prime:86 },
-    { n:"Mohammad Nawaz",    roles:["AR","SPN"], season:78, prime:80 },
-    { n:"Haris Rauf",        roles:["PAC"], season:84, prime:86 },
-    { n:"Shaheen Afridi",    roles:["PAC"], season:90, prime:92 },
-    { n:"Naseem Shah",       roles:["PAC"], season:84, prime:90 },
-    { n:"Mohammad Wasim Jr", roles:["PAC"], season:78, prime:80 }
-  ]},
-
-  /* ============ WEST INDIES ============ */
-  { team:"West Indies", year:1975, fmt:"odi", trophy:"ODI WC — Champions (inaugural)", squad:[
-    { n:"Roy Fredericks",    roles:["OPN"], season:84, prime:86 },
-    { n:"Gordon Greenidge",  roles:["OPN"], season:80, prime:92 },
-    { n:"Alvin Kallicharran",roles:["BAT"], season:84, prime:86 },
-    { n:"Viv Richards",      roles:["BAT"], season:86, prime:96 },
-    { n:"Rohan Kanhai",      roles:["BAT"], season:84, prime:88 },
-    { n:"Clive Lloyd",       roles:["BAT","FIN"], season:90, prime:92 },
-    { n:"Bernard Julien",    roles:["AR","PAC"], season:78, prime:80 },
-    { n:"Keith Boyce",       roles:["AR","PAC"], season:80, prime:84 },
-    { n:"Deryck Murray",     roles:["WK"], season:78, prime:80 },
-    { n:"Vanburn Holder",    roles:["PAC"], season:78, prime:82 },
-    { n:"Andy Roberts",      roles:["PAC"], season:84, prime:94 }
-  ]},
-  { team:"West Indies", year:1979, fmt:"odi", trophy:"ODI WC — Champions", squad:[
-    { n:"Gordon Greenidge",  roles:["OPN"], season:88, prime:92 },
-    { n:"Desmond Haynes",    roles:["OPN"], season:84, prime:90 },
-    { n:"Viv Richards",      roles:["BAT"], season:94, prime:96 },
-    { n:"Alvin Kallicharran",roles:["BAT"], season:82, prime:86 },
-    { n:"Clive Lloyd",       roles:["BAT","FIN"], season:88, prime:92 },
-    { n:"Collis King",       roles:["AR"], season:82, prime:84 },
-    { n:"Deryck Murray",     roles:["WK"], season:78, prime:80 },
-    { n:"Andy Roberts",      roles:["PAC"], season:90, prime:94 },
-    { n:"Michael Holding",   roles:["PAC"], season:90, prime:96 },
-    { n:"Joel Garner",       roles:["PAC"], season:88, prime:94 },
-    { n:"Colin Croft",       roles:["PAC"], season:84, prime:88 }
-  ]},
-  { team:"West Indies", year:1983, fmt:"odi", trophy:"ODI WC — Finalists", squad:[
-    { n:"Gordon Greenidge",  roles:["OPN"], season:92, prime:92 },
-    { n:"Desmond Haynes",    roles:["OPN"], season:88, prime:90 },
-    { n:"Viv Richards",      roles:["BAT"], season:96, prime:96 },
-    { n:"Larry Gomes",       roles:["BAT","SPN"], season:80, prime:82 },
-    { n:"Clive Lloyd",       roles:["BAT","FIN"], season:90, prime:92 },
-    { n:"Faoud Bacchus",     roles:["BAT"], season:72, prime:74 },
-    { n:"Jeff Dujon",        roles:["WK","BAT"], season:80, prime:84 },
-    { n:"Malcolm Marshall",  roles:["PAC"], season:92, prime:96 },
-    { n:"Andy Roberts",      roles:["PAC"], season:90, prime:94 },
-    { n:"Michael Holding",   roles:["PAC"], season:92, prime:96 },
-    { n:"Joel Garner",       roles:["PAC"], season:90, prime:94 }
-  ]},
-  { team:"West Indies", year:2012, fmt:"t20", trophy:"T20 WC — Champions", squad:[
-    { n:"Chris Gayle",       roles:["OPN"], season:96, prime:96 },
-    { n:"Johnson Charles",   roles:["OPN","WK"], season:74, prime:76 },
-    { n:"Marlon Samuels",    roles:["BAT","AR"], season:84, prime:86 },
-    { n:"Dwayne Bravo",      roles:["AR"], season:84, prime:86 },
-    { n:"Kieron Pollard",    roles:["AR","FIN"], season:86, prime:88 },
-    { n:"Darren Sammy",      roles:["AR"], season:78, prime:80 },
-    { n:"Andre Russell",     roles:["AR","FIN"], season:78, prime:92 },
-    { n:"Denesh Ramdin",     roles:["WK","BAT"], season:78, prime:80 },
-    { n:"Sunil Narine",      roles:["SPN"], season:90, prime:92 },
-    { n:"Samuel Badree",     roles:["SPN"], season:82, prime:84 },
-    { n:"Ravi Rampaul",      roles:["PAC"], season:78, prime:80 }
-  ]},
-  { team:"West Indies", year:2016, fmt:"t20", trophy:"T20 WC — Champions", squad:[
-    { n:"Chris Gayle",       roles:["OPN"], season:92, prime:96 },
-    { n:"Johnson Charles",   roles:["OPN","WK"], season:74, prime:76 },
-    { n:"Marlon Samuels",    roles:["BAT","AR"], season:86, prime:86 },
-    { n:"Lendl Simmons",     roles:["OPN","BAT"], season:80, prime:82 },
-    { n:"Dwayne Bravo",      roles:["AR"], season:84, prime:86 },
-    { n:"Carlos Brathwaite", roles:["AR","FIN"], season:80, prime:84 },
-    { n:"Andre Russell",     roles:["AR","FIN"], season:88, prime:92 },
-    { n:"Denesh Ramdin",     roles:["WK","BAT"], season:78, prime:80 },
-    { n:"Sulieman Benn",     roles:["SPN"], season:78, prime:80 },
-    { n:"Samuel Badree",     roles:["SPN"], season:84, prime:84 },
-    { n:"Jason Holder",      roles:["AR","PAC"], season:82, prime:86 }
-  ]},
-
-  /* ============ SRI LANKA ============ */
-  { team:"Sri Lanka", year:1996, fmt:"odi", trophy:"ODI WC — Champions", squad:[
-    { n:"Sanath Jayasuriya", roles:["OPN","AR"], season:90, prime:94 },
-    { n:"Romesh Kaluwitharana",roles:["WK","OPN"], season:78, prime:82 },
-    { n:"Asanka Gurusinha",  roles:["BAT"], season:82, prime:84 },
-    { n:"Aravinda de Silva", roles:["BAT","AR"], season:92, prime:94 },
-    { n:"Arjuna Ranatunga",  roles:["BAT","FIN"], season:84, prime:88 },
-    { n:"Hashan Tillakaratne",roles:["BAT"], season:78, prime:82 },
-    { n:"Roshan Mahanama",   roles:["BAT"], season:74, prime:78 },
-    { n:"Chaminda Vaas",     roles:["PAC"], season:84, prime:90 },
-    { n:"Muttiah Muralidaran",roles:["SPN"], season:84, prime:97 },
-    { n:"Kumar Dharmasena",  roles:["SPN","AR"], season:78, prime:80 },
-    { n:"Pramodya Wickramasinghe",roles:["PAC"], season:74, prime:76 }
-  ]},
-  { team:"Sri Lanka", year:2007, fmt:"odi", trophy:"ODI WC — Finalists", squad:[
-    { n:"Sanath Jayasuriya", roles:["OPN","AR"], season:90, prime:94 },
-    { n:"Upul Tharanga",     roles:["OPN"], season:82, prime:84 },
-    { n:"Kumar Sangakkara",  roles:["WK","BAT"], season:90, prime:94 },
-    { n:"Mahela Jayawardene",roles:["BAT"], season:92, prime:92 },
-    { n:"Tillakaratne Dilshan",roles:["BAT","OPN"], season:84, prime:88 },
-    { n:"Chamara Silva",     roles:["BAT","FIN"], season:78, prime:80 },
-    { n:"Russel Arnold",     roles:["BAT","FIN"], season:78, prime:80 },
-    { n:"Chaminda Vaas",     roles:["PAC"], season:88, prime:90 },
-    { n:"Muttiah Muralidaran",roles:["SPN"], season:96, prime:97 },
-    { n:"Lasith Malinga",    roles:["PAC"], season:84, prime:92 },
-    { n:"Dilhara Fernando",  roles:["PAC"], season:78, prime:80 }
-  ]},
-  { team:"Sri Lanka", year:2011, fmt:"odi", trophy:"ODI WC — Finalists", squad:[
-    { n:"Tillakaratne Dilshan",roles:["OPN"], season:88, prime:88 },
-    { n:"Upul Tharanga",     roles:["OPN"], season:82, prime:84 },
-    { n:"Kumar Sangakkara",  roles:["WK","BAT"], season:92, prime:94 },
-    { n:"Mahela Jayawardene",roles:["BAT"], season:90, prime:92 },
-    { n:"Thilan Samaraweera",roles:["BAT"], season:80, prime:82 },
-    { n:"Angelo Mathews",    roles:["AR"], season:82, prime:86 },
-    { n:"Chamara Kapugedera",roles:["BAT","FIN"], season:74, prime:76 },
-    { n:"Lasith Malinga",    roles:["PAC"], season:90, prime:92 },
-    { n:"Muttiah Muralidaran",roles:["SPN"], season:92, prime:97 },
-    { n:"Nuwan Kulasekara",  roles:["PAC"], season:82, prime:84 },
-    { n:"Rangana Herath",    roles:["SPN"], season:82, prime:88 }
-  ]},
-  { team:"Sri Lanka", year:2014, fmt:"t20", trophy:"T20 WC — Champions", squad:[
-    { n:"Tillakaratne Dilshan",roles:["OPN"], season:86, prime:88 },
-    { n:"Kusal Perera",      roles:["OPN","WK"], season:80, prime:84 },
-    { n:"Mahela Jayawardene",roles:["BAT"], season:88, prime:92 },
-    { n:"Kumar Sangakkara",  roles:["WK","BAT"], season:92, prime:94 },
-    { n:"Lahiru Thirimanne", roles:["BAT"], season:78, prime:80 },
-    { n:"Angelo Mathews",    roles:["AR"], season:86, prime:86 },
-    { n:"Thisara Perera",    roles:["AR","FIN"], season:80, prime:82 },
-    { n:"Nuwan Kulasekara",  roles:["PAC"], season:80, prime:84 },
-    { n:"Lasith Malinga",    roles:["PAC"], season:90, prime:92 },
-    { n:"Rangana Herath",    roles:["SPN"], season:88, prime:88 },
-    { n:"Sachithra Senanayake",roles:["SPN","AR"], season:76, prime:78 }
-  ]},
-
-  /* ============ NEW ZEALAND ============ */
-  { team:"New Zealand", year:1992, fmt:"odi", trophy:"ODI WC — Semi-Finalists", squad:[
-    { n:"Mark Greatbatch",   roles:["OPN"], season:82, prime:84 },
-    { n:"John Wright",       roles:["OPN"], season:80, prime:84 },
-    { n:"Andrew Jones",      roles:["BAT"], season:80, prime:82 },
-    { n:"Martin Crowe",      roles:["BAT"], season:90, prime:90 },
-    { n:"Ken Rutherford",    roles:["BAT"], season:76, prime:78 },
-    { n:"Chris Harris",      roles:["AR","FIN"], season:78, prime:82 },
-    { n:"Ian Smith",         roles:["WK"], season:76, prime:78 },
-    { n:"Chris Cairns",      roles:["AR","PAC"], season:78, prime:90 },
-    { n:"Danny Morrison",    roles:["PAC"], season:78, prime:82 },
-    { n:"Dipak Patel",       roles:["SPN","AR"], season:74, prime:76 },
-    { n:"Gavin Larsen",      roles:["AR","PAC"], season:78, prime:80 }
-  ]},
-  { team:"New Zealand", year:2015, fmt:"odi", trophy:"ODI WC — Finalists", squad:[
-    { n:"Martin Guptill",    roles:["OPN"], season:90, prime:90 },
-    { n:"Brendon McCullum",  roles:["OPN","WK","FIN"], season:88, prime:88 },
-    { n:"Kane Williamson",   roles:["BAT"], season:90, prime:93 },
-    { n:"Ross Taylor",       roles:["BAT"], season:86, prime:90 },
-    { n:"Grant Elliott",     roles:["AR","FIN"], season:82, prime:82 },
-    { n:"Corey Anderson",    roles:["AR","FIN"], season:80, prime:82 },
-    { n:"Luke Ronchi",       roles:["WK","BAT"], season:76, prime:78 },
-    { n:"Daniel Vettori",    roles:["SPN","AR"], season:84, prime:88 },
-    { n:"Tim Southee",       roles:["PAC"], season:88, prime:90 },
-    { n:"Trent Boult",       roles:["PAC"], season:90, prime:90 },
-    { n:"Adam Milne",        roles:["PAC"], season:78, prime:80 }
-  ]},
-  { team:"New Zealand", year:2019, fmt:"odi", trophy:"ODI WC — Finalists", squad:[
-    { n:"Martin Guptill",    roles:["OPN"], season:86, prime:90 },
-    { n:"Henry Nicholls",    roles:["OPN","BAT"], season:80, prime:82 },
-    { n:"Kane Williamson",   roles:["BAT"], season:92, prime:93 },
+  { team:"Royal Challengers Bangalore", year:2009, fmt:"t20", league:"ipl", trophy:"IPL — Finalists", squad:[
+    { n:"Jacques Kallis",    roles:["OPN","AR"], season:88, prime:94 },
+    { n:"Manish Pandey",     roles:["BAT"], season:80, prime:84 },
+    { n:"Rahul Dravid",      roles:["BAT"], season:88, prime:92 },
+    { n:"Virat Kohli",       roles:["BAT"], season:74, prime:95 },
     { n:"Ross Taylor",       roles:["BAT"], season:84, prime:90 },
-    { n:"Tom Latham",        roles:["WK","BAT"], season:82, prime:86 },
-    { n:"Colin de Grandhomme",roles:["AR"], season:78, prime:80 },
-    { n:"Jimmy Neesham",     roles:["AR","FIN"], season:80, prime:82 },
-    { n:"Mitchell Santner",  roles:["SPN","AR"], season:80, prime:82 },
-    { n:"Lockie Ferguson",   roles:["PAC"], season:84, prime:86 },
-    { n:"Trent Boult",       roles:["PAC"], season:88, prime:90 },
-    { n:"Matt Henry",        roles:["PAC"], season:80, prime:84 }
+    { n:"Mark Boucher",      roles:["WK","BAT"], season:82, prime:84 },
+    { n:"Robin Uthappa",     roles:["OPN","BAT"], season:80, prime:84 },
+    { n:"Praveen Kumar",     roles:["PAC","AR"], season:82, prime:84 },
+    { n:"Anil Kumble",       roles:["SPN"], season:86, prime:90 },
+    { n:"Dale Steyn",        roles:["PAC"], season:90, prime:96 },
+    { n:"Rajesh Bishnoi",    roles:["BAT"], season:72, prime:74 }
   ]},
-  { team:"New Zealand", year:2021, fmt:"t20", trophy:"T20 WC — Finalists", squad:[
-    { n:"Martin Guptill",    roles:["OPN"], season:86, prime:90 },
-    { n:"Daryl Mitchell",    roles:["OPN","AR"], season:82, prime:84 },
-    { n:"Kane Williamson",   roles:["BAT"], season:92, prime:93 },
-    { n:"Devon Conway",      roles:["BAT","WK"], season:86, prime:86 },
-    { n:"Glenn Phillips",    roles:["BAT","WK","FIN"], season:82, prime:86 },
-    { n:"James Neesham",     roles:["AR","FIN"], season:82, prime:82 },
-    { n:"Mitchell Santner",  roles:["SPN","AR"], season:82, prime:82 },
-    { n:"Ish Sodhi",         roles:["SPN"], season:80, prime:82 },
-    { n:"Tim Southee",       roles:["PAC"], season:88, prime:90 },
-    { n:"Trent Boult",       roles:["PAC"], season:88, prime:90 },
-    { n:"Adam Milne",        roles:["PAC"], season:78, prime:80 }
+  { team:"Royal Challengers Bangalore", year:2016, fmt:"t20", league:"ipl", trophy:"IPL — Finalists (Kohli record)", squad:[
+    { n:"Virat Kohli",       roles:["BAT"], season:96, prime:96 },
+    { n:"Chris Gayle",       roles:["OPN"], season:90, prime:96 },
+    { n:"AB de Villiers",    roles:["BAT","WK"], season:94, prime:96 },
+    { n:"KL Rahul",          roles:["WK","BAT"], season:82, prime:88 },
+    { n:"Shane Watson",      roles:["AR","BAT"], season:82, prime:86 },
+    { n:"Stuart Binny",      roles:["AR"], season:76, prime:78 },
+    { n:"Iqbal Abdulla",     roles:["SPN","AR"], season:76, prime:76 },
+    { n:"Yuzvendra Chahal",  roles:["SPN"], season:82, prime:84 },
+    { n:"Chris Jordan",      roles:["PAC"], season:82, prime:84 },
+    { n:"Sreenath Aravind",  roles:["PAC"], season:76, prime:76 },
+    { n:"Varun Aaron",       roles:["PAC"], season:78, prime:80 }
   ]},
-
-  /* ============ SOUTH AFRICA ============ */
-  { team:"South Africa", year:1992, fmt:"odi", trophy:"ODI WC — Semi-Finalists", squad:[
-    { n:"Kepler Wessels",   roles:["OPN","BAT"], season:82, prime:84 },
-    { n:"Andrew Hudson",    roles:["OPN"], season:78, prime:80 },
-    { n:"Peter Kirsten",    roles:["BAT"], season:82, prime:84 },
-    { n:"Hansie Cronje",    roles:["BAT","AR"], season:78, prime:86 },
-    { n:"Jonty Rhodes",     roles:["BAT","FIN"], season:78, prime:82 },
-    { n:"Brian McMillan",   roles:["AR","PAC"], season:80, prime:84 },
-    { n:"Dave Richardson",  roles:["WK"], season:76, prime:78 },
-    { n:"Allan Donald",     roles:["PAC"], season:88, prime:94 },
-    { n:"Meyrick Pringle",  roles:["PAC"], season:76, prime:78 },
-    { n:"Tertius Bosch",    roles:["PAC"], season:72, prime:74 },
-    { n:"Adrian Kuiper",    roles:["AR"], season:76, prime:78 }
+  { team:"Royal Challengers Bangalore", year:2025, fmt:"t20", league:"ipl", trophy:"IPL — Champions (first title)", squad:[
+    { n:"Phil Salt",         roles:["OPN","WK"], season:88, prime:88 },
+    { n:"Virat Kohli",       roles:["BAT","OPN"], season:92, prime:95 },
+    { n:"Rajat Patidar",     roles:["BAT"], season:86, prime:86 },
+    { n:"Jitesh Sharma",     roles:["WK","FIN"], season:82, prime:84 },
+    { n:"Liam Livingstone",  roles:["AR","BAT"], season:84, prime:86 },
+    { n:"Tim David",         roles:["FIN","BAT"], season:84, prime:86 },
+    { n:"Romario Shepherd",  roles:["AR","PAC"], season:80, prime:82 },
+    { n:"Krunal Pandya",     roles:["AR","SPN"], season:82, prime:82 },
+    { n:"Josh Hazlewood",    roles:["PAC"], season:90, prime:90 },
+    { n:"Bhuvneshwar Kumar", roles:["PAC"], season:84, prime:86 },
+    { n:"Yash Dayal",        roles:["PAC"], season:80, prime:82 },
+    { n:"Suyash Sharma",     roles:["SPN"], season:78, prime:80 }
   ]},
-  { team:"South Africa", year:2007, fmt:"odi", trophy:"ODI WC — Semi-Finalists", squad:[
-    { n:"Graeme Smith",     roles:["OPN"], season:88, prime:90 },
-    { n:"Herschelle Gibbs", roles:["OPN"], season:86, prime:88 },
-    { n:"Jacques Kallis",   roles:["BAT","AR"], season:92, prime:94 },
-    { n:"AB de Villiers",   roles:["BAT","WK"], season:84, prime:96 },
-    { n:"Justin Kemp",      roles:["AR","FIN"], season:78, prime:80 },
-    { n:"Mark Boucher",     roles:["WK","BAT"], season:82, prime:84 },
-    { n:"Shaun Pollock",    roles:["AR","PAC"], season:86, prime:90 },
-    { n:"Andrew Hall",      roles:["AR","PAC"], season:76, prime:78 },
-    { n:"Makhaya Ntini",    roles:["PAC"], season:84, prime:88 },
-    { n:"Charl Langeveldt", roles:["PAC"], season:78, prime:80 },
-    { n:"Robin Peterson",   roles:["SPN","AR"], season:74, prime:78 }
-  ]},
-  { team:"South Africa", year:2007, fmt:"t20", trophy:"T20 WC — Semi-Finalists", squad:[
-    { n:"Graeme Smith",     roles:["OPN"], season:86, prime:90 },
-    { n:"Herschelle Gibbs", roles:["OPN"], season:84, prime:88 },
-    { n:"Jacques Kallis",   roles:["BAT","AR"], season:88, prime:94 },
-    { n:"AB de Villiers",   roles:["BAT","WK"], season:82, prime:96 },
-    { n:"Justin Kemp",      roles:["AR","FIN"], season:80, prime:80 },
-    { n:"Mark Boucher",     roles:["WK","BAT"], season:80, prime:84 },
-    { n:"Shaun Pollock",    roles:["AR","PAC"], season:84, prime:90 },
-    { n:"Albie Morkel",     roles:["AR","FIN"], season:78, prime:82 },
-    { n:"Makhaya Ntini",    roles:["PAC"], season:84, prime:88 },
-    { n:"Vernon Philander", roles:["PAC","AR"], season:74, prime:86 },
-    { n:"Johan van der Wath",roles:["AR","PAC"], season:74, prime:76 }
-  ]},
-  { team:"South Africa", year:2011, fmt:"odi", trophy:"ODI WC — Quarter-Final", squad:[
-    { n:"Graeme Smith",     roles:["OPN"], season:88, prime:90 },
-    { n:"Hashim Amla",      roles:["OPN"], season:90, prime:92 },
-    { n:"Jacques Kallis",   roles:["BAT","AR"], season:90, prime:94 },
-    { n:"AB de Villiers",   roles:["BAT","WK","FIN"], season:92, prime:96 },
-    { n:"JP Duminy",        roles:["AR","BAT"], season:82, prime:84 },
-    { n:"Faf du Plessis",   roles:["BAT"], season:78, prime:88 },
-    { n:"Mark Boucher",     roles:["WK","BAT"], season:80, prime:84 },
-    { n:"Morne Morkel",     roles:["PAC"], season:86, prime:88 },
-    { n:"Dale Steyn",       roles:["PAC"], season:94, prime:96 },
-    { n:"Imran Tahir",      roles:["SPN"], season:82, prime:86 },
-    { n:"Robin Peterson",   roles:["SPN","AR"], season:74, prime:78 }
-  ]},
-  { team:"South Africa", year:2023, fmt:"odi", trophy:"ODI WC — Semi-Finalists", squad:[
-    { n:"Temba Bavuma",     roles:["OPN"], season:80, prime:82 },
-    { n:"Quinton de Kock",  roles:["WK","OPN"], season:92, prime:92 },
-    { n:"Rassie van der Dussen",roles:["BAT"], season:84, prime:86 },
-    { n:"Aiden Markram",    roles:["BAT","AR"], season:84, prime:86 },
-    { n:"Heinrich Klaasen", roles:["WK","FIN"], season:92, prime:92 },
-    { n:"David Miller",     roles:["FIN","BAT"], season:86, prime:88 },
-    { n:"Marco Jansen",     roles:["AR","PAC"], season:84, prime:84 },
-    { n:"Keshav Maharaj",   roles:["SPN"], season:82, prime:84 },
-    { n:"Tabraiz Shamsi",   roles:["SPN"], season:80, prime:82 },
-    { n:"Kagiso Rabada",    roles:["PAC"], season:90, prime:92 },
-    { n:"Gerald Coetzee",   roles:["PAC"], season:84, prime:86 },
-    { n:"Lungi Ngidi",      roles:["PAC"], season:82, prime:84 }
-  ]},
-  { team:"South Africa", year:1999, fmt:"odi", trophy:"ODI WC — Semi-Finalists", squad:[
-    { n:"Gary Kirsten",      roles:["OPN"], season:88, prime:90 },
-    { n:"Herschelle Gibbs",  roles:["OPN"], season:84, prime:88 },
-    { n:"Daryll Cullinan",   roles:["BAT"], season:84, prime:86 },
+  { team:"Kolkata Knight Riders", year:2012, fmt:"t20", league:"ipl", trophy:"IPL — Champions", squad:[
+    { n:"Gautam Gambhir",    roles:["OPN"], season:88, prime:88 },
+    { n:"Brendon McCullum",  roles:["OPN","WK"], season:86, prime:90 },
     { n:"Jacques Kallis",    roles:["BAT","AR"], season:88, prime:94 },
-    { n:"Hansie Cronje",     roles:["BAT","FIN"], season:84, prime:86 },
-    { n:"Jonty Rhodes",      roles:["BAT","FIN"], season:80, prime:82 },
-    { n:"Lance Klusener",    roles:["AR","FIN"], season:92, prime:92 },
-    { n:"Mark Boucher",      roles:["WK","BAT"], season:80, prime:84 },
-    { n:"Shaun Pollock",     roles:["AR","PAC"], season:88, prime:90 },
-    { n:"Allan Donald",      roles:["PAC"], season:92, prime:94 },
-    { n:"Steve Elworthy",    roles:["PAC"], season:76, prime:78 }
+    { n:"Manvinder Bisla",   roles:["WK","BAT"], season:78, prime:78 },
+    { n:"Yusuf Pathan",      roles:["AR","FIN"], season:82, prime:84 },
+    { n:"Sunil Narine",      roles:["SPN","AR"], season:86, prime:92 },
+    { n:"Shakib Al Hasan",   roles:["AR","SPN"], season:84, prime:92 },
+    { n:"Iqbal Abdulla",     roles:["SPN","AR"], season:78, prime:78 },
+    { n:"Brett Lee",         roles:["PAC"], season:88, prime:93 },
+    { n:"Lakshmipathy Balaji",roles:["PAC"], season:80, prime:82 },
+    { n:"Rajat Bhatia",      roles:["AR","PAC"], season:76, prime:78 }
   ]},
-  { team:"South Africa", year:2015, fmt:"odi", trophy:"ODI WC — Semi-Finalists", squad:[
-    { n:"Hashim Amla",       roles:["OPN"], season:92, prime:92 },
-    { n:"Quinton de Kock",   roles:["OPN","WK"], season:86, prime:90 },
-    { n:"Faf du Plessis",    roles:["BAT"], season:86, prime:88 },
-    { n:"AB de Villiers",    roles:["BAT","WK","FIN"], season:96, prime:96 },
-    { n:"Rilee Rossouw",     roles:["BAT"], season:78, prime:80 },
-    { n:"David Miller",      roles:["FIN","BAT"], season:84, prime:86 },
-    { n:"JP Duminy",         roles:["AR","BAT"], season:82, prime:84 },
-    { n:"Vernon Philander",  roles:["AR","PAC"], season:84, prime:86 },
-    { n:"Dale Steyn",        roles:["PAC"], season:92, prime:96 },
-    { n:"Morne Morkel",      roles:["PAC"], season:86, prime:88 },
-    { n:"Imran Tahir",       roles:["SPN"], season:84, prime:86 }
+  { team:"Kolkata Knight Riders", year:2014, fmt:"t20", league:"ipl", trophy:"IPL — Champions", squad:[
+    { n:"Robin Uthappa",     roles:["OPN"], season:86, prime:86 },
+    { n:"Gautam Gambhir",    roles:["OPN"], season:84, prime:88 },
+    { n:"Manish Pandey",     roles:["BAT"], season:84, prime:86 },
+    { n:"Yusuf Pathan",      roles:["AR","FIN"], season:82, prime:84 },
+    { n:"Suryakumar Yadav",  roles:["BAT"], season:78, prime:92 },
+    { n:"Ryan ten Doeschate",roles:["AR","BAT"], season:82, prime:86 },
+    { n:"Piyush Chawla",     roles:["SPN"], season:78, prime:80 },
+    { n:"Sunil Narine",      roles:["SPN","AR"], season:90, prime:92 },
+    { n:"Umesh Yadav",       roles:["PAC"], season:82, prime:84 },
+    { n:"Pat Cummins",       roles:["PAC"], season:78, prime:92 },
+    { n:"Morne Morkel",      roles:["PAC"], season:86, prime:88 }
   ]},
-  { team:"South Africa", year:2024, fmt:"t20", trophy:"T20 WC — Finalists", squad:[
-    { n:"Quinton de Kock",   roles:["WK","OPN"], season:88, prime:90 },
-    { n:"Reeza Hendricks",   roles:["OPN"], season:78, prime:80 },
-    { n:"Aiden Markram",     roles:["BAT","AR"], season:82, prime:84 },
-    { n:"Tristan Stubbs",    roles:["BAT","FIN"], season:80, prime:82 },
-    { n:"Heinrich Klaasen",  roles:["WK","FIN"], season:90, prime:90 },
-    { n:"David Miller",      roles:["FIN","BAT"], season:84, prime:86 },
-    { n:"Marco Jansen",      roles:["AR","PAC"], season:82, prime:84 },
-    { n:"Keshav Maharaj",    roles:["SPN"], season:80, prime:84 },
-    { n:"Tabraiz Shamsi",    roles:["SPN"], season:80, prime:82 },
-    { n:"Kagiso Rabada",     roles:["PAC"], season:90, prime:92 },
-    { n:"Anrich Nortje",     roles:["PAC"], season:88, prime:90 }
+  { team:"Kolkata Knight Riders", year:2024, fmt:"t20", league:"ipl", trophy:"IPL — Champions", squad:[
+    { n:"Phil Salt",         roles:["OPN","WK"], season:86, prime:88 },
+    { n:"Sunil Narine",      roles:["OPN","SPN"], season:90, prime:92 },
+    { n:"Venkatesh Iyer",    roles:["BAT","AR"], season:84, prime:84 },
+    { n:"Shreyas Iyer",      roles:["BAT"], season:88, prime:88 },
+    { n:"Rinku Singh",       roles:["FIN","BAT"], season:88, prime:88 },
+    { n:"Andre Russell",     roles:["AR","FIN"], season:90, prime:92 },
+    { n:"Ramandeep Singh",   roles:["AR"], season:78, prime:80 },
+    { n:"Mitchell Starc",    roles:["PAC"], season:88, prime:92 },
+    { n:"Varun Chakaravarthy",roles:["SPN"], season:88, prime:88 },
+    { n:"Harshit Rana",      roles:["PAC"], season:80, prime:82 },
+    { n:"Vaibhav Arora",     roles:["PAC"], season:78, prime:80 }
   ]},
-
-  /* ============ BANGLADESH ============ */
-  { team:"Bangladesh", year:2007, fmt:"odi", trophy:"ODI WC — Super 8 (beat India)", squad:[
-    { n:"Tamim Iqbal",       roles:["OPN"], season:78, prime:86 },
-    { n:"Shahriar Nafees",   roles:["OPN"], season:74, prime:76 },
-    { n:"Habibul Bashar",    roles:["BAT"], season:78, prime:80 },
-    { n:"Mohammad Ashraful", roles:["BAT"], season:78, prime:82 },
-    { n:"Aftab Ahmed",       roles:["BAT","FIN"], season:74, prime:76 },
-    { n:"Shakib Al Hasan",   roles:["AR","SPN"], season:80, prime:92 },
-    { n:"Mushfiqur Rahim",   roles:["WK"], season:74, prime:88 },
-    { n:"Mashrafe Mortaza",  roles:["PAC","AR"], season:80, prime:84 },
-    { n:"Mohammad Rafique",  roles:["SPN"], season:78, prime:80 },
-    { n:"Abdur Razzak",      roles:["SPN"], season:74, prime:78 },
-    { n:"Syed Rasel",        roles:["PAC"], season:72, prime:74 }
+  { team:"Sunrisers Hyderabad", year:2016, fmt:"t20", league:"ipl", trophy:"IPL — Champions", squad:[
+    { n:"David Warner",      roles:["OPN"], season:92, prime:91 },
+    { n:"Shikhar Dhawan",    roles:["OPN"], season:86, prime:88 },
+    { n:"Yuvraj Singh",      roles:["BAT","AR"], season:82, prime:92 },
+    { n:"Eoin Morgan",       roles:["BAT","FIN"], season:84, prime:90 },
+    { n:"Naman Ojha",        roles:["WK","BAT"], season:78, prime:78 },
+    { n:"Ben Cutting",       roles:["AR","FIN"], season:80, prime:82 },
+    { n:"Moises Henriques",  roles:["AR","BAT"], season:80, prime:82 },
+    { n:"Bhuvneshwar Kumar", roles:["PAC"], season:88, prime:88 },
+    { n:"Mustafizur Rahman", roles:["PAC"], season:88, prime:88 },
+    { n:"Barinder Sran",     roles:["PAC"], season:76, prime:76 },
+    { n:"Karn Sharma",       roles:["SPN"], season:78, prime:78 }
   ]},
-  { team:"Bangladesh", year:2015, fmt:"odi", trophy:"ODI WC — Quarter-Finals", squad:[
-    { n:"Tamim Iqbal",       roles:["OPN"], season:84, prime:86 },
-    { n:"Soumya Sarkar",     roles:["OPN","BAT"], season:78, prime:82 },
-    { n:"Mahmudullah",       roles:["AR","BAT"], season:82, prime:84 },
-    { n:"Mushfiqur Rahim",   roles:["WK","BAT"], season:84, prime:88 },
-    { n:"Shakib Al Hasan",   roles:["AR","SPN"], season:88, prime:92 },
-    { n:"Sabbir Rahman",     roles:["BAT"], season:76, prime:78 },
-    { n:"Nasir Hossain",     roles:["AR","FIN"], season:76, prime:78 },
-    { n:"Mashrafe Mortaza",  roles:["PAC","AR"], season:82, prime:84 },
-    { n:"Rubel Hossain",     roles:["PAC"], season:80, prime:82 },
-    { n:"Taskin Ahmed",      roles:["PAC"], season:78, prime:84 },
-    { n:"Arafat Sunny",      roles:["SPN"], season:74, prime:76 }
+  { team:"Rajasthan Royals", year:2008, fmt:"t20", league:"ipl", trophy:"IPL — Champions (inaugural)", squad:[
+    { n:"Graeme Smith",      roles:["OPN"], season:88, prime:90 },
+    { n:"Yusuf Pathan",      roles:["AR","FIN"], season:84, prime:84 },
+    { n:"Shane Watson",      roles:["AR","BAT"], season:86, prime:88 },
+    { n:"Mahesh Rawat",      roles:["WK"], season:74, prime:74 },
+    { n:"Ravindra Jadeja",   roles:["AR","SPN"], season:78, prime:88 },
+    { n:"Shane Warne",       roles:["SPN"], season:90, prime:96 },
+    { n:"Sohail Tanvir",     roles:["PAC","AR"], season:84, prime:84 },
+    { n:"Munaf Patel",       roles:["PAC"], season:78, prime:80 },
+    { n:"Siddharth Trivedi", roles:["PAC"], season:76, prime:78 },
+    { n:"Niraj Patel",       roles:["BAT"], season:72, prime:72 },
+    { n:"Dimitri Mascarenhas",roles:["AR","PAC"], season:78, prime:80 }
   ]},
-  { team:"Bangladesh", year:2019, fmt:"odi", trophy:"ODI WC — Group Stage", squad:[
-    { n:"Tamim Iqbal",       roles:["OPN"], season:84, prime:86 },
-    { n:"Soumya Sarkar",     roles:["OPN","AR"], season:78, prime:80 },
-    { n:"Shakib Al Hasan",   roles:["AR","SPN"], season:92, prime:92 },
-    { n:"Mushfiqur Rahim",   roles:["WK","BAT"], season:86, prime:88 },
-    { n:"Mahmudullah",       roles:["AR","FIN"], season:82, prime:84 },
-    { n:"Liton Das",         roles:["WK","BAT"], season:78, prime:84 },
-    { n:"Mosaddek Hossain",  roles:["AR","BAT"], season:74, prime:76 },
-    { n:"Mehidy Hasan",      roles:["AR","SPN"], season:78, prime:82 },
-    { n:"Mashrafe Mortaza",  roles:["PAC","AR"], season:78, prime:84 },
-    { n:"Mohammad Saifuddin",roles:["AR","PAC"], season:76, prime:80 },
-    { n:"Mustafizur Rahman", roles:["PAC"], season:84, prime:86 }
-  ]},
-
-  /* ============ AFGHANISTAN ============ */
-  { team:"Afghanistan", year:2019, fmt:"odi", trophy:"ODI WC — Debut Group Stage", squad:[
-    { n:"Mohammad Shahzad",  roles:["OPN","WK"], season:80, prime:84 },
-    { n:"Hazratullah Zazai", roles:["OPN"], season:76, prime:80 },
-    { n:"Rahmat Shah",       roles:["BAT"], season:80, prime:84 },
-    { n:"Hashmatullah Shahidi",roles:["BAT"], season:78, prime:84 },
-    { n:"Asghar Afghan",     roles:["BAT","FIN"], season:78, prime:80 },
-    { n:"Najibullah Zadran", roles:["FIN","BAT"], season:78, prime:82 },
-    { n:"Mohammad Nabi",     roles:["AR"], season:84, prime:86 },
+  { team:"Gujarat Titans", year:2022, fmt:"t20", league:"ipl", trophy:"IPL — Champions (debut)", squad:[
+    { n:"Shubman Gill",      roles:["OPN"], season:86, prime:88 },
+    { n:"Wriddhiman Saha",   roles:["OPN","WK"], season:80, prime:82 },
+    { n:"Hardik Pandya",     roles:["AR","FIN"], season:88, prime:88 },
+    { n:"David Miller",      roles:["FIN","BAT"], season:86, prime:86 },
+    { n:"Rahul Tewatia",     roles:["AR","FIN"], season:80, prime:80 },
+    { n:"Abhinav Manohar",   roles:["BAT"], season:76, prime:76 },
     { n:"Rashid Khan",       roles:["AR","SPN"], season:92, prime:92 },
-    { n:"Mujeeb Ur Rahman",  roles:["SPN"], season:84, prime:86 },
-    { n:"Hamid Hassan",      roles:["PAC"], season:74, prime:78 },
-    { n:"Aftab Alam",        roles:["PAC"], season:72, prime:76 }
+    { n:"Mohammed Shami",    roles:["PAC"], season:88, prime:90 },
+    { n:"Lockie Ferguson",   roles:["PAC"], season:84, prime:86 },
+    { n:"Yash Dayal",        roles:["PAC"], season:78, prime:82 },
+    { n:"Alzarri Joseph",    roles:["PAC"], season:82, prime:84 }
   ]},
-  { team:"Afghanistan", year:2023, fmt:"odi", trophy:"ODI WC — Beat ENG, PAK, SL", squad:[
-    { n:"Rahmanullah Gurbaz",roles:["OPN","WK"], season:84, prime:86 },
-    { n:"Ibrahim Zadran",    roles:["OPN"], season:82, prime:84 },
-    { n:"Rahmat Shah",       roles:["BAT"], season:82, prime:84 },
-    { n:"Hashmatullah Shahidi",roles:["BAT"], season:84, prime:84 },
-    { n:"Azmatullah Omarzai",roles:["AR","FIN"], season:80, prime:82 },
-    { n:"Mohammad Nabi",     roles:["AR"], season:80, prime:86 },
+
+  /* ============ PSL ============ */
+  { team:"Islamabad United", year:2018, fmt:"t20", league:"psl", trophy:"PSL — Champions", squad:[
+    { n:"Luke Ronchi",       roles:["OPN","WK"], season:82, prime:82 },
+    { n:"Sahibzada Farhan",  roles:["OPN"], season:76, prime:78 },
+    { n:"Hussain Talat",     roles:["BAT","AR"], season:78, prime:78 },
+    { n:"JP Duminy",         roles:["BAT"], season:84, prime:84 },
+    { n:"Asif Ali",          roles:["FIN"], season:80, prime:82 },
+    { n:"Faheem Ashraf",     roles:["AR","PAC"], season:80, prime:82 },
+    { n:"Shadab Khan",       roles:["AR","SPN"], season:84, prime:86 },
+    { n:"Mohammad Sami",     roles:["PAC"], season:82, prime:84 },
+    { n:"Andre Russell",     roles:["AR","FIN"], season:86, prime:92 },
+    { n:"Rumman Raees",      roles:["PAC"], season:78, prime:78 },
+    { n:"Mohammad Nawaz",    roles:["AR","SPN"], season:78, prime:80 }
+  ]},
+  { team:"Lahore Qalandars", year:2022, fmt:"t20", league:"psl", trophy:"PSL — Champions", squad:[
+    { n:"Fakhar Zaman",      roles:["OPN"], season:84, prime:86 },
+    { n:"Abdullah Shafique", roles:["OPN"], season:80, prime:84 },
+    { n:"Kamran Ghulam",     roles:["BAT"], season:78, prime:78 },
+    { n:"Mohammad Hafeez",   roles:["AR","BAT"], season:80, prime:84 },
+    { n:"Harry Brook",       roles:["BAT"], season:82, prime:90 },
+    { n:"Tim David",         roles:["FIN"], season:82, prime:86 },
+    { n:"Shaheen Afridi",    roles:["PAC"], season:90, prime:92 },
+    { n:"David Wiese",       roles:["AR","PAC"], season:82, prime:84 },
     { n:"Rashid Khan",       roles:["AR","SPN"], season:90, prime:92 },
-    { n:"Mujeeb Ur Rahman",  roles:["SPN"], season:84, prime:86 },
-    { n:"Noor Ahmad",        roles:["SPN"], season:80, prime:82 },
-    { n:"Naveen-ul-Haq",     roles:["PAC"], season:80, prime:84 },
-    { n:"Fazalhaq Farooqi",  roles:["PAC"], season:80, prime:82 }
+    { n:"Haris Rauf",        roles:["PAC"], season:84, prime:86 },
+    { n:"Zaman Khan",        roles:["PAC"], season:76, prime:78 }
   ]},
-  { team:"Afghanistan", year:2024, fmt:"t20", trophy:"T20 WC — Semi-Finalists", squad:[
-    { n:"Rahmanullah Gurbaz",roles:["OPN","WK"], season:84, prime:86 },
-    { n:"Ibrahim Zadran",    roles:["OPN"], season:82, prime:84 },
-    { n:"Gulbadin Naib",     roles:["AR"], season:76, prime:78 },
-    { n:"Azmatullah Omarzai",roles:["AR","FIN"], season:80, prime:82 },
-    { n:"Mohammad Nabi",     roles:["AR"], season:80, prime:86 },
-    { n:"Najibullah Zadran", roles:["FIN","BAT"], season:78, prime:82 },
-    { n:"Karim Janat",       roles:["AR"], season:76, prime:78 },
-    { n:"Rashid Khan",       roles:["AR","SPN"], season:92, prime:92 },
-    { n:"Noor Ahmad",        roles:["SPN"], season:82, prime:82 },
-    { n:"Naveen-ul-Haq",     roles:["PAC"], season:82, prime:84 },
-    { n:"Fazalhaq Farooqi",  roles:["PAC"], season:82, prime:82 }
+  { team:"Lahore Qalandars", year:2023, fmt:"t20", league:"psl", trophy:"PSL — Champions (back-to-back)", squad:[
+    { n:"Fakhar Zaman",      roles:["OPN"], season:84, prime:86 },
+    { n:"Abdullah Shafique", roles:["BAT"], season:80, prime:84 },
+    { n:"Sahibzada Farhan",  roles:["BAT"], season:78, prime:78 },
+    { n:"Mohammad Hafeez",   roles:["AR","SPN"], season:78, prime:84 },
+    { n:"Sikandar Raza",     roles:["AR"], season:84, prime:84 },
+    { n:"Shaheen Afridi",    roles:["PAC"], season:90, prime:92 },
+    { n:"David Wiese",       roles:["AR","FIN"], season:82, prime:84 },
+    { n:"Rashid Khan",       roles:["AR","SPN"], season:90, prime:92 },
+    { n:"Haris Rauf",        roles:["PAC"], season:86, prime:86 },
+    { n:"Zaman Khan",        roles:["PAC"], season:78, prime:80 },
+    { n:"Mirza Tahir Baig",  roles:["WK","BAT"], season:74, prime:74 }
+  ]},
+  { team:"Multan Sultans", year:2021, fmt:"t20", league:"psl", trophy:"PSL — Champions", squad:[
+    { n:"Mohammad Rizwan",   roles:["OPN","WK"], season:88, prime:90 },
+    { n:"Shan Masood",       roles:["OPN"], season:80, prime:82 },
+    { n:"Sohaib Maqsood",    roles:["BAT"], season:80, prime:80 },
+    { n:"Rilee Rossouw",     roles:["BAT","FIN"], season:82, prime:84 },
+    { n:"James Vince",       roles:["BAT"], season:80, prime:82 },
+    { n:"Asif Ali",          roles:["FIN"], season:80, prime:82 },
+    { n:"Khushdil Shah",     roles:["AR","FIN"], season:78, prime:78 },
+    { n:"Shahnawaz Dahani",  roles:["PAC"], season:82, prime:84 },
+    { n:"Imran Tahir",       roles:["SPN"], season:84, prime:88 },
+    { n:"Sohail Tanvir",     roles:["PAC","AR"], season:78, prime:84 },
+    { n:"Imran Khan",        roles:["PAC"], season:76, prime:76 }
+  ]},
+  { team:"Peshawar Zalmi", year:2017, fmt:"t20", league:"psl", trophy:"PSL — Champions", squad:[
+    { n:"Kamran Akmal",      roles:["OPN","WK"], season:82, prime:84 },
+    { n:"Mohammad Hafeez",   roles:["OPN","AR"], season:84, prime:84 },
+    { n:"Tamim Iqbal",       roles:["OPN"], season:84, prime:86 },
+    { n:"Shahid Afridi",     roles:["AR","SPN"], season:84, prime:90 },
+    { n:"Darren Sammy",      roles:["AR","FIN"], season:78, prime:80 },
+    { n:"Eoin Morgan",       roles:["BAT","FIN"], season:86, prime:90 },
+    { n:"Mohammad Asghar",   roles:["SPN"], season:74, prime:74 },
+    { n:"Hasan Ali",         roles:["PAC"], season:84, prime:86 },
+    { n:"Wahab Riaz",        roles:["PAC"], season:84, prime:86 },
+    { n:"Iftikhar Ahmed",    roles:["AR","BAT"], season:80, prime:82 },
+    { n:"Mohammad Asghar",   roles:["SPN","AR"], season:72, prime:74 }
+  ]},
+  { team:"Karachi Kings", year:2020, fmt:"t20", league:"psl", trophy:"PSL — Champions", squad:[
+    { n:"Babar Azam",        roles:["OPN"], season:92, prime:92 },
+    { n:"Sharjeel Khan",     roles:["OPN"], season:80, prime:82 },
+    { n:"Cameron Delport",   roles:["BAT"], season:78, prime:78 },
+    { n:"Alex Hales",        roles:["BAT"], season:84, prime:88 },
+    { n:"Imad Wasim",        roles:["AR","SPN"], season:82, prime:84 },
+    { n:"Chadwick Walton",   roles:["WK","FIN"], season:76, prime:78 },
+    { n:"Mohammad Amir",     roles:["PAC"], season:84, prime:90 },
+    { n:"Waqas Maqsood",     roles:["PAC"], season:74, prime:76 },
+    { n:"Arshad Iqbal",      roles:["PAC"], season:76, prime:78 },
+    { n:"Mohammad Nabi",     roles:["AR"], season:82, prime:86 },
+    { n:"Aamer Yamin",       roles:["AR"], season:76, prime:76 }
   ]},
 
-  /* ============ SCOTLAND ============ */
-  { team:"Scotland", year:2015, fmt:"odi", trophy:"ODI WC — Group Stage", squad:[
-    { n:"Kyle Coetzer",      roles:["OPN"], season:78, prime:80 },
-    { n:"Calum MacLeod",     roles:["BAT"], season:78, prime:82 },
-    { n:"Preston Mommsen",   roles:["BAT"], season:74, prime:76 },
-    { n:"Matt Machan",       roles:["BAT"], season:72, prime:74 },
-    { n:"Richie Berrington", roles:["BAT","AR"], season:76, prime:80 },
-    { n:"Matthew Cross",     roles:["WK"], season:70, prime:74 },
-    { n:"Majid Haq",         roles:["SPN"], season:72, prime:74 },
-    { n:"Josh Davey",        roles:["PAC","AR"], season:74, prime:78 },
-    { n:"Iain Wardlaw",      roles:["PAC"], season:70, prime:72 },
-    { n:"Alasdair Evans",    roles:["PAC"], season:70, prime:72 },
-    { n:"Rob Taylor",        roles:["AR"], season:70, prime:72 }
+  /* ============ BIG BASH LEAGUE ============ */
+  { team:"Perth Scorchers", year:2015, fmt:"t20", league:"bbl", trophy:"BBL — Champions", squad:[
+    { n:"Shaun Marsh",       roles:["OPN"], season:86, prime:86 },
+    { n:"Michael Klinger",   roles:["OPN"], season:80, prime:82 },
+    { n:"Mike Hussey",       roles:["BAT"], season:84, prime:90 },
+    { n:"Adam Voges",        roles:["BAT"], season:82, prime:82 },
+    { n:"Mitchell Marsh",    roles:["AR"], season:80, prime:88 },
+    { n:"Sam Whiteman",      roles:["WK"], season:76, prime:78 },
+    { n:"Ashton Agar",       roles:["AR","SPN"], season:78, prime:80 },
+    { n:"Brad Hogg",         roles:["SPN"], season:78, prime:80 },
+    { n:"Jason Behrendorff", roles:["PAC"], season:82, prime:86 },
+    { n:"Yasir Arafat",      roles:["AR","PAC"], season:76, prime:76 },
+    { n:"Andrew Tye",        roles:["PAC"], season:82, prime:86 }
   ]},
-  { team:"Scotland", year:2021, fmt:"t20", trophy:"T20 WC — Super 12s", squad:[
-    { n:"Kyle Coetzer",      roles:["OPN"], season:76, prime:80 },
-    { n:"George Munsey",     roles:["OPN"], season:78, prime:80 },
-    { n:"Calum MacLeod",     roles:["BAT"], season:76, prime:82 },
-    { n:"Richie Berrington", roles:["BAT","AR"], season:78, prime:80 },
-    { n:"Matthew Cross",     roles:["WK"], season:74, prime:76 },
-    { n:"Michael Leask",     roles:["AR"], season:74, prime:76 },
-    { n:"Chris Greaves",     roles:["AR","SPN"], season:74, prime:76 },
-    { n:"Mark Watt",         roles:["SPN"], season:78, prime:80 },
-    { n:"Safyaan Sharif",    roles:["PAC"], season:74, prime:76 },
-    { n:"Brad Wheal",        roles:["PAC"], season:76, prime:78 },
-    { n:"Josh Davey",        roles:["PAC"], season:74, prime:78 }
+  { team:"Perth Scorchers", year:2022, fmt:"t20", league:"bbl", trophy:"BBL — Champions", squad:[
+    { n:"Colin Munro",       roles:["OPN"], season:84, prime:86 },
+    { n:"Kurtis Patterson",  roles:["OPN"], season:78, prime:78 },
+    { n:"Laurie Evans",      roles:["BAT"], season:82, prime:82 },
+    { n:"Ashton Turner",     roles:["AR","BAT"], season:80, prime:82 },
+    { n:"Mitchell Marsh",    roles:["AR","BAT"], season:88, prime:88 },
+    { n:"Aaron Hardie",      roles:["AR"], season:78, prime:80 },
+    { n:"Cameron Green",     roles:["AR","PAC"], season:82, prime:84 },
+    { n:"Andrew Tye",        roles:["PAC"], season:84, prime:86 },
+    { n:"Jason Behrendorff", roles:["PAC"], season:84, prime:86 },
+    { n:"Peter Hatzoglou",   roles:["SPN"], season:80, prime:80 },
+    { n:"Josh Inglis",       roles:["WK","BAT"], season:84, prime:84 }
+  ]},
+  { team:"Sydney Sixers", year:2020, fmt:"t20", league:"bbl", trophy:"BBL — Champions", squad:[
+    { n:"Josh Philippe",     roles:["OPN","WK"], season:84, prime:86 },
+    { n:"Daniel Hughes",     roles:["OPN"], season:80, prime:80 },
+    { n:"James Vince",       roles:["BAT"], season:84, prime:84 },
+    { n:"Moises Henriques",  roles:["AR","BAT"], season:82, prime:84 },
+    { n:"Jordan Silk",       roles:["BAT","FIN"], season:80, prime:80 },
+    { n:"Tom Curran",        roles:["AR","PAC"], season:82, prime:84 },
+    { n:"Sean Abbott",       roles:["PAC","AR"], season:82, prime:84 },
+    { n:"Jackson Bird",      roles:["PAC"], season:80, prime:82 },
+    { n:"Steve O'Keefe",     roles:["SPN"], season:80, prime:82 },
+    { n:"Ben Manenti",       roles:["AR","SPN"], season:76, prime:78 },
+    { n:"Daniel Christian",  roles:["AR","FIN"], season:80, prime:82 }
+  ]},
+  { team:"Sydney Sixers", year:2021, fmt:"t20", league:"bbl", trophy:"BBL — Champions (b2b)", squad:[
+    { n:"Daniel Hughes",     roles:["OPN"], season:80, prime:80 },
+    { n:"Josh Philippe",     roles:["OPN","WK"], season:86, prime:86 },
+    { n:"Moises Henriques",  roles:["AR","BAT"], season:82, prime:84 },
+    { n:"James Vince",       roles:["BAT"], season:82, prime:84 },
+    { n:"Jordan Silk",       roles:["BAT"], season:80, prime:80 },
+    { n:"Daniel Christian",  roles:["AR","FIN"], season:80, prime:82 },
+    { n:"Carlos Brathwaite", roles:["AR","FIN"], season:80, prime:84 },
+    { n:"Sean Abbott",       roles:["PAC"], season:84, prime:84 },
+    { n:"Steve O'Keefe",     roles:["SPN"], season:80, prime:82 },
+    { n:"Hayden Kerr",       roles:["AR","PAC"], season:78, prime:80 },
+    { n:"Nathan Lyon",       roles:["SPN"], season:86, prime:86 }
+  ]},
+  { team:"Brisbane Heat", year:2013, fmt:"t20", league:"bbl", trophy:"BBL — Champions", squad:[
+    { n:"Brendon McCullum",  roles:["OPN","WK"], season:88, prime:90 },
+    { n:"Joe Burns",         roles:["OPN"], season:80, prime:82 },
+    { n:"Chris Lynn",        roles:["BAT","FIN"], season:80, prime:86 },
+    { n:"James Hopes",       roles:["AR","PAC"], season:80, prime:80 },
+    { n:"Daniel Christian",  roles:["AR","FIN"], season:80, prime:82 },
+    { n:"Luke Pomersbach",   roles:["BAT"], season:76, prime:78 },
+    { n:"Ben Cutting",       roles:["AR","PAC"], season:80, prime:82 },
+    { n:"Nathan Hauritz",    roles:["SPN"], season:80, prime:80 },
+    { n:"Ryan Harris",       roles:["PAC"], season:84, prime:86 },
+    { n:"Cameron Gannon",    roles:["PAC"], season:76, prime:76 },
+    { n:"Brendan Drew",      roles:["AR","PAC"], season:74, prime:76 }
+  ]},
+  { team:"Hobart Hurricanes", year:2024, fmt:"t20", league:"bbl", trophy:"BBL — Champions (first title)", squad:[
+    { n:"Caleb Jewell",      roles:["OPN"], season:78, prime:80 },
+    { n:"Ben McDermott",     roles:["OPN","WK"], season:82, prime:82 },
+    { n:"Mitchell Owen",     roles:["AR","BAT"], season:84, prime:84 },
+    { n:"Tim David",         roles:["FIN","BAT"], season:84, prime:86 },
+    { n:"Matthew Wade",      roles:["WK","FIN"], season:80, prime:84 },
+    { n:"Nikhil Chaudhary",  roles:["AR","SPN"], season:78, prime:78 },
+    { n:"Chris Jordan",      roles:["PAC"], season:82, prime:84 },
+    { n:"Riley Meredith",    roles:["PAC"], season:82, prime:82 },
+    { n:"Nathan Ellis",      roles:["PAC"], season:84, prime:84 },
+    { n:"Peter Siddle",      roles:["PAC"], season:78, prime:82 },
+    { n:"Paddy Dooley",      roles:["SPN"], season:76, prime:76 }
   ]},
 
-  /* ============ NETHERLANDS ============ */
-  { team:"Netherlands", year:2011, fmt:"odi", trophy:"ODI WC — Group Stage", squad:[
-    { n:"Ryan ten Doeschate",roles:["AR","BAT"], season:84, prime:86 },
-    { n:"Wesley Barresi",    roles:["OPN","BAT"], season:72, prime:76 },
-    { n:"Eric Szwarczynski", roles:["BAT"], season:70, prime:72 },
-    { n:"Tom de Grooth",     roles:["BAT"], season:70, prime:72 },
-    { n:"Bas Zuiderent",     roles:["BAT"], season:72, prime:74 },
-    { n:"Atse Buurman",      roles:["WK"], season:68, prime:70 },
-    { n:"Peter Borren",      roles:["AR"], season:74, prime:76 },
-    { n:"Pieter Seelaar",    roles:["SPN","AR"], season:72, prime:76 },
-    { n:"Mudassar Bukhari",  roles:["AR","PAC"], season:72, prime:74 },
-    { n:"Berend Westdijk",   roles:["PAC"], season:70, prime:72 },
-    { n:"Bernard Loots",     roles:["PAC"], season:68, prime:70 }
+  /* ============ CARIBBEAN PREMIER LEAGUE (for CL) ============ */
+  { team:"Trinbago Knight Riders", year:2018, fmt:"t20", league:"cpl", trophy:"CPL — Champions", squad:[
+    { n:"Brendon McCullum",  roles:["OPN","WK"], season:86, prime:90 },
+    { n:"Sunil Narine",      roles:["OPN","SPN"], season:88, prime:92 },
+    { n:"Colin Munro",       roles:["BAT","OPN"], season:84, prime:86 },
+    { n:"Dwayne Bravo",      roles:["AR","FIN"], season:84, prime:88 },
+    { n:"Darren Bravo",      roles:["BAT"], season:80, prime:82 },
+    { n:"Kieron Pollard",    roles:["AR","FIN"], season:88, prime:90 },
+    { n:"Denesh Ramdin",     roles:["WK","BAT"], season:78, prime:80 },
+    { n:"Kevon Cooper",      roles:["AR"], season:76, prime:78 },
+    { n:"Khary Pierre",      roles:["SPN"], season:76, prime:78 },
+    { n:"Ali Khan",          roles:["PAC"], season:82, prime:84 },
+    { n:"Fawad Ahmed",       roles:["SPN"], season:78, prime:80 }
   ]},
-  { team:"Netherlands", year:2023, fmt:"odi", trophy:"ODI WC — Beat SA", squad:[
-    { n:"Vikramjit Singh",   roles:["OPN"], season:74, prime:76 },
-    { n:"Max O'Dowd",        roles:["OPN"], season:76, prime:80 },
-    { n:"Bas de Leede",      roles:["AR","BAT"], season:80, prime:82 },
-    { n:"Sybrand Engelbrecht",roles:["BAT"], season:74, prime:76 },
-    { n:"Scott Edwards",     roles:["WK","BAT"], season:80, prime:82 },
-    { n:"Wesley Barresi",    roles:["BAT"], season:72, prime:74 },
-    { n:"Teja Nidamanuru",   roles:["BAT","FIN"], season:74, prime:78 },
-    { n:"Logan van Beek",    roles:["AR","PAC"], season:80, prime:82 },
-    { n:"Roelof van der Merwe",roles:["AR","SPN"], season:78, prime:82 },
-    { n:"Aryan Dutt",        roles:["SPN"], season:72, prime:74 },
-    { n:"Bas van Meekeren",  roles:["PAC"], season:72, prime:74 }
+  { team:"Trinbago Knight Riders", year:2020, fmt:"t20", league:"cpl", trophy:"CPL — Champions (unbeaten)", squad:[
+    { n:"Sunil Narine",      roles:["OPN","SPN"], season:90, prime:92 },
+    { n:"Lendl Simmons",     roles:["OPN"], season:80, prime:82 },
+    { n:"Colin Munro",       roles:["BAT"], season:82, prime:86 },
+    { n:"Darren Bravo",      roles:["BAT"], season:78, prime:82 },
+    { n:"Kieron Pollard",    roles:["AR","FIN"], season:88, prime:90 },
+    { n:"Tion Webster",      roles:["BAT"], season:76, prime:76 },
+    { n:"Tim Seifert",       roles:["WK","BAT"], season:80, prime:80 },
+    { n:"Khary Pierre",      roles:["SPN"], season:78, prime:80 },
+    { n:"Jayden Seales",     roles:["PAC"], season:78, prime:80 },
+    { n:"Pravin Tambe",      roles:["SPN"], season:76, prime:78 },
+    { n:"Ali Khan",          roles:["PAC"], season:82, prime:84 }
+  ]},
+  { team:"Guyana Amazon Warriors", year:2023, fmt:"t20", league:"cpl", trophy:"CPL — Champions", squad:[
+    { n:"Shai Hope",         roles:["OPN","WK"], season:82, prime:84 },
+    { n:"Saim Ayub",         roles:["OPN"], season:78, prime:82 },
+    { n:"Rahmanullah Gurbaz",roles:["WK","OPN"], season:84, prime:86 },
+    { n:"Heinrich Klaasen",  roles:["WK","FIN"], season:90, prime:92 },
+    { n:"Shimron Hetmyer",   roles:["BAT","FIN"], season:84, prime:86 },
+    { n:"Romario Shepherd",  roles:["AR","PAC"], season:82, prime:84 },
+    { n:"Imran Tahir",       roles:["SPN"], season:84, prime:88 },
+    { n:"Dwaine Pretorius",  roles:["AR","PAC"], season:82, prime:84 },
+    { n:"Tabraiz Shamsi",    roles:["SPN"], season:84, prime:86 },
+    { n:"Junior Sinclair",   roles:["PAC"], season:74, prime:76 },
+    { n:"Keemo Paul",        roles:["AR","PAC"], season:78, prime:80 }
+  ]},
+
+  /* ============ T20 BLAST (for CL) ============ */
+  { team:"Notts Outlaws", year:2017, fmt:"t20", league:"blast", trophy:"T20 Blast — Champions", squad:[
+    { n:"Alex Hales",        roles:["OPN"], season:88, prime:88 },
+    { n:"Riki Wessels",      roles:["OPN","WK"], season:80, prime:80 },
+    { n:"Michael Lumb",      roles:["OPN"], season:78, prime:80 },
+    { n:"Brendan Taylor",    roles:["BAT","WK"], season:78, prime:82 },
+    { n:"Samit Patel",       roles:["AR","SPN"], season:78, prime:80 },
+    { n:"Daniel Christian",  roles:["AR","FIN"], season:80, prime:82 },
+    { n:"Steven Mullaney",   roles:["AR"], season:78, prime:80 },
+    { n:"Luke Wood",         roles:["PAC"], season:78, prime:80 },
+    { n:"Harry Gurney",      roles:["PAC"], season:80, prime:82 },
+    { n:"Jake Ball",         roles:["PAC"], season:80, prime:82 },
+    { n:"Matthew Carter",    roles:["SPN"], season:76, prime:78 }
+  ]},
+  { team:"Birmingham Bears", year:2014, fmt:"t20", league:"blast", trophy:"T20 Blast — Champions", squad:[
+    { n:"Ian Bell",          roles:["OPN"], season:86, prime:88 },
+    { n:"Varun Chopra",      roles:["OPN"], season:80, prime:82 },
+    { n:"William Porterfield",roles:["BAT"], season:78, prime:80 },
+    { n:"Laurie Evans",      roles:["BAT"], season:78, prime:82 },
+    { n:"Tim Ambrose",       roles:["WK","BAT"], season:78, prime:80 },
+    { n:"Rikki Clarke",      roles:["AR","PAC"], season:80, prime:82 },
+    { n:"Ateeq Javid",       roles:["BAT","AR"], season:76, prime:76 },
+    { n:"Jeetan Patel",      roles:["SPN"], season:82, prime:84 },
+    { n:"Boyd Rankin",       roles:["PAC"], season:80, prime:82 },
+    { n:"Chris Woakes",      roles:["AR","PAC"], season:82, prime:88 },
+    { n:"Recordo Gordon",    roles:["PAC"], season:74, prime:76 }
+  ]},
+  { team:"Hampshire Hawks", year:2010, fmt:"t20", league:"blast", trophy:"T20 Blast — Champions", squad:[
+    { n:"Michael Lumb",      roles:["OPN"], season:78, prime:80 },
+    { n:"Jimmy Adams",       roles:["OPN"], season:76, prime:78 },
+    { n:"Sean Ervine",       roles:["AR","BAT"], season:78, prime:80 },
+    { n:"Neil McKenzie",     roles:["BAT"], season:80, prime:82 },
+    { n:"Dominic Cork",      roles:["AR","PAC"], season:78, prime:82 },
+    { n:"Chris Benham",      roles:["BAT","FIN"], season:76, prime:76 },
+    { n:"Nic Pothas",        roles:["WK","BAT"], season:78, prime:80 },
+    { n:"Imran Tahir",       roles:["SPN"], season:82, prime:88 },
+    { n:"Dimitri Mascarenhas",roles:["AR","PAC"], season:78, prime:80 },
+    { n:"David Griffiths",   roles:["PAC"], season:74, prime:76 },
+    { n:"Liam Dawson",       roles:["AR","SPN"], season:78, prime:80 }
   ]}
 ];
 
-/* =========================================================
-   OPPONENTS — added Bangladesh, Afghanistan, Scotland, Netherlands
-   ========================================================= */
-const OPPONENTS = [
-  { n:"Australia",    wtc:92, odi:92, t20:90 },
-  { n:"India",        wtc:93, odi:93, t20:92 },
-  { n:"England",      wtc:91, odi:90, t20:90 },
-  { n:"New Zealand",  wtc:88, odi:88, t20:86 },
-  { n:"Pakistan",     wtc:90, odi:90, t20:90 },
-  { n:"South Africa", wtc:91, odi:91, t20:89 },
-  { n:"West Indies",  wtc:93, odi:93, t20:91 },
-  { n:"Sri Lanka",    wtc:88, odi:90, t20:88 },
-  { n:"Bangladesh",   wtc:78, odi:82, t20:80 },
-  { n:"Afghanistan",  wtc:74, odi:82, t20:86 },
-  { n:"Scotland",     wtc:70, odi:74, t20:76 },
-  { n:"Netherlands",  wtc:70, odi:74, t20:76 }
-];
+// Opponents = list of all team-seasons (mapped to use team rating)
+const OPPONENTS = TEAM_SEASONS.map(ts => ({
+  n: `${ts.team} ${ts.year}`,
+  team: ts.team,
+  year: ts.year,
+  league: ts.league,
+  squad: ts.squad,
+  wtc: 0, odi: 0,
+  t20: Math.round(ts.squad.reduce((a,b)=>a+b.season,0) / ts.squad.length)
+}));
 
-const OPP_XI = {
-  "Australia": [
-    { n:"Matthew Hayden",    roles:["OPN"], season:93, prime:93 },
-    { n:"Adam Gilchrist",    roles:["WK","OPN"], season:92, prime:92 },
-    { n:"Ricky Ponting",     roles:["BAT"], season:94, prime:94 },
-    { n:"Steve Smith",       roles:["BAT"], season:94, prime:94 },
-    { n:"Steve Waugh",       roles:["BAT","AR"], season:90, prime:90 },
-    { n:"Michael Bevan",     roles:["FIN","BAT"], season:91, prime:91 },
-    { n:"Shane Warne",       roles:["SPN"], season:96, prime:96 },
-    { n:"Glenn McGrath",     roles:["PAC"], season:96, prime:96 },
-    { n:"Dennis Lillee",     roles:["PAC"], season:95, prime:95 },
-    { n:"Brett Lee",         roles:["PAC"], season:93, prime:93 },
-    { n:"Pat Cummins",       roles:["PAC","AR"], season:92, prime:92 }
-  ],
-  "India": [
-    { n:"Virender Sehwag",   roles:["OPN"], season:92, prime:92 },
-    { n:"Sachin Tendulkar",  roles:["OPN","BAT"], season:96, prime:96 },
-    { n:"Rahul Dravid",      roles:["BAT"], season:92, prime:92 },
-    { n:"Virat Kohli",       roles:["BAT"], season:95, prime:95 },
-    { n:"Sourav Ganguly",    roles:["BAT"], season:88, prime:88 },
-    { n:"MS Dhoni",          roles:["WK","FIN"], season:90, prime:90 },
-    { n:"Kapil Dev",         roles:["AR","PAC"], season:90, prime:90 },
-    { n:"Anil Kumble",       roles:["SPN"], season:90, prime:90 },
-    { n:"R Ashwin",          roles:["SPN","AR"], season:90, prime:90 },
-    { n:"Zaheer Khan",       roles:["PAC"], season:88, prime:88 },
-    { n:"Jasprit Bumrah",    roles:["PAC"], season:96, prime:96 }
-  ],
-  "England": [
-    { n:"Jack Hobbs",        roles:["OPN"], season:90, prime:90 },
-    { n:"Len Hutton",        roles:["OPN"], season:90, prime:90 },
-    { n:"Joe Root",          roles:["BAT"], season:92, prime:92 },
-    { n:"Kevin Pietersen",   roles:["BAT"], season:92, prime:92 },
-    { n:"Ben Stokes",        roles:["AR"], season:92, prime:92 },
-    { n:"Jos Buttler",       roles:["WK","FIN"], season:92, prime:92 },
-    { n:"Ian Botham",        roles:["AR","PAC"], season:92, prime:92 },
-    { n:"James Anderson",    roles:["PAC"], season:92, prime:92 },
-    { n:"Stuart Broad",      roles:["PAC","AR"], season:90, prime:90 },
-    { n:"Graeme Swann",      roles:["SPN"], season:92, prime:92 },
-    { n:"Fred Trueman",      roles:["PAC"], season:90, prime:90 }
-  ],
-  "New Zealand": [
-    { n:"Glenn Turner",      roles:["OPN"], season:84, prime:84 },
-    { n:"Devon Conway",      roles:["OPN"], season:86, prime:86 },
-    { n:"Kane Williamson",   roles:["BAT"], season:93, prime:93 },
-    { n:"Martin Crowe",      roles:["BAT"], season:90, prime:90 },
-    { n:"Ross Taylor",       roles:["BAT"], season:90, prime:90 },
-    { n:"Brendon McCullum",  roles:["WK","FIN"], season:88, prime:88 },
-    { n:"Daniel Vettori",    roles:["SPN","AR"], season:88, prime:88 },
-    { n:"Richard Hadlee",    roles:["AR","PAC"], season:96, prime:96 },
-    { n:"Trent Boult",       roles:["PAC"], season:90, prime:90 },
-    { n:"Tim Southee",       roles:["PAC"], season:90, prime:90 },
-    { n:"Kyle Jamieson",     roles:["PAC","AR"], season:88, prime:88 }
-  ],
-  "Pakistan": [
-    { n:"Saeed Anwar",       roles:["OPN"], season:88, prime:88 },
-    { n:"Hanif Mohammad",    roles:["OPN"], season:86, prime:86 },
-    { n:"Javed Miandad",     roles:["BAT"], season:94, prime:94 },
-    { n:"Inzamam-ul-Haq",    roles:["BAT"], season:92, prime:92 },
-    { n:"Younis Khan",       roles:["BAT"], season:88, prime:88 },
-    { n:"Moin Khan",         roles:["WK","BAT"], season:82, prime:82 },
-    { n:"Imran Khan",        roles:["AR","PAC"], season:96, prime:96 },
-    { n:"Wasim Akram",       roles:["AR","PAC"], season:96, prime:96 },
-    { n:"Waqar Younis",      roles:["PAC"], season:94, prime:94 },
-    { n:"Saqlain Mushtaq",   roles:["SPN"], season:88, prime:88 },
-    { n:"Saeed Ajmal",       roles:["SPN"], season:92, prime:92 }
-  ],
-  "South Africa": [
-    { n:"Graeme Smith",      roles:["OPN"], season:90, prime:90 },
-    { n:"Hashim Amla",       roles:["OPN","BAT"], season:92, prime:92 },
-    { n:"Jacques Kallis",    roles:["BAT","AR"], season:94, prime:94 },
-    { n:"AB de Villiers",    roles:["BAT","WK"], season:96, prime:96 },
-    { n:"Heinrich Klaasen",  roles:["WK","FIN"], season:90, prime:90 },
-    { n:"Shaun Pollock",     roles:["AR","PAC"], season:90, prime:90 },
-    { n:"Lance Klusener",    roles:["AR","FIN"], season:88, prime:88 },
-    { n:"Dale Steyn",        roles:["PAC"], season:96, prime:96 },
-    { n:"Allan Donald",      roles:["PAC"], season:94, prime:94 },
-    { n:"Kagiso Rabada",     roles:["PAC"], season:92, prime:92 },
-    { n:"Keshav Maharaj",    roles:["SPN"], season:84, prime:84 }
-  ],
-  "West Indies": [
-    { n:"Gordon Greenidge",  roles:["OPN"], season:92, prime:92 },
-    { n:"Desmond Haynes",    roles:["OPN"], season:90, prime:90 },
-    { n:"Brian Lara",        roles:["BAT"], season:96, prime:96 },
-    { n:"Viv Richards",      roles:["BAT"], season:96, prime:96 },
-    { n:"Clive Lloyd",       roles:["BAT","FIN"], season:92, prime:92 },
-    { n:"Chris Gayle",       roles:["OPN","BAT"], season:92, prime:92 },
-    { n:"Jeff Dujon",        roles:["WK"], season:82, prime:82 },
-    { n:"Garry Sobers",      roles:["AR"], season:97, prime:97 },
-    { n:"Malcolm Marshall",  roles:["PAC"], season:96, prime:96 },
-    { n:"Michael Holding",   roles:["PAC"], season:96, prime:96 },
-    { n:"Curtly Ambrose",    roles:["PAC"], season:94, prime:94 }
-  ],
-  "Sri Lanka": [
-    { n:"Sanath Jayasuriya", roles:["OPN","AR"], season:94, prime:94 },
-    { n:"Marvan Atapattu",   roles:["OPN"], season:84, prime:84 },
-    { n:"Kumar Sangakkara",  roles:["WK","BAT"], season:94, prime:94 },
-    { n:"Mahela Jayawardene",roles:["BAT"], season:92, prime:92 },
-    { n:"Aravinda de Silva", roles:["BAT","AR"], season:94, prime:94 },
-    { n:"Arjuna Ranatunga",  roles:["BAT","FIN"], season:88, prime:88 },
-    { n:"Angelo Mathews",    roles:["AR","BAT"], season:86, prime:86 },
-    { n:"Muttiah Muralidaran",roles:["SPN"], season:97, prime:97 },
-    { n:"Rangana Herath",    roles:["SPN"], season:88, prime:88 },
-    { n:"Chaminda Vaas",     roles:["PAC"], season:90, prime:90 },
-    { n:"Lasith Malinga",    roles:["PAC"], season:92, prime:92 }
-  ],
-  "Bangladesh": [
-    { n:"Tamim Iqbal",       roles:["OPN"], season:86, prime:86 },
-    { n:"Soumya Sarkar",     roles:["OPN"], season:80, prime:82 },
-    { n:"Liton Das",         roles:["OPN","WK"], season:84, prime:84 },
-    { n:"Mushfiqur Rahim",   roles:["WK","BAT"], season:88, prime:88 },
-    { n:"Mahmudullah",       roles:["AR","FIN"], season:84, prime:84 },
-    { n:"Shakib Al Hasan",   roles:["AR","SPN"], season:92, prime:92 },
-    { n:"Mehidy Hasan",      roles:["AR","SPN"], season:82, prime:82 },
-    { n:"Mashrafe Mortaza",  roles:["PAC","AR"], season:84, prime:84 },
-    { n:"Mustafizur Rahman", roles:["PAC"], season:86, prime:86 },
-    { n:"Mohammad Rafique",  roles:["SPN"], season:80, prime:80 },
-    { n:"Taskin Ahmed",      roles:["PAC"], season:82, prime:84 }
-  ],
-  "Afghanistan": [
-    { n:"Rahmanullah Gurbaz",roles:["OPN","WK"], season:86, prime:86 },
-    { n:"Ibrahim Zadran",    roles:["OPN"], season:84, prime:84 },
-    { n:"Rahmat Shah",       roles:["BAT"], season:84, prime:84 },
-    { n:"Hashmatullah Shahidi",roles:["BAT"], season:84, prime:84 },
-    { n:"Najibullah Zadran", roles:["FIN","BAT"], season:82, prime:82 },
-    { n:"Mohammad Nabi",     roles:["AR"], season:86, prime:86 },
-    { n:"Rashid Khan",       roles:["AR","SPN"], season:92, prime:92 },
-    { n:"Mujeeb Ur Rahman",  roles:["SPN"], season:86, prime:86 },
-    { n:"Noor Ahmad",        roles:["SPN"], season:82, prime:82 },
-    { n:"Naveen-ul-Haq",     roles:["PAC"], season:84, prime:84 },
-    { n:"Fazalhaq Farooqi",  roles:["PAC"], season:82, prime:82 }
-  ],
-  "Scotland": [
-    { n:"Kyle Coetzer",      roles:["OPN"], season:80, prime:80 },
-    { n:"George Munsey",     roles:["OPN"], season:80, prime:80 },
-    { n:"Calum MacLeod",     roles:["BAT"], season:82, prime:82 },
-    { n:"Richie Berrington", roles:["BAT","AR"], season:80, prime:80 },
-    { n:"Matthew Cross",     roles:["WK"], season:76, prime:76 },
-    { n:"Michael Leask",     roles:["AR"], season:76, prime:76 },
-    { n:"Chris Greaves",     roles:["AR","SPN"], season:76, prime:76 },
-    { n:"Mark Watt",         roles:["SPN"], season:80, prime:80 },
-    { n:"Brad Wheal",        roles:["PAC"], season:78, prime:78 },
-    { n:"Josh Davey",        roles:["PAC"], season:78, prime:78 },
-    { n:"Safyaan Sharif",    roles:["PAC"], season:76, prime:76 }
-  ],
-  "Netherlands": [
-    { n:"Max O'Dowd",        roles:["OPN"], season:80, prime:80 },
-    { n:"Vikramjit Singh",   roles:["OPN"], season:76, prime:76 },
-    { n:"Wesley Barresi",    roles:["BAT"], season:76, prime:76 },
-    { n:"Bas de Leede",      roles:["AR","BAT"], season:82, prime:82 },
-    { n:"Scott Edwards",     roles:["WK","BAT"], season:82, prime:82 },
-    { n:"Ryan ten Doeschate",roles:["AR","BAT"], season:86, prime:86 },
-    { n:"Teja Nidamanuru",   roles:["BAT","FIN"], season:78, prime:78 },
-    { n:"Roelof van der Merwe",roles:["AR","SPN"], season:82, prime:82 },
-    { n:"Logan van Beek",    roles:["AR","PAC"], season:82, prime:82 },
-    { n:"Aryan Dutt",        roles:["SPN"], season:74, prime:74 },
-    { n:"Pieter Seelaar",    roles:["SPN","AR"], season:76, prime:76 }
-  ]
-};
+// For each franchise team, build a canonical XI from its strongest squad in TEAM_SEASONS
+const OPP_XI = {};
+OPPONENTS.forEach(o => {
+  OPP_XI[o.n] = o.squad.slice();
+});
 
 const TOURNAMENTS = [
-  { id:"wtc", name:"ICC World Test Championship", fmt:"wtc", icon:"🏆", rounds:["Final"], overs:90, base:300 },
-  { id:"odi", name:"ICC ODI World Cup",           fmt:"odi", icon:"🥇", rounds:["Quarter-Final","Semi-Final","Final"], overs:50, base:280 },
-  { id:"t20", name:"ICC T20 World Cup",           fmt:"t20", icon:"🏏", rounds:["Quarter-Final","Semi-Final","Final"], overs:20, base:170 }
+  { id:"ipl", name:"IPL", fmt:"t20", icon:"🏏", rounds:["Qualifier 1","Qualifier 2","Final"], overs:20, base:170, leagues:["ipl"] },
+  { id:"psl", name:"PSL", fmt:"t20", icon:"🏆", rounds:["Qualifier","Eliminator","Final"], overs:20, base:170, leagues:["psl"] },
+  { id:"bbl", name:"Big Bash League", fmt:"t20", icon:"🔥", rounds:["Knockout","Challenger","Final"], overs:20, base:170, leagues:["bbl"] },
+  { id:"cl",  name:"Champions League", fmt:"t20", icon:"🌍", rounds:["Round of 16","Quarter-Final","Semi-Final","Final"], overs:20, base:170, leagues:["ipl","psl","bbl","cpl","blast"] }
+];
+
+// Top 3 teams from each league for the Champions League pool
+const CL_POOL = [
+  "Mumbai Indians", "Chennai Super Kings", "Royal Challengers Bangalore", // IPL
+  "Lahore Qalandars", "Islamabad United", "Multan Sultans",               // PSL
+  "Perth Scorchers", "Sydney Sixers", "Hobart Hurricanes",                // BBL
+  "Trinbago Knight Riders", "Guyana Amazon Warriors", "Barbados Royals",  // CPL
+  "Notts Outlaws", "Birmingham Bears", "Hampshire Hawks"                  // T20 Blast
 ];
 
 /* =========== STATE =========== */
-const SAVE_KEY = "tc_cricket_v5";
+const SAVE_KEY = "tc_cricket_v6";
 let S = load() || newSave();
 let animTimer = null;
 const SQUAD_SIZE = 11;
@@ -1340,7 +850,7 @@ function newSave(){
     rerollsLeft:1, rerollsTotal:1,
     squad: SLOTS.map(s => ({ id:s.id, label:s.label, player:null })),
     currentSpin:null,
-    trophies:{ wtc:false, odi:false, t20:false },
+    trophies:{ ipl:false, psl:false, bbl:false, cl:false },
     lives:1, livesTotal:1,
     playerStats:{},
     careerLog:[],
@@ -1583,7 +1093,7 @@ function startDraft(){
   S.lives = lives; S.livesTotal = lives;
   S.playerStats = {};
   S.squad = SLOTS.map(s => ({ id:s.id, label:s.label, player:null }));
-  S.trophies = { wtc:false, odi:false, t20:false };
+  S.trophies = { ipl:false, psl:false, bbl:false, cl:false };
   S.careerLog = []; S.currentSpin = null; S.tour = null;
   S.screen = "draft";
   save(); render();
@@ -1647,16 +1157,15 @@ function startTournament(tId){
   if (S.trophies[tId]) return;
   if (S.lives < 0) { S.screen = "gameover"; save(); render(); return; }
   const t = TOURNAMENTS.find(x=>x.id===tId);
-  // WTC restricted to established Test-playing nations
-  let pool = OPPONENTS;
-  if (tId === "wtc") pool = OPPONENTS.filter(o => TEST_NATIONS.includes(o.n));
+  // Filter opponents by league(s) belonging to this tournament
+  let pool = OPPONENTS.filter(o => t.leagues.includes(o.league));
+  // Champions League: only top teams from each league (CL_POOL)
+  if (tId === "cl") {
+    pool = pool.filter(o => CL_POOL.includes(o.team));
+  }
   // Opponent difficulty modifier
   const mod = S.setup.oppDifficulty === "easy" ? -8 : S.setup.oppDifficulty === "legend" ? +4 : 0;
   let candidates = pool.map(o=>({ n:o.n, r: Math.max(60, Math.min(98, o[t.fmt] + mod)) }));
-  // For WTC final, pick a strong opponent (top 4 by rating)
-  if (tId === "wtc"){
-    candidates = candidates.sort((a,b)=>b.r-a.r).slice(0,4);
-  }
   const opps = shuffle(candidates).slice(0, t.rounds.length).sort((a,b)=>a.r-b.r);
   const auto = orderForBatting(squadPicks().map(s=>s.player)).map(p=>p.n);
   S.tour = { tId, fmt:t.fmt, roundIdx:0, opps, scorecards:[], live:false, speed:2, battingOrder: auto };
@@ -2017,7 +1526,7 @@ function continueAfterAwards(){
     S.trophies[t.id] = true;
     S.careerLog.unshift({ t:t.name, won:true, lines: S.tour.scorecards.map((m,i)=>`${t.rounds[i]} v ${m.opp}: W`) });
     S.tour = null;
-    if (S.trophies.wtc && S.trophies.odi && S.trophies.t20) S.screen = "win";
+    if (S.trophies.ipl && S.trophies.psl && S.trophies.bbl && S.trophies.cl) S.screen = "win";
     else S.screen = "hub";
     save(); render(); return;
   }
@@ -2094,30 +1603,33 @@ function openFeedbackModal(){
     if (!msg) { st.style.color = "var(--red)"; st.textContent = "Please write something."; return; }
     st.style.color = "var(--muted)"; st.textContent = "Sending…";
     const send = modal.querySelector('#fbSend'); send.disabled = true;
+    const body = `Type: ${type}\n\n${msg}\n\n---\nScreen: ${S.screen}\nLives: ${S.lives}/${S.livesTotal}\nTrophies: ${["ipl","psl","bbl","cl"].filter(k=>S.trophies[k]).join(", ")||"none"}\nDifficulty: ${S.setup.difficulty}, Opp: ${S.setup.oppDifficulty}`;
+    let sent = false;
+    // Try formsubmit first (no email client needed)
     try{
-      const body = `Type: ${type}\n\n${msg}\n\n---\nScreen: ${S.screen}\nLives: ${S.lives}/${S.livesTotal}\nTrophies: ${["wtc","odi","t20"].filter(k=>S.trophies[k]).join(", ")||"none"}\nDifficulty: ${S.setup.difficulty}, Opp: ${S.setup.oppDifficulty}`;
       const r = await fetch('https://formsubmit.co/ajax/fardeenwyne11@yahoo.com', {
         method:'POST',
         headers:{'Content-Type':'application/json','Accept':'application/json'},
         body: JSON.stringify({
+          name: `11-0 ${type}`,
+          email: 'noreply@11-0.app',
           _subject: `[11-0 Cricket] ${type}`,
           _captcha:'false',
-          _template:'table',
           message: body
         })
       });
       const j = await r.json().catch(()=>({}));
-      if (j.success === "true" || j.success === true){
-        st.style.color = "var(--green-deep)"; st.textContent = "✓ Sent! Thanks for the feedback.";
-        setTimeout(close, 1400);
-      } else {
-        st.style.color = "var(--red)"; st.textContent = "Couldn't send right now. Try again later.";
-        send.disabled = false;
-      }
-    } catch(e){
-      st.style.color = "var(--red)"; st.textContent = "Network error. Try again later.";
-      send.disabled = false;
+      sent = (j.success === "true" || j.success === true);
+    } catch(e){ sent = false; }
+    if (sent){
+      st.style.color = "var(--green-deep)"; st.textContent = "✓ Sent! Thanks for the feedback.";
+      setTimeout(close, 1400);
+      return;
     }
+    // Fallback: open user's mail client with prefilled email to the dev
+    const mailto = `mailto:fardeenwyne11@yahoo.com?subject=${encodeURIComponent('[11-0 Cricket] '+type)}&body=${encodeURIComponent(body)}`;
+    st.style.color = "var(--gold)"; st.innerHTML = `Couldn't auto-send. <a href="${mailto}" style="color:var(--green-deep);font-weight:800">Open email app to send →</a>`;
+    send.disabled = false;
   };
 }
 
@@ -2189,7 +1701,7 @@ async function shareResult(opts){
 
 function renderSetup(){
   const wrap = el(`<div style="max-width:1100px;margin:0 auto;padding:40px 24px;width:100%"></div>`);
-  wrap.append(el(`<div class="hero"><h1>11-0</h1><p>Pick 11 cricketers from any World Cup squad in history. Free-build your XI. Win the Triple Crown — WTC, ODI WC, T20 WC.</p></div>`));
+  wrap.append(el(`<div class="hero"><h1>11-0</h1><p>Pick 11 cricketers from franchise squads. Build your dream XI. Win the Grand Slam — IPL, PSL, Big Bash, Champions League.</p></div>`));
   const grid = el(`<div class="setup-grid"></div>`);
   const left = el(`<div class="setup-card"></div>`);
   left.append(el(`<h2>Difficulty</h2>`));
@@ -2333,11 +1845,11 @@ function renderDraft(){
 }
 
 function renderHub(){
-  const allWon = S.trophies.wtc && S.trophies.odi && S.trophies.t20;
+  const allWon = S.trophies.ipl && S.trophies.psl && S.trophies.bbl && S.trophies.cl;
   if (allWon) { S.screen = "win"; save(); return renderWin(); }
   const wrap = el(`<div></div>`);
   wrap.append(el(`<h1>Career Hub</h1>`));
-  wrap.append(el(`<p class="muted">Play each tournament with your XI. Win all three for the Triple Crown.</p>`));
+  wrap.append(el(`<p class="muted">Play each tournament with your XI. Win all four for the Grand Slam.</p>`));
 
   // Lives + opp difficulty bar
   const heartsHTML = (() => {
@@ -2365,19 +1877,19 @@ function renderHub(){
   });
   wrap.append(status);
 
-  const won = ["wtc","odi","t20"].filter(k=>S.trophies[k]);
+  const won = ["ipl","psl","bbl","cl"].filter(k=>S.trophies[k]);
   const cabinetRow = el(`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:18px 0 10px">Trophy Cabinet</h2>${won.length?'<button class="share-btn" id="shareCab" style="padding:6px 12px;font-size:11px">📸 Share squad</button>':''}</div>`);
   wrap.append(cabinetRow);
   if (won.length){
     cabinetRow.querySelector('#shareCab').onclick = () => {
-      const labels = { wtc:"WTC", odi:"ODI World Cup", t20:"T20 World Cup" };
+      const labels = { ipl:"IPL", psl:"PSL", bbl:"BBL", cl:"Champions League" };
       shareResult({
         title:"My XI",
-        subtitle: won.length===3 ? "TRIPLE CROWN WINNER" : `${won.length} ICC trophies won`,
-        trophyEmoji: won.length===3 ? "🏆🏆🏆" : "🏆",
-        headline: won.length===3 ? "TRIPLE CROWN!" : `${won.length} trophies won`,
+        subtitle: won.length===4 ? "GRAND SLAM WINNER" : `${won.length} trophies won`,
+        trophyEmoji: won.length===4 ? "🏆🏆🏆🏆" : "🏆",
+        headline: won.length===4 ? "GRAND SLAM!" : `${won.length} trophies won`,
         body: won.map(k=>labels[k]).join(" · "),
-        shareText: `My XI in 11-0 Cricket — ${won.length} ICC trophies won so far. Beat me?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
+        shareText: `My XI in 11-0 Cricket — ${won.length} trophies won. Beat me?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
       });
     };
   }
@@ -2551,14 +2063,14 @@ function renderWatchChoice(){
   const wrap = el(`<div></div>`);
   wrap.append(el(`<div class="hero" style="padding:30px 20px;margin-bottom:18px">
     <h1 style="font-size:32px">${t.icon} ${t.rounds[S.tour.roundIdx]}</h1>
-    <p style="font-size:14px"><b style="color:var(--ink)">${t.fmt==="wtc"?"You":"Your XI"}</b> vs <b style="color:var(--ink)">${opp.n}</b> · ${t.overs} overs${t.fmt==="wtc"?" × 2 innings":""}</p>
+    <p style="font-size:14px"><b style="color:var(--ink)">Your XI</b> vs <b style="color:var(--ink)">${opp.n}</b> · ${t.overs} overs</p>
   </div>`));
   wrap.append(el(`<h2 style="text-align:center;margin-top:0">🎬 How do you want to play this match?</h2>`));
   const choices = el(`<div class="awards" style="grid-template-columns:1fr 1fr;margin-top:10px"></div>`);
   const watch = el(`<div class="choice-card">
     <div class="ic" style="font-size:48px">📺</div>
     <div class="title">Watch Live</div>
-    <div class="desc">Ball-by-ball commentary,<br/>animated scoring${t.fmt==="wtc"?'<br/><small style="color:var(--gold)">⚠ Test = 4 innings, longest format</small>':''}</div>
+    <div class="desc">Ball-by-ball commentary,<br/>animated scoring</div>
     <button class="primary" style="width:100%;margin-top:14px">▶ Watch</button>
   </div>`);
   watch.querySelector("button").onclick = () => startMatch();
@@ -2733,8 +2245,8 @@ function computeMargin(m){
 
 function renderGameOver(){
   const wrap = el(`<div></div>`);
-  const trophies = ["wtc","odi","t20"].filter(k=>S.trophies[k]);
-  const tNames = { wtc:"WTC", odi:"ODI WC", t20:"T20 WC" };
+  const trophies = ["ipl","psl","bbl","cl"].filter(k=>S.trophies[k]);
+  const tNames = { ipl:"IPL", psl:"PSL", bbl:"BBL", cl:"Champions League" };
   wrap.append(el(`<div class="gameover">
     <h1>CAREER ENDED</h1>
     <p>You ran out of lives.</p>
@@ -2766,19 +2278,19 @@ function renderWin(){
   const wrap = el(`<div></div>`);
   wrap.append(el(`<div class="hero" style="background:radial-gradient(ellipse at center,#3a2a08 0%,transparent 60%)">
     <h1 style="font-size:72px;letter-spacing:4px">🏆🏆🏆</h1>
-    <h1 style="font-size:48px;background:linear-gradient(180deg,#f5c451,#d4a435);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">TRIPLE CROWN</h1>
-    <p>You won the WTC, ODI World Cup and T20 World Cup. Legendary career.</p>
+    <h1 style="font-size:48px;background:linear-gradient(180deg,#f5c451,#d4a435);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">GRAND SLAM</h1>
+    <p>You won the IPL, PSL, Big Bash & Champions League. Legendary career.</p>
   </div>`));
   const row = el(`<div class="row" style="justify-content:center;margin-top:20px;gap:10px"></div>`);
-  const share = el(`<button class="share-btn" style="padding:14px 24px;font-size:15px">📸 Share Triple Crown</button>`);
+  const share = el(`<button class="share-btn" style="padding:14px 24px;font-size:15px">📸 Share Grand Slam</button>`);
   share.onclick = () => {
     shareResult({
-      title:"TRIPLE CROWN",
-      subtitle:"All three ICC trophies",
-      trophyEmoji:"🏆🏆🏆",
-      headline:"I won the TRIPLE CROWN!",
-      body:"WTC · ODI World Cup · T20 World Cup",
-      shareText:"🏆🏆🏆 I just won the Triple Crown in 11-0 Cricket — WTC, ODI WC, T20 WC. Think you can match it?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/"
+      title:"GRAND SLAM",
+      subtitle:"All four trophies",
+      trophyEmoji:"🏆🏆🏆🏆",
+      headline:"I won the GRAND SLAM!",
+      body:"IPL · PSL · Big Bash · Champions League",
+      shareText:"🏆🏆🏆🏆 I just won the Grand Slam in 11-0 Cricket — IPL, PSL, BBL, Champions League. Think you can match it?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/"
     });
   };
   const a = el(`<button class="primary" style="padding:14px 28px;font-size:15px">Start a new career</button>`);
