@@ -1585,13 +1585,15 @@ function startDraft(){
 
 /* ============ AUCTION ============ */
 const AUCTION_BUDGET = 200;
-const AUCTION_TIMER_SECS = 15;
+const AUCTION_TIMER_SECS = 10;
 const AUCTION_MIN_PRICE = 2;
+const AUCTION_MAX_PASSES = 5;
 
 function playerPrice(p){
   const r = ratingOf(p);
-  // 60→2, 70→9, 80→16, 90→23, 96→27 — much cheaper, lets you grab more players
-  return Math.max(AUCTION_MIN_PRICE, Math.round((r - 60) * 0.7 + 2));
+  // Steeper curve rewards budgeting skill: 70→8c, 80→18c, 90→35c, 96→45c.
+  // Stars eat real budget, so you can't buy a whole XI of elites.
+  return Math.max(AUCTION_MIN_PRICE, Math.round(Math.pow(Math.max(0, r - 60), 1.4) * 0.25 + 2));
 }
 
 let _auctionTimerInt = null;
@@ -1607,6 +1609,7 @@ function startAuction(){
   S.auctionBudget = AUCTION_BUDGET;
   S.auctionCurrent = null;
   S.auctionFireSale = false;
+  S.auctionPassesLeft = AUCTION_MAX_PASSES;
   S.screen = "auction";
   save(); nextAuctionLot();
 }
@@ -1673,8 +1676,19 @@ function startAuctionTimer(){
   _auctionTimerInt = setInterval(() => {
     if (!S.auctionCurrent || S.screen !== "auction") { clearAuctionTimer(); return; }
     S.auctionTimeLeft--;
-    if (S.auctionTimeLeft > 0 && S.auctionTimeLeft <= 5) sfx("tick");
-    if (S.auctionTimeLeft <= 0){ passAuctionLot(); return; }
+    if (S.auctionTimeLeft > 0 && S.auctionTimeLeft <= 3) sfx("tick");
+    if (S.auctionTimeLeft <= 0){
+      if ((S.auctionPassesLeft ?? AUCTION_MAX_PASSES) > 0){
+        passAuctionLot();           // free auto-pass while you still have passes
+      } else {
+        // Out of passes: time-out forces a decision.
+        clearAuctionTimer();
+        const price = S.auctionFireSale ? AUCTION_MIN_PRICE : playerPrice(S.auctionCurrent.p);
+        if (S.auctionBudget >= price){ buyAuctionLot(); }   // auto-buy if affordable
+        else { S.auctionCurrent = null; sfx("warning"); nextAuctionLot(); }  // else lot is lost
+      }
+      return;
+    }
     const tBar = document.getElementById('auctionTimerBar');
     const tNum = document.getElementById('auctionTimerNum');
     if (tBar) tBar.style.width = (S.auctionTimeLeft/AUCTION_TIMER_SECS*100)+"%";
@@ -1697,7 +1711,10 @@ function buyAuctionLot(){
 }
 function passAuctionLot(){
   if (!S.auctionCurrent) return;
+  if (S.auctionPassesLeft == null) S.auctionPassesLeft = AUCTION_MAX_PASSES;
+  if (S.auctionPassesLeft <= 0) { sfx("warning"); return; }
   clearAuctionTimer();
+  S.auctionPassesLeft--;
   if (!S.auctionCurrent.requeued) { S.auctionCurrent.requeued = true; S.auctionQueue.push(S.auctionCurrent); }
   S.auctionCurrent = null;
   sfx("pass");
@@ -2503,6 +2520,7 @@ function renderAuction(){
     <div class="it"><small>Budget</small><b class="${S.auctionFireSale?'red':'gold'}">${S.auctionBudget} c${S.auctionFireSale?' 🔥':''}</b></div>
     <div class="it"><small>Squad</small><b class="green">${filled}/${SQUAD_SIZE}</b></div>
     <div class="it"><small>Avg/pick</small><b>${slotsLeft?Math.floor(S.auctionBudget/slotsLeft):0} c</b></div>
+    <div class="it"><small>Passes</small><b class="${(S.auctionPassesLeft ?? AUCTION_MAX_PASSES)<=0?'red':((S.auctionPassesLeft ?? AUCTION_MAX_PASSES)<=1?'gold':'green')}">${S.auctionPassesLeft ?? AUCTION_MAX_PASSES}/${AUCTION_MAX_PASSES}</b></div>
     ${!hasKeeper()?`<div class="it"><small>Status</small><b class="red">Need WK</b></div>`:''}
   </div>`);
   wrap.append(status);
@@ -2523,6 +2541,8 @@ function renderAuction(){
   const lot = S.auctionCurrent;
   const price = S.auctionFireSale ? AUCTION_MIN_PRICE : playerPrice(lot.p);
   const canAfford = S.auctionBudget >= price;
+  const passesLeft = S.auctionPassesLeft ?? AUCTION_MAX_PASSES;
+  const canPass = passesLeft > 0;
   const timeLeft = S.auctionTimeLeft || AUCTION_TIMER_SECS;
   const lotEl = el(`<div class="auction-lot">
     <div class="auction-timer">
@@ -2537,11 +2557,13 @@ function renderAuction(){
     ${S.setup.showRatings?`<div style="margin:6px 0;color:var(--muted);font-size:13px">Rating <b style="color:var(--ink)">${ratingOf(lot.p)}</b></div>`:''}
     <div class="pricetag"><span class="lbl">PRICE</span><span class="px">${price}</span><span class="c">c</span></div>
     <div class="auction-actions">
-      <button class="ghost" id="passBtn">⏭ Pass</button>
+      <button class="ghost" id="passBtn" ${!canPass?'disabled':''}>${canPass?('⏭ Pass ('+passesLeft+' left)'):'No passes left'}</button>
       <button class="primary" id="buyBtn" ${!canAfford?'disabled':''}>${canAfford?('💰 Buy at '+price+' c'):'Over budget'}</button>
     </div>
+    ${!canPass?`<div style="margin-top:8px;font-size:11px;color:var(--muted)">Out of passes — when the timer runs out you'll auto-buy this lot if you can afford it.</div>`:''}
   </div>`);
-  lotEl.querySelector('#passBtn').onclick = passAuctionLot;
+  const passBtnEl = lotEl.querySelector('#passBtn');
+  if (canPass) passBtnEl.onclick = passAuctionLot;
   lotEl.querySelector('#buyBtn').onclick = buyAuctionLot;
   wrap.append(lotEl);
   return wrap;
