@@ -2726,29 +2726,58 @@ function startLeagueSim(){
     { n:"Your XI", r: avg(squadPicks().map(s=>ratingOf(s.player))), isMe:true },
     ...teams.map(o => ({ n:o.n, r: Math.max(60, Math.min(99, oppRating(o) + mod)), isMe:false }))
   ];
-  // Round-robin. Small leagues play home/away (double) for ~10 games each; larger
-  // leagues (e.g. IPL's 10 franchises) play a single round-robin so the season
-  // stays a manageable length while still featuring every team.
-  const passes = allTeams.length <= 7 ? 2 : 1;
-  const fixtures = [];
-  let gw = 0;
-  for (let pass=0; pass<passes; pass++){
-    const teamsR = pass===0 ? allTeams.slice() : allTeams.slice().reverse();
-    for (let i=0; i<teamsR.length; i++){
-      for (let j=i+1; j<teamsR.length; j++){
-        fixtures.push({ home: teamsR[i], away: teamsR[j], result:null, gw: Math.floor(fixtures.length / Math.max(1, Math.floor(teamsR.length/2))) + 1 });
-      }
-    }
-  }
-  // Renumber game weeks: 1 per round of teams.length/2 matches
+  // Double round-robin using the circle method.
+  // Each team plays every other team exactly twice (one home, one away).
+  // Fixtures are interleaved by Game Week so AI matches and the user's matches
+  // happen in the same round, like a real league season.
+  const fixtures = buildDoubleRoundRobin(allTeams);
   const perGw = Math.max(1, Math.floor(allTeams.length / 2));
-  fixtures.forEach((f,i)=>{ f.gw = Math.floor(i/perGw) + 1; });
   const standings = allTeams.map(t => ({ team:t, P:0, W:0, L:0, F:0, A:0, pts:0, nrr:0 }));
   S.tour.league = { fixtures, standings, fixtureIdx:0, teams: allTeams, perGw, done:false };
   S.screen = "leaguesim";
   save(); render();
   startLeagueAnim();
 }
+// Circle-method round-robin. Returns one full leg (each pair plays once),
+// scheduled across (N-1) game weeks with (N/2) matches per week.
+function roundRobinLeg(teams, gwOffset){
+  const arr = teams.slice();
+  if (arr.length % 2 === 1) arr.push({ n:"__BYE__", isBye:true });
+  const n = arr.length;
+  const half = n / 2;
+  const rounds = n - 1;
+  const fixed = arr[0];
+  let rota = arr.slice(1);
+  const out = [];
+  for (let r = 0; r < rounds; r++){
+    const gw = gwOffset + r + 1;
+    // Pair the fixed team with the LAST in the rota
+    const opp = rota[rota.length - 1];
+    if (!fixed.isBye && !opp.isBye){
+      out.push({ home: fixed, away: opp, result:null, gw });
+    }
+    // Pair the others by walking inward
+    for (let i = 0; i < half - 1; i++){
+      const h = rota[i];
+      const a = rota[rota.length - 2 - i];
+      if (h && a && !h.isBye && !a.isBye){
+        out.push({ home: h, away: a, result:null, gw });
+      }
+    }
+    // Rotate: last element moves to the front
+    rota = [rota[rota.length - 1], ...rota.slice(0, rota.length - 1)];
+  }
+  return out;
+}
+function buildDoubleRoundRobin(teams){
+  // First leg as scheduled
+  const leg1 = roundRobinLeg(teams, 0);
+  // Second leg: same schedule but swap home/away — and continue the gw counter
+  const numRounds = teams.length % 2 === 0 ? teams.length - 1 : teams.length;
+  const leg2 = roundRobinLeg(teams, numRounds).map(f => ({ home:f.away, away:f.home, result:null, gw:f.gw }));
+  return leg1.concat(leg2);
+}
+
 function simSingleLeagueMatch(home, away){
   // Two-innings T20 single-match outcome (compressed)
   const base = 170;
