@@ -80,7 +80,7 @@
   .pill.warn{background:#f8d7da;color:var(--red);border-color:var(--red)}
   .pill.ok{background:#d4edda;color:var(--green-deep);border-color:var(--green)}
 
-  button{background:var(--panel);color:var(--ink);border:2px solid var(--line);padding:10px 14px;border-radius:10px;font-weight:800;cursor:pointer;font-size:13px;transition:all .15s ease;box-shadow:0 2px 0 var(--line-soft)}
+  button{background:var(--panel);color:var(--ink);border:2px solid var(--line);padding:10px 18px;border-radius:999px;font-weight:800;cursor:pointer;font-size:13px;transition:all .15s ease;box-shadow:0 2px 0 var(--line-soft)}
   button:hover:not(:disabled){border-color:var(--gold);transform:translateY(-1px)}
   button:active:not(:disabled){transform:translateY(0);box-shadow:0 1px 0 var(--line-soft)}
   button.primary{background:var(--green);color:#fff;border-color:var(--green-deep);box-shadow:0 2px 0 var(--green-deep)}
@@ -137,7 +137,7 @@
   .hero{text-align:center;padding:40px 20px;background:linear-gradient(180deg,rgba(45,122,77,.08),transparent 60%),var(--panel);border:2px solid var(--line);border-radius:16px;margin-bottom:24px;position:relative;overflow:hidden;box-shadow:0 2px 0 var(--line-soft),0 8px 32px rgba(168,122,14,.08);animation:fadeIn .5s ease}
   @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:repeating-linear-gradient(90deg,var(--red) 0,var(--red) 14px,#fff 14px,#fff 28px);opacity:.85}
-  .hero h1{font-size:56px;letter-spacing:3px;margin-bottom:6px;color:var(--ink);font-weight:900;text-shadow:3px 3px 0 var(--green-light)}
+  .hero h1{font-size:56px;letter-spacing:3px;margin-bottom:6px;color:var(--ink);font-weight:900}
   .hero p{color:var(--muted);margin:0 0 18px;font-size:15px;max-width:560px;margin:0 auto}
 
   /* Setup */
@@ -158,17 +158,18 @@
   .pos-left{color:var(--muted);font-size:13px;margin-bottom:22px;font-weight:600}
 
   /* Green spin button (38-0 style) */
-  .spin-btn{background:var(--green);color:#053a26;border:0;padding:16px 36px;border-radius:12px;font-weight:900;font-size:16px;cursor:pointer;letter-spacing:.5px;box-shadow:0 6px 20px rgba(61,220,151,.3);position:relative;transition:all .2s ease;display:inline-flex;align-items:center;gap:10px}
+  .spin-btn{background:var(--green);color:#053a26;border:0;padding:16px 36px;border-radius:999px;font-weight:900;font-size:16px;cursor:pointer;letter-spacing:.5px;box-shadow:0 6px 20px rgba(61,220,151,.3);position:relative;transition:all .2s ease;display:inline-flex;align-items:center;gap:10px}
   .spin-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(61,220,151,.45)}
   .spin-btn:active{transform:translateY(0)}
   .spin-tap-hint{font-size:11px;color:var(--muted);letter-spacing:.5px;margin-top:10px;font-weight:600}
 
   /* CLUB | SEASON visualisation boxes */
-  .spin-boxes{display:inline-flex;align-items:center;gap:12px;margin:14px 0 22px}
-  .spin-box-stub{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px 28px;min-width:130px;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+  .spin-boxes{display:inline-flex;align-items:stretch;gap:12px;margin:14px 0 10px;max-width:100%;flex-wrap:wrap;justify-content:center}
+  .spin-box-stub{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px 22px;min-width:130px;max-width:240px;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
   .spin-box-stub .lbl-mini{position:absolute;top:-9px;background:var(--panel);padding:0 8px;font-size:9px;color:var(--muted);font-weight:800;letter-spacing:1.6px}
-  .spin-box-stub .val{font-size:14px;font-weight:800;color:var(--ink);text-align:center}
-  .spin-x{color:var(--muted);font-weight:700;font-size:14px}
+  .spin-box-stub .val{font-size:15px;font-weight:800;color:var(--ink);text-align:center;line-height:1.25;word-break:break-word}
+  .spin-x{color:var(--muted);font-weight:700;font-size:14px;align-self:center}
+  .spun-league{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:2px;margin:0 0 14px}
 
   /* Expected odds screen */
   .odds-box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px}
@@ -446,7 +447,7 @@
     .sidebar.open{left:0;box-shadow:8px 0 32px rgba(0,0,0,.3)}
     .app{grid-template-columns:1fr}
     .main{padding-top:60px;padding-left:16px;padding-right:16px}
-    .hero h1{font-size:42px;text-shadow:2px 2px 0 var(--gold-bright)}
+    .hero h1{font-size:42px}
   }
 
   /* Live batters/bowler panel */
@@ -487,7 +488,7 @@
   /* Share card (hidden, used for export) */
   .share-card{position:fixed;left:-10000px;top:0;width:600px;background:#fafdf2;padding:32px;border:8px solid var(--green);border-radius:24px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;color:var(--ink)}
   .share-card .sc-head{text-align:center;margin-bottom:18px;padding-bottom:14px;border-bottom:3px dashed var(--green-light)}
-  .share-card .sc-head h1{font-size:48px;letter-spacing:3px;color:var(--green-deep);text-shadow:3px 3px 0 var(--gold-bright);margin:0;font-weight:900}
+  .share-card .sc-head h1{font-size:48px;letter-spacing:3px;color:var(--green-deep);margin:0;font-weight:900}
   .share-card .sc-head .sub{font-size:14px;color:var(--muted);margin-top:6px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
   .share-card .sc-trophy{text-align:center;padding:18px;background:linear-gradient(160deg,#3a4520,#2a3818);border:3px solid var(--gold-bright);border-radius:16px;margin-bottom:18px}
   .share-card .sc-trophy .big{font-size:80px;line-height:1}
@@ -1689,7 +1690,19 @@ function findPlayerObj(name){
   }
   return { n:name, roles:[], from:{ team:"" } };
 }
-function toggleDrawer(){ S.drawerOpen = !S.drawerOpen; render(); }
+function toggleDrawer(){
+  // Lightweight: just slide the drawer + toggle the scrim. Avoids a full
+  // render() (which rebuilds the main panel and made the page appear to refresh).
+  S.drawerOpen = !S.drawerOpen;
+  const root = document.getElementById("app");
+  if (!root) return;
+  const sb = root.querySelector(":scope > .sidebar");
+  if (sb) sb.classList.toggle("open", S.drawerOpen);
+  const ham = root.querySelector(":scope > .hamburger");
+  let scrim = root.querySelector(":scope > .scrim");
+  if (S.drawerOpen && !scrim && ham){ scrim = el(`<div class="scrim"></div>`); scrim.onclick = toggleDrawer; ham.after(scrim); }
+  else if (!S.drawerOpen && scrim){ scrim.remove(); }
+}
 
 /* =========== SOUND =========== */
 let _audioCtx = null;
@@ -2831,9 +2844,19 @@ function renderDraft(){
   }
 
   const ts = TEAM_SEASONS[S.currentSpin.teamSeasonIdx];
+  // During the spin: the slot-machine reel. Once landed: the same CLUB × SEASON
+  // two-box layout as the pre-spin state (just filled in) so it stays consistent.
+  const landed = `<div class="spin-boxes">
+      <div class="spin-box-stub"><span class="lbl-mini">CLUB</span><div class="val">${ts.team}</div></div>
+      <span class="spin-x">×</span>
+      <div class="spin-box-stub"><span class="lbl-mini">SEASON</span><div class="val">${ts.year}</div></div>
+    </div>
+    <div class="spun-league">${LEAGUE_NAMES[ts.league]||""}</div>`;
   const reveal = el(`<div class="spin-box">
     <div class="lbl">${S.spinning?'SPINNING…':'SQUAD SPUN'}</div>
-    <div class="reel"><div class="reel-track"><div class="reel-item"><div class="t">${ts.team}</div><div class="y">${ts.year}</div><div class="f">${LEAGUE_NAMES[ts.league]||""}</div></div></div></div>
+    ${S.spinning
+      ? `<div class="reel"><div class="reel-track"><div class="reel-item"><div class="t">${ts.team}</div><div class="y">${ts.year}</div><div class="f">${LEAGUE_NAMES[ts.league]||""}</div></div></div></div>`
+      : landed}
     ${!S.spinning && ts.trophy ? `<div class="trophy-label">${ts.trophy}</div>` : ''}
     ${!S.spinning ? `<div class="reroll">Rerolls left: <b>${S.rerollsLeft}</b> ${S.rerollsLeft>0?'· <a id="rr">Reroll squad</a>':''}</div>` : ''}
   </div>`);
