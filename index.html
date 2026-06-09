@@ -1202,8 +1202,14 @@ const OPPONENTS = TEAM_SEASONS.map(ts => ({
   league: ts.league,
   squad: ts.squad,
   wtc: 0, odi: 0,
-  t20: Math.round(ts.squad.reduce((a,b)=>a+b.season,0) / ts.squad.length)
+  t20: Math.round(ts.squad.reduce((a,b)=>a+b.season,0) / ts.squad.length),
+  t20Prime: Math.round(ts.squad.reduce((a,b)=>a+b.prime,0) / ts.squad.length)
 }));
+// Helper: get the opp's rating based on current Prime Mode setting
+function oppRating(o){
+  if (S.setup.primeMode && o.t20Prime) return o.t20Prime;
+  return o.t20 || 80;
+}
 
 // For each franchise team, build a canonical XI from its strongest squad in TEAM_SEASONS
 const OPP_XI = {};
@@ -1702,6 +1708,8 @@ function removeFromSlot(id){ const slot = S.squad.find(s=>s.id===id); slot.playe
 function startTournament(tId){
   if (S.trophies[tId]) return;
   if (S.lives < 0) { S.screen = "gameover"; save(); render(); return; }
+  // CL requires the other 3 trophies first
+  if (tId === "cl" && (!S.trophies.ipl || !S.trophies.psl || !S.trophies.bbl)) return;
   const t = TOURNAMENTS.find(x=>x.id===tId);
   // Filter opponents by league(s) belonging to this tournament
   let pool = OPPONENTS.filter(o => t.leagues.includes(o.league));
@@ -1710,9 +1718,9 @@ function startTournament(tId){
   }
   // One entry per franchise — every real participating team is available.
   pool = canonicalLeagueTeams(pool);
-  // Opponent difficulty modifier
-  const mod = S.setup.oppDifficulty === "easy" ? -8 : S.setup.oppDifficulty === "legend" ? +4 : 0;
-  let candidates = pool.map(o=>({ n:o.n, team:o.team, year:o.year, r: Math.max(60, Math.min(98, o[t.fmt] + mod)) }));
+  // Opponent difficulty modifier — Easy -10, Normal 0, Legend +10
+  const mod = S.setup.oppDifficulty === "easy" ? -10 : S.setup.oppDifficulty === "legend" ? +10 : 0;
+  let candidates = pool.map(o=>({ n:o.n, team:o.team, year:o.year, r: Math.max(60, Math.min(99, oppRating(o) + mod)) }));
   const opps = shuffle(candidates).slice(0, t.rounds.length).sort((a,b)=>a.r-b.r);
   const auto = orderForBatting(squadPicks().map(s=>s.player)).map(p=>p.n);
   S.tour = { tId, fmt:t.fmt, roundIdx:0, opps, scorecards:[], live:false, speed:2, battingOrder: auto, oppPool: pool.map(o=>o.n) };
@@ -2618,15 +2626,21 @@ function renderHub(){
   wrap.append(tr);
   wrap.append(el(`<h2>Play Tournament</h2>`));
   const grid = el(`<div style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))"></div>`);
+  // Champions League is locked until the other 3 trophies are won
+  const clLocked = !S.trophies.ipl || !S.trophies.psl || !S.trophies.bbl;
   TOURNAMENTS.forEach(t => {
     const r = avg(squadPicks().map(s=>ratingOf(s.player)));
     const won = S.trophies[t.id];
-    const canPlay = !won && S.lives >= 0;
-    const btnText = won ? 'Already won' : (S.lives < 0 ? 'Career ended' : 'Play');
-    const c = el(`<div class="spin-box" style="padding:18px;text-align:left">
+    const locked = (t.id === "cl") && clLocked;
+    const canPlay = !won && S.lives >= 0 && !locked;
+    let btnText = 'Play';
+    if (won) btnText = '🏆 Already won';
+    else if (S.lives < 0) btnText = 'Career ended';
+    else if (locked) btnText = '🔒 Locked';
+    const c = el(`<div class="spin-box" style="padding:18px;text-align:left;${locked?'opacity:.55':''}">
       <div style="font-size:22px"><span style="font-size:28px">${t.icon}</span> <b>${t.name.replace('ICC ','')}</b></div>
       <div class="muted" style="font-size:12px;margin:4px 0 10px">${(t.id === "cl" ? t.rounds : ["League Season", ...t.rounds]).join(' → ')} · ${t.overs} overs</div>
-      <div style="font-size:13px;margin-bottom:12px">XI rating: <b style="color:var(--gold)">${r.toFixed(1)}</b></div>
+      ${locked ? `<div style="font-size:12px;color:var(--gold);margin-bottom:10px;font-weight:700">Win IPL, PSL & Big Bash first to unlock</div>` : `<div style="font-size:13px;margin-bottom:12px">XI rating: <b style="color:var(--gold)">${r.toFixed(1)}</b></div>`}
       <button class="primary" ${!canPlay?'disabled':''} style="width:100%">${btnText}</button>
     </div>`);
     c.querySelector("button").onclick = () => startTournament(t.id);
@@ -2683,10 +2697,10 @@ function startLeagueSim(){
   let pool = OPPONENTS.filter(o => t.leagues.includes(o.league));
   // Every real franchise in this league participates (one canonical edition each).
   let teams = canonicalLeagueTeams(pool);
-  const mod = S.setup.oppDifficulty === "easy" ? -8 : S.setup.oppDifficulty === "legend" ? +4 : 0;
+  const mod = S.setup.oppDifficulty === "easy" ? -10 : S.setup.oppDifficulty === "legend" ? +10 : 0;
   const allTeams = [
     { n:"Your XI", r: avg(squadPicks().map(s=>ratingOf(s.player))), isMe:true },
-    ...teams.map(o => ({ n:o.n, r: Math.max(60, Math.min(98, o.t20 + mod)), isMe:false }))
+    ...teams.map(o => ({ n:o.n, r: Math.max(60, Math.min(99, oppRating(o) + mod)), isMe:false }))
   ];
   // Round-robin. Small leagues play home/away (double) for ~10 games each; larger
   // leagues (e.g. IPL's 10 franchises) play a single round-robin so the season
@@ -2714,8 +2728,9 @@ function startLeagueSim(){
 function simSingleLeagueMatch(home, away){
   // Two-innings T20 single-match outcome (compressed)
   const base = 170;
-  let hScore = base * Math.pow(home.r/85, 1.0) * Math.pow(85/away.r, 0.4) + (Math.random()-0.5)*40;
-  let aScore = base * Math.pow(away.r/85, 1.0) * Math.pow(85/home.r, 0.4) + (Math.random()-0.5)*40;
+  // Wider variance (±35) — underdogs deserve a chance, favourites can flop
+  let hScore = base * Math.pow(home.r/85, 1.0) * Math.pow(85/away.r, 0.35) + (Math.random()-0.5)*70;
+  let aScore = base * Math.pow(away.r/85, 1.0) * Math.pow(85/home.r, 0.35) + (Math.random()-0.5)*70;
   hScore = Math.min(250, Math.max(60, Math.round(hScore)));
   aScore = Math.min(250, Math.max(60, Math.round(aScore)));
   return { homeScore:hScore, awayScore:aScore, winner: hScore >= aScore ? "home" : "away" };
@@ -3386,15 +3401,61 @@ function computeMargin(m){
   return `${i0.runs - i1.runs} runs`;
 }
 
+function buildCareerSummary(){
+  const stats = S.playerStats || {};
+  let totalRuns = 0, totalBalls = 0, totalFours = 0, totalSixes = 0;
+  let totalWkts = 0, totalBallsBowled = 0, totalRunsConceded = 0;
+  let totalMatches = 0, totalMotm = 0;
+  const players = [];
+  for (const n in stats){
+    const s = stats[n];
+    totalRuns += s.runs; totalBalls += s.balls; totalFours += s.fours; totalSixes += s.sixes;
+    totalWkts += s.wickets; totalBallsBowled += s.ballsBowled; totalRunsConceded += s.runsConceded;
+    totalMatches = Math.max(totalMatches, s.matches);
+    totalMotm += s.motm;
+    if (s.runs > 0 || s.wickets > 0) players.push({ n, ...s });
+  }
+  const topRun = players.slice().sort((a,b)=>b.runs-a.runs)[0];
+  const topWkt = players.filter(p=>p.wickets>0).slice().sort((a,b)=>b.wickets-a.wickets)[0];
+  const motmLeader = players.slice().sort((a,b)=>b.motm-a.motm)[0];
+  const sr = totalBalls ? ((totalRuns/totalBalls)*100).toFixed(1) : '0.0';
+  const econ = totalBallsBowled ? (totalRunsConceded/(totalBallsBowled/6)).toFixed(2) : '0.00';
+  const trophies = ["ipl","psl","bbl","cl"].filter(k=>S.trophies[k]);
+  return { totalRuns, totalBalls, totalFours, totalSixes, totalWkts, totalBallsBowled, totalRunsConceded,
+    totalMatches, totalMotm, topRun, topWkt, motmLeader, sr, econ, trophies };
+}
+function renderCareerStats(cs){
+  const wrap = el(`<div style="margin:18px 0"></div>`);
+  wrap.append(el(`<h2>Your Career — Season Stats</h2>`));
+  wrap.append(el(`<div class="big-stats">
+    <div class="big-stat"><div class="v g">${cs.totalRuns}</div><div class="l">Runs Scored</div></div>
+    <div class="big-stat"><div class="v y">${cs.sr}</div><div class="l">Strike Rate</div></div>
+    <div class="big-stat"><div class="v r">${cs.totalWkts}</div><div class="l">Wickets Taken</div></div>
+  </div>`));
+  wrap.append(el(`<div class="big-stats" style="margin-top:10px">
+    <div class="big-stat"><div class="v">${cs.totalFours}</div><div class="l">Fours</div></div>
+    <div class="big-stat"><div class="v g">${cs.totalSixes}</div><div class="l">Sixes</div></div>
+    <div class="big-stat"><div class="v y">${cs.econ}</div><div class="l">Bowl Econ</div></div>
+  </div>`));
+  if (cs.topRun || cs.topWkt || cs.motmLeader){
+    const awards = el(`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px"></div>`);
+    if (cs.topRun) awards.append(el(`<div class="stat-card motm-card" style="text-align:center"><div class="h" style="justify-content:center"><b>🏏 Top Run-scorer</b></div><div style="margin-top:4px"><b>${cs.topRun.n}</b><br><span style="color:var(--green);font-weight:900">${cs.topRun.runs} runs</span></div></div>`));
+    if (cs.topWkt) awards.append(el(`<div class="stat-card motm-card" style="text-align:center"><div class="h" style="justify-content:center"><b>🎯 Top Wicket-taker</b></div><div style="margin-top:4px"><b>${cs.topWkt.n}</b><br><span style="color:var(--red);font-weight:900">${cs.topWkt.wickets} wkts</span></div></div>`));
+    if (cs.motmLeader && cs.motmLeader.motm > 0) awards.append(el(`<div class="stat-card motm-card" style="text-align:center"><div class="h" style="justify-content:center"><b>🏅 MOTM Leader</b></div><div style="margin-top:4px"><b>${cs.motmLeader.n}</b><br><span style="color:var(--gold);font-weight:900">${cs.motmLeader.motm} medals</span></div></div>`));
+    wrap.append(awards);
+  }
+  return wrap;
+}
 function renderGameOver(){
   const wrap = el(`<div></div>`);
-  const trophies = ["ipl","psl","bbl","cl"].filter(k=>S.trophies[k]);
+  const cs = buildCareerSummary();
   const tNames = { ipl:"IPL", psl:"PSL", bbl:"BBL", cl:"Champions League" };
   wrap.append(el(`<div class="gameover">
     <h1>CAREER ENDED</h1>
     <p>You ran out of lives.</p>
-    <p style="margin-top:8px;font-size:14px">Trophies won: ${trophies.length?trophies.map(k=>`🏆 ${tNames[k]}`).join(" · "):"none"}</p>
+    <p style="margin-top:8px;font-size:14px">Trophies won: ${cs.trophies.length?cs.trophies.map(k=>`🏆 ${tNames[k]}`).join(" · "):"none"}</p>
   </div>`));
+  wrap.append(renderCareerStats(cs));
   const row = el(`<div class="row" style="justify-content:center;margin-top:20px"></div>`);
   const a = el(`<button class="primary" style="padding:14px 28px;font-size:15px">Start a new career</button>`);
   a.onclick = () => reset();
@@ -3405,9 +3466,10 @@ function renderGameOver(){
 
 function renderWin(){
   setTimeout(()=>{
+    sfx("win");
     const c = document.createElement("div"); c.className = "confetti";
     const colors = ['#f5c451','#3ddc97','#5aa9ff','#ff5d73','#a578f0'];
-    for (let i=0;i<80;i++){
+    for (let i=0;i<120;i++){
       const p = document.createElement("i");
       p.style.left = Math.random()*100+'%';
       p.style.background = colors[Math.floor(Math.random()*colors.length)];
@@ -3416,27 +3478,55 @@ function renderWin(){
       c.appendChild(p);
     }
     document.body.appendChild(c);
-    setTimeout(()=>c.remove(), 6000);
+    setTimeout(()=>c.remove(), 8000);
   },50);
+  const cs = buildCareerSummary();
+  // Undefeated check — true if total wins == matches played and at least one match
+  // (player stats don't track loss-per-match, so we approximate from careerLog)
+  const wonTournaments = (S.careerLog||[]).filter(e=>e.won).length;
+  const lostTournaments = (S.careerLog||[]).filter(e=>!e.won).length;
+  const undefeated = lostTournaments === 0;
+  // Persist undefeated achievement
+  try {
+    const past = JSON.parse(localStorage.getItem("achievements")||"{}");
+    if (undefeated) past.undefeatedGrandSlam = (past.undefeatedGrandSlam||0)+1;
+    past.grandSlams = (past.grandSlams||0)+1;
+    localStorage.setItem("achievements", JSON.stringify(past));
+  } catch(e){}
   const wrap = el(`<div></div>`);
   wrap.append(el(`<div class="hero" style="background:radial-gradient(ellipse at center,#3a2a08 0%,transparent 60%)">
-    <h1 style="font-size:72px;letter-spacing:4px">🏆🏆🏆</h1>
+    <h1 style="font-size:72px;letter-spacing:4px">🏆🏆🏆🏆</h1>
     <h1 style="font-size:48px;background:linear-gradient(180deg,#f5c451,#d4a435);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">GRAND SLAM</h1>
-    <p>You won the IPL, PSL, Big Bash & Champions League. Legendary career.</p>
+    <p>You won the IPL, PSL, Big Bash & Champions League. ${undefeated?'<b style="color:var(--green)">Undefeated.</b>':''} Legendary career.</p>
   </div>`));
+  // Next-challenge call to action
+  if (undefeated){
+    wrap.append(el(`<div class="narrative" style="border-color:var(--gold-bright);background:linear-gradient(135deg,rgba(245,196,81,.1),rgba(232,196,120,.04))">
+      <h3 style="color:var(--gold-bright)">🐐 UNDEFEATED LEGEND</h3>
+      <p>You didn't drop a single tournament. Untouchable.</p>
+      <p class="epi">Next mission: do it again — start a new career and go undefeated through every single tournament without losing a single match. Eternal glory awaits.</p>
+    </div>`));
+  } else {
+    wrap.append(el(`<div class="narrative">
+      <h3 style="color:var(--green)">🎯 NEXT CHALLENGE</h3>
+      <p>You won the Grand Slam with ${lostTournaments} setback${lostTournaments===1?'':'s'} along the way.</p>
+      <p class="epi">Now go undefeated. Start a new career and don't lose a single tournament. The Undefeated Legend title awaits.</p>
+    </div>`));
+  }
+  wrap.append(renderCareerStats(cs));
   const row = el(`<div class="row" style="justify-content:center;margin-top:20px;gap:10px"></div>`);
   const share = el(`<button class="share-btn" style="padding:14px 24px;font-size:15px">📸 Share Grand Slam</button>`);
   share.onclick = () => {
     shareResult({
       title:"GRAND SLAM",
-      subtitle:"All four trophies",
-      trophyEmoji:"🏆🏆🏆🏆",
-      headline:"I won the GRAND SLAM!",
-      body:"IPL · PSL · Big Bash · Champions League",
-      shareText:"🏆🏆🏆🏆 I just won the Grand Slam in Whitewash Cricket — IPL, PSL, BBL, Champions League. Think you can match it?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/"
+      subtitle: undefeated ? "UNDEFEATED LEGEND" : "All four trophies",
+      trophyEmoji: undefeated ? "🐐🏆🏆🏆🏆" : "🏆🏆🏆🏆",
+      headline: undefeated ? "UNDEFEATED GRAND SLAM!" : "I won the GRAND SLAM!",
+      body: undefeated ? "Won every tournament without losing one." : "IPL · PSL · Big Bash · Champions League",
+      shareText: (undefeated?"🐐 UNDEFEATED ":"🏆🏆🏆🏆 ") + "I just won the Grand Slam in Whitewash Cricket. Think you can match it?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/"
     });
   };
-  const a = el(`<button class="primary" style="padding:14px 28px;font-size:15px">Start a new career</button>`);
+  const a = el(`<button class="primary" style="padding:14px 28px;font-size:15px">${undefeated?'Defend the legacy →':'Go undefeated next time →'}</button>`);
   a.onclick = () => reset();
   row.append(share, a);
   wrap.append(row);
