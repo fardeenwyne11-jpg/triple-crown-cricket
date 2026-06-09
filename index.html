@@ -172,6 +172,28 @@
   .big-stat .v.r{color:var(--red)}
   .big-stat .v.b{color:var(--blue)}
   .big-stat .l{font-size:11px;color:var(--muted);letter-spacing:1.2px;margin-top:4px;text-transform:uppercase;font-weight:700}
+
+  /* Auction */
+  .auction-status{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:14px;flex-wrap:wrap;gap:12px}
+  .auction-status .it{display:flex;flex-direction:column}
+  .auction-status .it small{font-size:10px;color:var(--muted);letter-spacing:1.5px;font-weight:800;text-transform:uppercase}
+  .auction-status .it b{font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums;font-weight:900}
+  .auction-status .it b.green{color:var(--green)}
+  .auction-status .it b.gold{color:var(--gold-bright)}
+  .auction-status .it b.red{color:var(--red)}
+
+  .auction-lot{background:linear-gradient(160deg,var(--panel2),var(--panel));border:2px solid var(--gold);border-radius:16px;padding:24px;text-align:center;margin-bottom:14px;box-shadow:0 8px 28px rgba(232,196,120,.12)}
+  .auction-lot .lot-no{font-size:10px;color:var(--muted);letter-spacing:2px;font-weight:800;margin-bottom:10px}
+  .auction-lot .auction-avatar{margin-bottom:14px}
+  .auction-lot h2.nm{margin:0;font-size:26px;color:var(--ink);letter-spacing:.3px;text-transform:none;font-weight:900}
+  .auction-lot .src{color:var(--muted);font-size:13px;margin:6px 0 12px;font-weight:600}
+  .auction-lot .roles{display:flex;gap:6px;justify-content:center;margin:8px 0 14px;flex-wrap:wrap}
+  .auction-lot .pricetag{display:inline-flex;align-items:baseline;gap:6px;background:var(--bg);padding:10px 18px;border-radius:10px;border:1px solid var(--line);margin:8px 0}
+  .auction-lot .pricetag .lbl{font-size:11px;color:var(--muted);letter-spacing:1.5px;font-weight:800}
+  .auction-lot .pricetag .px{font-size:32px;color:var(--gold-bright);font-weight:900;font-variant-numeric:tabular-nums}
+  .auction-lot .pricetag .c{font-size:13px;color:var(--gold);font-weight:700}
+  .auction-actions{display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+  .auction-actions button{padding:14px 28px;font-size:14px;min-width:140px}
   .spin-btn:active{transform:translateY(0)}
 
   .reel{height:90px;display:block;position:relative;overflow:hidden;margin:8px 0 4px;border-radius:10px;background:var(--bg-alt);border:1px solid var(--line)}
@@ -567,6 +589,71 @@ const TEAM_SEASONS = [
     { n:"Harshit Rana",      roles:["PAC"], season:80, prime:82 },
     { n:"Vaibhav Arora",     roles:["PAC"], season:78, prime:80 }
   ]},
+  { team:"Sunrisers Hyderabad", year:2024, fmt:"t20", league:"ipl", trophy:"IPL — Finalists", squad:[
+    { n:"Travis Head",       roles:["OPN"], season:90, prime:88 },
+    { n:"Abhishek Sharma",   roles:["OPN","AR"], season:86, prime:86 },
+    { n:"Rahul Tripathi",    roles:["BAT"], season:80, prime:82 },
+    { n:"Aiden Markram",     roles:["BAT","AR"], season:84, prime:86 },
+    { n:"Heinrich Klaasen",  roles:["WK","FIN"], season:92, prime:92 },
+    { n:"Nitish Reddy",      roles:["AR","BAT"], season:80, prime:82 },
+    { n:"Pat Cummins",       roles:["PAC","AR"], season:90, prime:92 },
+    { n:"Bhuvneshwar Kumar", roles:["PAC"], season:84, prime:86 },
+    { n:"T. Natarajan",      roles:["PAC"], season:82, prime:84 },
+    { n:"Mayank Markande",   roles:["SPN"], season:78, prime:80 },
+    { n:"Shahbaz Ahmed",     roles:["AR","SPN"], season:78, prime:78 }
+  ]},
+  { team:"Rajasthan Royals", year:2024, fmt:"t20", league:"ipl", trophy:"IPL — Semi-Finalists", squad:[
+    { n:"Yashasvi Jaiswal",  roles:["OPN"], season:90, prime:88 },
+    { n:"Jos Buttler",       roles:["OPN","WK","FIN"], season:90, prime:92 },
+    { n:"Sanju Samson",      roles:["WK","BAT"], season:86, prime:86 },
+    { n:"Riyan Parag",       roles:["BAT","AR"], season:84, prime:84 },
+    { n:"Dhruv Jurel",       roles:["WK","BAT"], season:80, prime:80 },
+    { n:"Shimron Hetmyer",   roles:["FIN","BAT"], season:84, prime:86 },
+    { n:"Ravichandran Ashwin",roles:["AR","SPN"], season:84, prime:90 },
+    { n:"Yuzvendra Chahal",  roles:["SPN"], season:82, prime:84 },
+    { n:"Trent Boult",       roles:["PAC"], season:86, prime:90 },
+    { n:"Avesh Khan",        roles:["PAC"], season:80, prime:82 },
+    { n:"Sandeep Sharma",    roles:["PAC"], season:78, prime:80 }
+  ]},
+  { team:"Royal Challengers Bangalore", year:2024, fmt:"t20", league:"ipl", trophy:"IPL — Playoffs", squad:[
+    { n:"Virat Kohli",       roles:["OPN","BAT"], season:92, prime:95 },
+    { n:"Faf du Plessis",    roles:["OPN"], season:86, prime:88 },
+    { n:"Rajat Patidar",     roles:["BAT"], season:84, prime:86 },
+    { n:"Glenn Maxwell",     roles:["AR","BAT"], season:84, prime:88 },
+    { n:"Cameron Green",     roles:["AR","PAC"], season:82, prime:84 },
+    { n:"Dinesh Karthik",    roles:["WK","FIN"], season:84, prime:84 },
+    { n:"Mahipal Lomror",    roles:["AR","BAT"], season:76, prime:78 },
+    { n:"Mohammed Siraj",    roles:["PAC"], season:84, prime:86 },
+    { n:"Yash Dayal",        roles:["PAC"], season:80, prime:82 },
+    { n:"Lockie Ferguson",   roles:["PAC"], season:84, prime:86 },
+    { n:"Karn Sharma",       roles:["SPN"], season:78, prime:78 }
+  ]},
+  { team:"Mumbai Indians", year:2024, fmt:"t20", league:"ipl", trophy:"IPL — Group Stage", squad:[
+    { n:"Rohit Sharma",      roles:["OPN"], season:86, prime:90 },
+    { n:"Ishan Kishan",      roles:["WK","BAT"], season:82, prime:88 },
+    { n:"Suryakumar Yadav",  roles:["BAT","FIN"], season:88, prime:92 },
+    { n:"Tilak Varma",       roles:["BAT"], season:84, prime:86 },
+    { n:"Hardik Pandya",     roles:["AR","FIN"], season:80, prime:88 },
+    { n:"Tim David",         roles:["FIN"], season:82, prime:86 },
+    { n:"Romario Shepherd",  roles:["AR","PAC"], season:80, prime:82 },
+    { n:"Piyush Chawla",     roles:["SPN"], season:76, prime:78 },
+    { n:"Jasprit Bumrah",    roles:["PAC"], season:94, prime:96 },
+    { n:"Gerald Coetzee",    roles:["PAC"], season:82, prime:84 },
+    { n:"Akash Madhwal",     roles:["PAC"], season:78, prime:80 }
+  ]},
+  { team:"Chennai Super Kings", year:2024, fmt:"t20", league:"ipl", trophy:"IPL — Playoffs", squad:[
+    { n:"Ruturaj Gaikwad",   roles:["OPN"], season:88, prime:88 },
+    { n:"Devon Conway",      roles:["OPN"], season:84, prime:86 },
+    { n:"Daryl Mitchell",    roles:["BAT","AR"], season:80, prime:84 },
+    { n:"Shivam Dube",       roles:["AR","BAT"], season:82, prime:82 },
+    { n:"Ravindra Jadeja",   roles:["AR","SPN"], season:84, prime:88 },
+    { n:"MS Dhoni",          roles:["WK","FIN"], season:80, prime:90 },
+    { n:"Sameer Rizvi",      roles:["BAT"], season:76, prime:78 },
+    { n:"Deepak Chahar",     roles:["PAC"], season:80, prime:84 },
+    { n:"Mustafizur Rahman", roles:["PAC"], season:84, prime:88 },
+    { n:"Matheesha Pathirana",roles:["PAC"], season:84, prime:86 },
+    { n:"Maheesh Theekshana",roles:["SPN"], season:80, prime:84 }
+  ]},
   { team:"Sunrisers Hyderabad", year:2016, fmt:"t20", league:"ipl", trophy:"IPL — Champions", squad:[
     { n:"David Warner",      roles:["OPN"], season:92, prime:91 },
     { n:"Shikhar Dhawan",    roles:["OPN"], season:86, prime:88 },
@@ -686,6 +773,45 @@ const TEAM_SEASONS = [
     { n:"Mohammad Nabi",     roles:["AR"], season:82, prime:86 },
     { n:"Aamer Yamin",       roles:["AR"], season:76, prime:76 }
   ]},
+  { team:"Islamabad United", year:2024, fmt:"t20", league:"psl", trophy:"PSL — Champions", squad:[
+    { n:"Alex Hales",        roles:["OPN"], season:84, prime:88 },
+    { n:"Colin Munro",       roles:["OPN"], season:82, prime:86 },
+    { n:"Martin Guptill",    roles:["OPN"], season:80, prime:90 },
+    { n:"Shadab Khan",       roles:["AR","SPN"], season:84, prime:86 },
+    { n:"Azam Khan",         roles:["WK","FIN"], season:78, prime:80 },
+    { n:"Imad Wasim",        roles:["AR","SPN"], season:80, prime:84 },
+    { n:"Faheem Ashraf",     roles:["AR","PAC"], season:80, prime:82 },
+    { n:"Naseem Shah",       roles:["PAC"], season:86, prime:90 },
+    { n:"Hunain Shah",       roles:["PAC"], season:76, prime:76 },
+    { n:"Mubasir Khan",      roles:["AR"], season:76, prime:78 },
+    { n:"Salman Irshad",     roles:["PAC"], season:76, prime:76 }
+  ]},
+  { team:"Multan Sultans", year:2024, fmt:"t20", league:"psl", trophy:"PSL — Finalists", squad:[
+    { n:"Mohammad Rizwan",   roles:["OPN","WK"], season:90, prime:90 },
+    { n:"Usman Khan",        roles:["OPN","WK"], season:82, prime:84 },
+    { n:"Yasir Khan",        roles:["BAT"], season:76, prime:78 },
+    { n:"Iftikhar Ahmed",    roles:["BAT","AR"], season:82, prime:82 },
+    { n:"Khushdil Shah",     roles:["AR","FIN"], season:78, prime:80 },
+    { n:"Reece Topley",      roles:["PAC"], season:82, prime:84 },
+    { n:"Abbas Afridi",      roles:["PAC"], season:80, prime:82 },
+    { n:"Shahnawaz Dahani",  roles:["PAC"], season:82, prime:84 },
+    { n:"Akeal Hosein",      roles:["AR","SPN"], season:80, prime:82 },
+    { n:"Usama Mir",         roles:["SPN"], season:78, prime:80 },
+    { n:"Ihsanullah",        roles:["PAC"], season:80, prime:82 }
+  ]},
+  { team:"Lahore Qalandars", year:2024, fmt:"t20", league:"psl", trophy:"PSL — Knockouts", squad:[
+    { n:"Fakhar Zaman",      roles:["OPN"], season:84, prime:86 },
+    { n:"Shaheen Afridi",    roles:["PAC"], season:88, prime:92 },
+    { n:"Abdullah Shafique", roles:["OPN","BAT"], season:80, prime:84 },
+    { n:"Sahibzada Farhan",  roles:["BAT"], season:78, prime:78 },
+    { n:"Sikandar Raza",     roles:["AR"], season:84, prime:84 },
+    { n:"Daryl Mitchell",    roles:["BAT","AR"], season:82, prime:84 },
+    { n:"David Wiese",       roles:["AR","FIN"], season:80, prime:84 },
+    { n:"Haris Rauf",        roles:["PAC"], season:84, prime:86 },
+    { n:"Zaman Khan",        roles:["PAC"], season:78, prime:80 },
+    { n:"Rashid Khan",       roles:["AR","SPN"], season:90, prime:92 },
+    { n:"Carlos Brathwaite", roles:["AR","FIN"], season:78, prime:84 }
+  ]},
 
   /* ============ BIG BASH LEAGUE ============ */
   { team:"Perth Scorchers", year:2015, fmt:"t20", league:"bbl", trophy:"BBL — Champions", squad:[
@@ -765,6 +891,45 @@ const TEAM_SEASONS = [
     { n:"Nathan Ellis",      roles:["PAC"], season:84, prime:84 },
     { n:"Peter Siddle",      roles:["PAC"], season:78, prime:82 },
     { n:"Paddy Dooley",      roles:["SPN"], season:76, prime:76 }
+  ]},
+  { team:"Sydney Sixers", year:2024, fmt:"t20", league:"bbl", trophy:"BBL — Finalists", squad:[
+    { n:"Josh Philippe",     roles:["OPN","WK"], season:86, prime:86 },
+    { n:"Steve Smith",       roles:["BAT"], season:88, prime:94 },
+    { n:"Moises Henriques",  roles:["AR","BAT"], season:82, prime:84 },
+    { n:"James Vince",       roles:["BAT"], season:84, prime:84 },
+    { n:"Jordan Silk",       roles:["BAT","FIN"], season:80, prime:80 },
+    { n:"Daniel Hughes",     roles:["OPN"], season:80, prime:80 },
+    { n:"Hayden Kerr",       roles:["AR","PAC"], season:80, prime:82 },
+    { n:"Ben Dwarshuis",     roles:["PAC"], season:82, prime:82 },
+    { n:"Sean Abbott",       roles:["PAC"], season:84, prime:86 },
+    { n:"Todd Murphy",       roles:["SPN"], season:80, prime:82 },
+    { n:"Ben Manenti",       roles:["AR","SPN"], season:76, prime:78 }
+  ]},
+  { team:"Brisbane Heat", year:2024, fmt:"t20", league:"bbl", trophy:"BBL — Champions", squad:[
+    { n:"Josh Brown",        roles:["OPN"], season:80, prime:82 },
+    { n:"Nathan McSweeney",  roles:["OPN"], season:78, prime:80 },
+    { n:"Colin Munro",       roles:["OPN"], season:82, prime:86 },
+    { n:"Jimmy Peirson",     roles:["WK","BAT"], season:78, prime:80 },
+    { n:"Marnus Labuschagne",roles:["BAT"], season:82, prime:86 },
+    { n:"Matt Renshaw",      roles:["BAT","AR"], season:78, prime:80 },
+    { n:"Michael Neser",     roles:["AR","PAC"], season:80, prime:82 },
+    { n:"Mitchell Swepson",  roles:["SPN"], season:80, prime:82 },
+    { n:"Spencer Johnson",   roles:["PAC"], season:84, prime:84 },
+    { n:"Xavier Bartlett",   roles:["PAC"], season:82, prime:82 },
+    { n:"Paul Walter",       roles:["AR","PAC"], season:76, prime:78 }
+  ]},
+  { team:"Adelaide Strikers", year:2024, fmt:"t20", league:"bbl", trophy:"BBL — Knockouts", squad:[
+    { n:"Travis Head",       roles:["OPN"], season:88, prime:88 },
+    { n:"Matt Short",        roles:["OPN","AR"], season:84, prime:84 },
+    { n:"Chris Lynn",        roles:["BAT","FIN"], season:80, prime:86 },
+    { n:"Alex Carey",        roles:["WK","BAT"], season:80, prime:82 },
+    { n:"Henry Hunt",        roles:["BAT"], season:76, prime:78 },
+    { n:"Jamie Overton",     roles:["AR","PAC"], season:80, prime:82 },
+    { n:"Wes Agar",          roles:["PAC"], season:78, prime:80 },
+    { n:"D'Arcy Short",      roles:["AR","BAT"], season:78, prime:84 },
+    { n:"Cameron Boyce",     roles:["SPN"], season:80, prime:82 },
+    { n:"Rashid Khan",       roles:["AR","SPN"], season:88, prime:92 },
+    { n:"Lance Morris",      roles:["PAC"], season:80, prime:82 }
   ]},
 
   /* ============ CARIBBEAN PREMIER LEAGUE (for CL) ============ */
@@ -893,7 +1058,7 @@ const TEST_NATIONS = ["Australia","India","England","New Zealand","Pakistan","So
 function newSave(){
   return {
     screen:"setup",
-    setup:{ difficulty:"normal", showRatings:true, primeMode:true, eraMin:1975, eraMax:2024, oppDifficulty:"normal" },
+    setup:{ difficulty:"normal", showRatings:true, primeMode:true, eraMin:1975, eraMax:2024, oppDifficulty:"normal", draftMode:"spin" },
     rerollsLeft:1, rerollsTotal:1,
     squad: SLOTS.map(s => ({ id:s.id, label:s.label, player:null })),
     currentSpin:null,
@@ -1142,8 +1307,90 @@ function startDraft(){
   S.squad = SLOTS.map(s => ({ id:s.id, label:s.label, player:null }));
   S.trophies = { ipl:false, psl:false, bbl:false, cl:false };
   S.careerLog = []; S.currentSpin = null; S.tour = null;
+  if (S.setup.draftMode === "auction"){
+    startAuction();
+    return;
+  }
   S.screen = "draft";
   save(); render();
+}
+
+/* ============ AUCTION ============ */
+function playerPrice(p){
+  const r = ratingOf(p);
+  // 60 → 5 credits, 96 → 45 credits, smooth curve
+  return Math.max(5, Math.round((r - 55) * 1.15));
+}
+function startAuction(){
+  // Build flat pool of {seasonIdx, playerIdx} from filtered seasons
+  const seasons = filteredSeasons();
+  const pool = [];
+  seasons.forEach(ts => {
+    ts.squad.forEach(p => pool.push({ team: ts.team, year: ts.year, fmt: ts.fmt, p }));
+  });
+  // De-duplicate by player name (keep highest prime)
+  const seen = {};
+  pool.forEach(x => {
+    if (!seen[x.p.n] || ratingOf(seen[x.p.n].p) < ratingOf(x.p)) seen[x.p.n] = x;
+  });
+  S.auctionQueue = shuffle(Object.values(seen));
+  S.auctionBudget = 250;     // total credits
+  S.auctionCurrent = null;
+  S.auctionSkipped = 0;
+  S.screen = "auction";
+  nextAuctionLot();
+}
+function nextAuctionLot(){
+  if (!S.auctionQueue || picksRemaining() === 0){
+    if (picksRemaining() === 0) { S.screen = "hub"; save(); render(); return; }
+  }
+  // If running out of pool, reshuffle skipped
+  if (!S.auctionQueue || S.auctionQueue.length === 0){
+    S.auctionQueue = shuffle(Object.values(window._auctionAll || {}));
+  }
+  // Force-WK constraint on last pick
+  let candidate = null;
+  if (picksRemaining() === 1 && !hasKeeper()){
+    const wkIdx = S.auctionQueue.findIndex(x => x.p.roles.includes("WK") && !alreadyPicked(x.p.n));
+    if (wkIdx >= 0) { candidate = S.auctionQueue.splice(wkIdx,1)[0]; }
+  }
+  if (!candidate){
+    while (S.auctionQueue.length && alreadyPicked(S.auctionQueue[0].p.n)) S.auctionQueue.shift();
+    candidate = S.auctionQueue.shift();
+  }
+  if (!candidate) { S.screen = "hub"; save(); render(); return; }
+  S.auctionCurrent = candidate;
+  save(); render();
+}
+function buyAuctionLot(){
+  if (!S.auctionCurrent) return;
+  const lot = S.auctionCurrent;
+  const price = playerPrice(lot.p);
+  if (S.auctionBudget < price) return;
+  // Check if enough budget for remaining picks (each remaining at least 5 credits)
+  const slotsLeft = picksRemaining();
+  const minNeeded = (slotsLeft - 1) * 5;
+  if (S.auctionBudget - price < minNeeded) {
+    alert("Not enough budget left for remaining picks (min 5 each).");
+    return;
+  }
+  S.auctionBudget -= price;
+  const emptySlot = S.squad.find(s => !s.player);
+  emptySlot.player = { ...lot.p, from: { team: lot.team, year: lot.year, fmt: lot.fmt } };
+  S.auctionCurrent = null;
+  if (picksRemaining() === 0) { S.screen = "hub"; save(); render(); return; }
+  nextAuctionLot();
+}
+function passAuctionLot(){
+  if (!S.auctionCurrent) return;
+  S.auctionSkipped++;
+  // Put at the back of the queue with a chance — once
+  if (!S.auctionCurrent.requeued) {
+    S.auctionCurrent.requeued = true;
+    S.auctionQueue.push(S.auctionCurrent);
+  }
+  S.auctionCurrent = null;
+  nextAuctionLot();
 }
 function spin(){
   const pool = filteredSeasons();
@@ -1630,6 +1877,7 @@ function render(){
   root.append(renderSidebar());
   const main = document.createElement("div"); main.className="main";
   if (S.screen === "draft") main.append(renderDraft());
+  else if (S.screen === "auction") main.append(renderAuction());
   else if (S.screen === "hub") main.append(renderHub());
   else if (S.screen === "odds") main.append(renderOdds());
   else if (S.screen === "summary") main.append(renderSummary());
@@ -1784,7 +2032,7 @@ function renderSetup(){
   const left = el(`<div class="setup-card"></div>`);
   left.append(el(`<h2>Difficulty</h2>`));
   const diff = el(`<div class="opts"></div>`);
-  [["easy","Easy","3 rerolls"],["normal","Normal","1 reroll"],["hard","Hard","0 rerolls · ratings hidden"]].forEach(([k,n,d])=>{
+  [["easy","Easy","2 rerolls · 2 lives"],["normal","Normal","1 reroll · 1 life"],["hard","Hard","0 rerolls · last chance · ratings hidden"]].forEach(([k,n,d])=>{
     const o = el(`<div class="opt ${S.setup.difficulty===k?'active':''}">${n}<small>${d}</small></div>`);
     o.onclick = () => { S.setup.difficulty=k; if (k==="hard") S.setup.showRatings=false; save(); render(); };
     diff.append(o);
@@ -1799,6 +2047,15 @@ function renderSetup(){
   });
   left.append(sr);
   const right = el(`<div class="setup-card"></div>`);
+  right.append(el(`<h2>Draft mode</h2>`));
+  const dm = el(`<div class="opts"></div>`);
+  [["spin","🏧 Spin Wheel","Random team-season offers"],["auction","💰 Auction","Bid credits for any player"]].forEach(([k,n,d])=>{
+    const o = el(`<div class="opt ${S.setup.draftMode===k?'active':''}">${n}<small>${d}</small></div>`);
+    o.onclick = () => { S.setup.draftMode=k; save(); render(); };
+    dm.append(o);
+  });
+  right.append(dm);
+
   right.append(el(`<h2>Player ratings</h2>`));
   const pm = el(`<div class="opts"></div>`);
   [[false,"Career Season","Rating from that WC year"],[true,"Prime Mode","Career-best rating"]].forEach(([v,n,d])=>{
@@ -1865,6 +2122,53 @@ function renderSidebar(){
     side.append(back);
   }
   return side;
+}
+
+function renderAuction(){
+  const wrap = el(`<div></div>`);
+  const filled = squadPicks().length;
+  const slotsLeft = picksRemaining();
+  const status = el(`<div class="auction-status">
+    <div class="it"><small>Budget</small><b class="gold">${S.auctionBudget} c</b></div>
+    <div class="it"><small>Squad</small><b class="green">${filled}/${SQUAD_SIZE}</b></div>
+    <div class="it"><small>Avg/pick</small><b>${slotsLeft?Math.floor(S.auctionBudget/slotsLeft):0} c</b></div>
+    ${!hasKeeper()?`<div class="it"><small>Status</small><b class="red">Need WK</b></div>`:''}
+  </div>`);
+  wrap.append(status);
+
+  if (!S.auctionCurrent){
+    const done = picksRemaining() === 0;
+    const box = el(`<div class="auction-lot">
+      <h2 class="nm">${done?'Auction complete!':'No more lots'}</h2>
+      <p class="muted">${done?'You filled your XI. Heading to hub…':'Use the queue or build the squad again.'}</p>
+    </div>`);
+    wrap.append(box);
+    return wrap;
+  }
+
+  const lot = S.auctionCurrent;
+  const price = playerPrice(lot.p);
+  const canAfford = S.auctionBudget >= price;
+  const slotsAfter = slotsLeft - 1;
+  const budgetAfter = S.auctionBudget - price;
+  const wouldStarve = slotsAfter > 0 && budgetAfter < slotsAfter * 5;
+  const lotEl = el(`<div class="auction-lot">
+    <div class="lot-no">LOT · ${filled+1}/${SQUAD_SIZE}</div>
+    <div class="auction-avatar">${avatarHTML({...lot.p, from:{team:lot.team}}, 88)}</div>
+    <h2 class="nm">${lot.p.n}</h2>
+    <div class="src">${flagChip(lot.team)} ${lot.team} ${lot.year}</div>
+    <div class="roles">${lot.p.roles.map(r=>`<span class="tag t-${r}">${r}</span>`).join('')}</div>
+    ${S.setup.showRatings?`<div style="margin:6px 0;color:var(--muted);font-size:13px">Rating <b style="color:var(--ink)">${ratingOf(lot.p)}</b></div>`:''}
+    <div class="pricetag"><span class="lbl">PRICE</span><span class="px">${price}</span><span class="c">c</span></div>
+    <div class="auction-actions">
+      <button class="ghost" id="passBtn">Pass</button>
+      <button class="primary" id="buyBtn" ${(!canAfford||wouldStarve)?'disabled':''}>${canAfford?(wouldStarve?'Would starve budget':'Buy at '+price+' c'):'Over budget'}</button>
+    </div>
+  </div>`);
+  lotEl.querySelector('#passBtn').onclick = passAuctionLot;
+  lotEl.querySelector('#buyBtn').onclick = buyAuctionLot;
+  wrap.append(lotEl);
+  return wrap;
 }
 
 function renderDraft(){
