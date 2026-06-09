@@ -384,6 +384,19 @@
   /* Commentary cherry-red highlight for sixes/fours */
   .c-6{color:var(--gold);text-shadow:0 0 8px rgba(245,196,81,.4)}
   .c-W{color:var(--cherry-light);text-shadow:0 0 6px rgba(212,87,102,.3)}
+
+  /* Chase target tracker */
+  .chase-box{background:linear-gradient(135deg,rgba(164,34,47,.15),rgba(245,196,81,.08));border:1px solid var(--cherry);border-radius:12px;padding:12px 16px;margin:10px 0;display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+  .chase-box .it{display:flex;flex-direction:column}
+  .chase-box .it small{font-size:10px;color:var(--muted);letter-spacing:1px;font-weight:700;text-transform:uppercase}
+  .chase-box .it b{font-size:18px;font-variant-numeric:tabular-nums;color:var(--ink);margin-top:2px}
+  .chase-box .it b.gold{color:var(--gold)}
+  .chase-box .it b.red{color:var(--cherry-light)}
+  .chase-box .it b.green{color:var(--green)}
+
+  /* Avatar background-image support */
+  .avatar.has-photo{background-color:#000 !important;background-size:cover !important;background-position:center top !important}
+  .avatar.has-photo .ini{display:none}
 </style>
 </head>
 <body>
@@ -1425,12 +1438,49 @@ function initials(name){
   if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
   return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
 }
+function escHTML(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function avatarHTML(player, size=48){
   const team = (player.from && player.from.team) || player.team || "";
   const grad = COUNTRY_GRAD[team] || "linear-gradient(135deg,#5aa9ff,#3a89e0)";
   const flag = COUNTRY_FLAGS[team] || "🏏";
   const fs = Math.round(size*0.36);
-  return `<div class="avatar" style="width:${size}px;height:${size}px;font-size:${fs}px;background:${grad}"><span>${initials(player.n)}</span><span class="flag">${flag}</span></div>`;
+  return `<div class="avatar" data-pname="${escHTML(player.n)}" style="width:${size}px;height:${size}px;font-size:${fs}px;background:${grad}"><span class="ini">${initials(player.n)}</span><span class="flag">${flag}</span></div>`;
+}
+
+const photoCache = {};
+async function fetchPlayerPhoto(name){
+  if (name in photoCache) return photoCache[name];
+  const tryUrl = async (n) => {
+    try {
+      const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(n.replace(/\s+/g,'_'))}`;
+      const r = await fetch(url);
+      if (!r.ok) return null;
+      const j = await r.json();
+      if (j.type === "disambiguation") return null;
+      const desc = ((j.description||"") + " " + (j.extract||"").slice(0,250)).toLowerCase();
+      const isCricketer = desc.includes("cricket");
+      if (!isCricketer) return null;
+      return j.thumbnail?.source || j.originalimage?.source || null;
+    } catch(e){ return null; }
+  };
+  // Try `(cricketer)` qualifier first (better for ambiguous names like Steve Smith, Mark Waugh)
+  let photo = await tryUrl(name + " (cricketer)");
+  if (!photo) photo = await tryUrl(name);
+  photoCache[name] = photo;
+  return photo;
+}
+function hydrateAvatars(){
+  document.querySelectorAll('.avatar[data-pname]').forEach(av => {
+    if (av.dataset.hydrated) return;
+    av.dataset.hydrated = "1";
+    const name = av.dataset.pname;
+    fetchPlayerPhoto(name).then(url => {
+      if (url && document.contains(av)){
+        av.style.backgroundImage = `url('${url}')`;
+        av.classList.add("has-photo");
+      }
+    });
+  });
 }
 
 function ensurePlayerStat(name){
@@ -1590,8 +1640,8 @@ function awardFig(award, kind){
 /* =========== DRAFT =========== */
 function startDraft(){
   const d = S.setup.difficulty;
-  const rerolls = d==="easy"?3 : d==="hard"?0 : 1;
-  const lives = d==="easy"?3 : d==="hard"?1 : 2;
+  const rerolls = d==="easy"?2 : d==="hard"?0 : 1;
+  const lives = d==="easy"?2 : d==="hard"?0 : 1;
   S.rerollsLeft = rerolls; S.rerollsTotal = rerolls;
   S.lives = lives; S.livesTotal = lives;
   S.playerStats = {};
@@ -1658,7 +1708,7 @@ function removeFromSlot(id){ const slot = S.squad.find(s=>s.id===id); slot.playe
 /* =========== TOURNAMENT =========== */
 function startTournament(tId){
   if (S.trophies[tId]) return;
-  if (S.lives <= 0) { S.screen = "gameover"; save(); render(); return; }
+  if (S.lives < 0) { S.screen = "gameover"; save(); render(); return; }
   const t = TOURNAMENTS.find(x=>x.id===tId);
   // WTC restricted to established Test-playing nations
   let pool = OPPONENTS;
@@ -1982,6 +2032,23 @@ function flashScore(){
     setT("liveBowler", S.tour.liveBowler || "—");
     setT("liveBowlerFig", S.tour.liveBowlerFigs || "—");
   }
+  // Update chase tracker
+  const m = S.tour.currentMatch;
+  if (m && m.target){
+    const totalInn = m.innings.length;
+    if (S.tour.currentInn === totalInn - 1){
+      const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
+      const [ovs, bs] = S.tour.liveOver.split(".").map(Number);
+      const ballsBowled = ovs*6 + bs;
+      const ballsLeft = Math.max(0, t.overs*6 - ballsBowled);
+      const need = Math.max(0, m.target - (S.tour.liveRuns||0));
+      const rrr = ballsLeft > 0 ? (need/(ballsLeft/6)) : 0;
+      const set = (id,v,cls)=>{ const e=document.getElementById(id); if (e){ e.textContent=v; if (cls){ e.className=cls; } } };
+      set("chaseNeed", need, need===0?"green":"red");
+      set("chaseBalls", ballsLeft);
+      set("chaseRRR", rrr.toFixed(2), rrr>10?"red":rrr>7?"gold":"green");
+    }
+  }
 }
 function endMatch(match){
   updatePlayerStats(match);
@@ -2005,7 +2072,7 @@ function continueAfterAwards(){
     S.careerLog.unshift({ t:t.name, won:false, lines: S.tour.scorecards.map((m,i)=>`${t.rounds[i]} v ${m.opp}: L`) });
     S.lives--;
     S.tour = null;
-    if (S.lives <= 0){ S.screen = "gameover"; save(); render(); return; }
+    if (S.lives < 0){ S.screen = "gameover"; save(); render(); return; }
     S.screen = "hub"; save(); render(); return;
   }
   S.tour.roundIdx++;
@@ -2050,6 +2117,8 @@ function render(){
   else if (S.screen === "win") main.append(renderWin());
   else if (S.screen === "gameover") main.append(renderGameOver());
   root.append(main);
+  // Lazy-load Wikipedia player photos for any avatars rendered
+  setTimeout(hydrateAvatars, 50);
 }
 
 function renderSetup(){
@@ -2150,7 +2219,7 @@ function renderDraft(){
     const box = el(`<div class="spin-box">
       <div class="lbl">SPIN FOR A WORLD CUP SQUAD</div>
       <div class="pos-left">${remaining} position${remaining===1?'':'s'} left ${wkAlert?'<span style="color:var(--gold)">· Must pick a keeper</span>':''}</div>
-      <button class="spin-btn">🎲 Spin the Wheel</button>
+      <button class="spin-btn">Spin the Wheel</button>
     </div>`);
     box.querySelector("button").onclick = spin;
     wrap.append(box);
@@ -2206,14 +2275,15 @@ function renderHub(){
 
   // Lives + opp difficulty bar
   const heartsHTML = (() => {
+    if (S.livesTotal === 0) return "";
     let h = "";
-    const total = Math.max(S.livesTotal, 1);
-    for (let i=0; i<total; i++){
+    for (let i=0; i<S.livesTotal; i++){
       h += `<span class="heart ${i>=S.lives?'lost':''}"></span>`;
     }
     return h;
   })();
-  const livesLbl = S.lives <= 0 ? `<span style="color:var(--red);font-weight:700">No lives left</span>` :
+  const livesLbl = S.lives < 0 ? `<span style="color:var(--red);font-weight:700">No lives left</span>` :
+    S.lives === 0 ? `<b style="color:var(--gold)">Last chance!</b>` :
     `<b>${S.lives}</b> ${S.lives===1?'life':'lives'} left`;
   const status = el(`<div class="panel" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between">
     <div class="row"><span class="muted" style="font-size:12px;letter-spacing:1px;font-weight:700;text-transform:uppercase">Lives</span> <span class="lives">${heartsHTML}</span> <span style="margin-left:4px;font-size:13px">${livesLbl}</span></div>
@@ -2244,8 +2314,8 @@ function renderHub(){
   TOURNAMENTS.forEach(t => {
     const r = avg(squadPicks().map(s=>ratingOf(s.player)));
     const won = S.trophies[t.id];
-    const canPlay = !won && S.lives > 0;
-    const btnText = won ? 'Already won' : (S.lives <= 0 ? 'Career ended' : 'Play');
+    const canPlay = !won && S.lives >= 0;
+    const btnText = won ? 'Already won' : (S.lives < 0 ? 'Career ended' : 'Play');
     const c = el(`<div class="spin-box" style="padding:18px;text-align:left">
       <div style="font-size:22px"><span style="font-size:28px">${t.icon}</span> <b>${t.name.replace('ICC ','')}</b></div>
       <div class="muted" style="font-size:12px;margin:4px 0 10px">${t.rounds.join(' → ')} · ${t.overs} overs</div>
@@ -2450,6 +2520,17 @@ function renderLive(){
   sb.append(el(`<div class="sb-bar"><i style="width:0%"></i></div>`));
   wrap.append(sb);
 
+  // Chase tracker — only on the final (chasing) innings
+  const isChase = innIdx === totalInn - 1 && m.target;
+  if (isChase){
+    wrap.append(el(`<div class="chase-box" id="chaseBox">
+      <div class="it"><small>Target</small><b class="gold">${m.target}</b></div>
+      <div class="it"><small>Need</small><b id="chaseNeed" class="red">${m.target}</b></div>
+      <div class="it"><small>Balls left</small><b id="chaseBalls">${t.overs*6}</b></div>
+      <div class="it"><small>Req rate</small><b id="chaseRRR" class="gold">${(m.target/t.overs).toFixed(2)}</b></div>
+    </div>`));
+  }
+
   // Current batters + bowler info
   const li = el(`<div class="live-info">
     <div class="live-box">
@@ -2525,7 +2606,7 @@ function renderScorecard(){
   back.onclick = () => {
     if (!m.won) S.lives--;
     S.tour=null;
-    if (S.lives <= 0) S.screen = "gameover"; else S.screen = "hub";
+    if (S.lives < 0) S.screen = "gameover"; else S.screen = "hub";
     save(); render();
   };
   const cont = el(`<button class="primary">View awards →</button>`);
