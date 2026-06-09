@@ -1247,7 +1247,7 @@ const CL_POOL = [
 ];
 
 /* =========== STATE =========== */
-const SAVE_KEY = "tc_cricket_v7";
+const SAVE_KEY = "tc_cricket_v8";
 let S = load() || newSave();
 let animTimer = null;
 const SQUAD_SIZE = 11;
@@ -1585,14 +1585,14 @@ function nextAuctionLot(){
   clearAuctionTimer();
   if (picksRemaining() === 0){ S.screen = "hub"; save(); render(); return; }
   const slotsLeft = picksRemaining();
-  // FIRE SALE when budget can't cover one more pick
+  // FIRE SALE when budget can't cover one more pick at min price
   if (S.auctionBudget < slotsLeft * AUCTION_MIN_PRICE) {
     S.auctionFireSale = true;
     S.auctionBudget = Math.max(S.auctionBudget, slotsLeft * AUCTION_MIN_PRICE);
     sfx("warning");
   }
-  // Refill queue if empty
-  if (S.auctionQueue.length < 3){
+  // Refill queue if low
+  if (S.auctionQueue.length < 5){
     const seasons = filteredSeasons();
     const refill = [];
     seasons.forEach(ts => ts.squad.forEach(p => {
@@ -1600,14 +1600,38 @@ function nextAuctionLot(){
     }));
     S.auctionQueue = S.auctionQueue.concat(shuffle(refill));
   }
+  // Budget cap for current pick:
+  //   Spend at most (budget - 2c × other slots) on this one player.
+  //   Guarantees every remaining slot can still be filled at min price.
+  const maxAffordable = S.auctionFireSale
+      ? Infinity
+      : S.auctionBudget - (slotsLeft - 1) * AUCTION_MIN_PRICE;
+
   let candidate = null;
+  // Last-slot WK enforcement
   if (slotsLeft === 1 && !hasKeeper()){
-    const wkIdx = S.auctionQueue.findIndex(x => x.p.roles.includes("WK") && !alreadyPicked(x.p.n));
-    if (wkIdx >= 0) candidate = S.auctionQueue.splice(wkIdx,1)[0];
+    const wkIdx = S.auctionQueue.findIndex(x => x && x.p.roles.includes("WK") && !alreadyPicked(x.p.n) && playerPrice(x.p) <= maxAffordable);
+    if (wkIdx >= 0) candidate = S.auctionQueue.splice(wkIdx, 1)[0];
   }
+  // Normal pick: find first affordable AND not-already-picked
   if (!candidate){
-    while (S.auctionQueue.length && alreadyPicked(S.auctionQueue[0].p.n)) S.auctionQueue.shift();
-    candidate = S.auctionQueue.shift();
+    const idx = S.auctionQueue.findIndex(x => x && !alreadyPicked(x.p.n) && playerPrice(x.p) <= maxAffordable);
+    if (idx >= 0) candidate = S.auctionQueue.splice(idx, 1)[0];
+  }
+  // Nothing affordable in entire queue → fire sale, then pick anyone
+  if (!candidate){
+    S.auctionFireSale = true;
+    S.auctionBudget = Math.max(S.auctionBudget, slotsLeft * AUCTION_MIN_PRICE);
+    sfx("warning");
+    // Re-search the queue under fire sale (every player is 2c, all affordable)
+    if (slotsLeft === 1 && !hasKeeper()){
+      const wkIdx = S.auctionQueue.findIndex(x => x && x.p.roles.includes("WK") && !alreadyPicked(x.p.n));
+      if (wkIdx >= 0) candidate = S.auctionQueue.splice(wkIdx, 1)[0];
+    }
+    if (!candidate){
+      while (S.auctionQueue.length && alreadyPicked(S.auctionQueue[0].p.n)) S.auctionQueue.shift();
+      candidate = S.auctionQueue.shift();
+    }
   }
   if (!candidate){ S.screen = "hub"; save(); render(); return; }
   S.auctionCurrent = candidate;
@@ -2774,17 +2798,58 @@ function playLeagueMatch(){
   if (f.home.isMe || f.away.isMe){
     if ((f.home.isMe && r.winner==="home") || (f.away.isMe && r.winner==="away")) sfx("six");
     else sfx("wicket");
+    // Distribute league-match stats to your players so summary shows real numbers
+    const userRuns = f.home.isMe ? r.homeScore : r.awayScore;
+    const oppRuns  = f.home.isMe ? r.awayScore : r.homeScore;
+    distributeLeagueMatchStats(userRuns, oppRuns);
   }
   lg.fixtureIdx++;
   lg.standings.sort((a,b)=>{
     if (b.pts !== a.pts) return b.pts - a.pts;
     return ((b.F-b.A)/Math.max(1,b.P)) - ((a.F-a.A)/Math.max(1,a.P));
   });
-  // Only surface the user's own fixtures in the results feed; AI-vs-AI matches
-  // are still simulated (they shape the standings) but stay hidden.
   if (f.home.isMe || f.away.isMe) appendLeagueResult(f, r);
   updateStandingsTable();
   updateLeagueProgress();
+}
+// Approximate per-player contribution from a single user-XI league match.
+// (League sim is team-level, so we estimate rather than ball-by-ball.)
+function distributeLeagueMatchStats(teamRuns, runsConceded){
+  const xi = squadPicks().map(s => s.player);
+  if (!xi.length) return;
+  // BATTERS — top 6 by rating, skewed to middle order
+  const isBat = p => p.roles.includes("OPN")||p.roles.includes("BAT")||p.roles.includes("FIN")||p.roles.includes("WK")||p.roles.includes("AR");
+  const batters = xi.filter(isBat).sort((a,b)=>ratingOf(b)-ratingOf(a)).slice(0,6);
+  const batDist = [0.22, 0.25, 0.20, 0.15, 0.10, 0.08];
+  let runsLeft = teamRuns;
+  batters.forEach((p, i) => {
+    const st = ensurePlayerStat(p.n);
+    const share = Math.max(0, Math.round(teamRuns * batDist[i] * (0.6 + Math.random()*0.8)));
+    const playerRuns = Math.min(share, runsLeft);
+    runsLeft -= playerRuns;
+    const balls = Math.max(playerRuns ? Math.ceil(playerRuns / (1.3 + Math.random()*0.4)) : 0, 0);
+    st.runs += playerRuns;
+    st.balls += balls;
+    if (playerRuns > 20) st.fours += Math.floor(Math.random()*4) + 1;
+    if (playerRuns > 35) st.sixes += Math.floor(Math.random()*3) + 1;
+  });
+  // BOWLERS — top 5 by bowl skill share the wickets (assume ~7 fall on avg)
+  const isBowl = p => p.roles.includes("PAC")||p.roles.includes("SPN")||p.roles.includes("AR");
+  const bowlers = xi.filter(isBowl).sort((a,b)=>bowlSkill(b)-bowlSkill(a)).slice(0,5);
+  if (bowlers.length){
+    const totalWkts = Math.min(10, 4 + Math.floor(Math.random()*5));
+    let wktsLeft = totalWkts;
+    bowlers.forEach((p, i) => {
+      const st = ensurePlayerStat(p.n);
+      const target = Math.min(wktsLeft, Math.floor((totalWkts / bowlers.length) * (0.5 + Math.random()*1.2)));
+      st.wickets += target;
+      wktsLeft -= target;
+      st.ballsBowled += Math.round(24 * (1 - i*0.12));
+      st.runsConceded += Math.round((runsConceded / bowlers.length) * (0.7 + Math.random()*0.6));
+    });
+  }
+  // Match credit for the whole XI
+  xi.forEach(p => ensurePlayerStat(p.n).matches++);
 }
 function finishLeagueSim(){
   const lg = S.tour.league;
@@ -2896,7 +2961,7 @@ function renderLeagueSim(){
   if (!lg.done){
     const sk = el(`<div class="row" style="justify-content:center;margin-top:14px"><button class="ghost" id="skipLeague">⏭ Skip to final table</button></div>`);
     sk.querySelector('#skipLeague').onclick = () => {
-      if (_leagueInt) { clearInterval(_leagueInt); _leagueInt = null; }
+      if (_leagueInt) { clearTimeout(_leagueInt); clearInterval(_leagueInt); _leagueInt = null; }
       while (S.tour.league.fixtureIdx < S.tour.league.fixtures.length){
         const f = S.tour.league.fixtures[S.tour.league.fixtureIdx];
         const r = simSingleLeagueMatch(f.home, f.away);
@@ -2909,6 +2974,12 @@ function renderLeagueSim(){
         as.F += r.awayScore; as.A += r.homeScore;
         if (r.winner === "home"){ hs.W++; hs.pts+=2; as.L++; }
         else { as.W++; as.pts+=2; hs.L++; }
+        // Distribute user-match stats when skipping too
+        if (f.home.isMe || f.away.isMe){
+          const userRuns = f.home.isMe ? r.homeScore : r.awayScore;
+          const oppRuns  = f.home.isMe ? r.awayScore : r.homeScore;
+          distributeLeagueMatchStats(userRuns, oppRuns);
+        }
         lgg.fixtureIdx++;
       }
       S.tour.league.standings.sort((a,b)=>{
