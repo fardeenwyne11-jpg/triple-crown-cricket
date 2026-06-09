@@ -403,6 +403,7 @@
   .award.motm .lbl{color:var(--gold-deep)}
   .avatar{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;color:#fff;position:relative;box-shadow:0 4px 12px rgba(0,0,0,.18);text-shadow:0 1px 2px rgba(0,0,0,.4);border:3px solid #fff}
   .avatar .flag{position:absolute;bottom:-4px;right:-4px;font-size:18px;background:var(--panel);border-radius:50%;padding:0 3px;border:2px solid var(--gold);line-height:1.2}
+  .avatar.flag-av{background:var(--panel2);text-shadow:none;overflow:hidden;line-height:1}
   .award .nm{font-weight:900;font-size:18px;color:var(--ink);margin-top:8px}
   .award .from{color:var(--muted);font-size:11px;margin:2px 0 8px;font-weight:700}
   .award .fig{font-size:15px;font-weight:800;margin-top:8px;color:var(--ink);background:var(--panel);padding:6px 10px;border-radius:8px;display:inline-block;border:1px solid var(--line)}
@@ -1377,12 +1378,24 @@ function initials(name){
   return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
 }
 function escHTML(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+// Player nationality (ISO 3166-1 alpha-2). West Indians use their island nation;
+// England/Scotland/Wales use GB. ~6 obscure players are unmapped -> initials fallback.
+const PLAYER_NAT = {"AB de Villiers":"ZA","Aamer Yamin":"PK","Aaron Hardie":"AU","Abbas Afridi":"PK","Abdullah Shafique":"PK","Abhinav Manohar":"IN","Abhishek Sharma":"IN","Adam Voges":"AU","Adam Zampa":"AU","Ahmed Shehzad":"PK","Aiden Blizzard":"AU","Aiden Markram":"ZA","Ajinkya Rahane":"IN","Akash Madhwal":"IN","Akeal Hosein":"TT","Akif Javed":"PK","Akshar Patel":"IN","Albie Morkel":"ZA","Alex Carey":"AU","Alex Hales":"GB","Ali Khan":"US","Alzarri Joseph":"AG","Ambati Rayudu":"IN","Andre Russell":"JM","Andrew Tye":"AU","Anil Kumble":"IN","Anrich Nortje":"ZA","Anwar Ali":"PK","Arshad Iqbal":"PK","Ashton Agar":"AU","Ashton Turner":"AU","Asif Afridi":"PK","Asif Ali":"PK","Ateeq Javid":"GB","Avesh Khan":"IN","Axar Patel":"IN","Azam Khan":"PK","Babar Azam":"PK","Barinder Sran":"IN","Ben Cutting":"AU","Ben Dwarshuis":"AU","Ben Hilfenhaus":"AU","Ben Manenti":"AU","Ben McDermott":"AU","Bhuvneshwar Kumar":"IN","Boyd Rankin":"IE","Brad Hogg":"AU","Brendan Drew":"AU","Brendan Taylor":"ZW","Brendon McCullum":"NZ","Brett Lee":"AU","Caleb Jewell":"AU","Cameron Boyce":"AU","Cameron Delport":"ZA","Cameron Gannon":"AU","Cameron Green":"AU","Carlos Brathwaite":"BB","Chadwick Walton":"JM","Cheteshwar Pujara":"IN","Chris Benham":"AU","Chris Gayle":"JM","Chris Green":"AU","Chris Jordan":"GB","Chris Lynn":"AU","Chris Woakes":"GB","Clint McKay":"AU","Colin Munro":"NZ","D'Arcy Short":"AU","Dale Steyn":"ZA","Daniel Christian":"AU","Daniel Hughes":"AU","Daniel Vettori":"NZ","Daniel Worrall":"AU","Darren Bravo":"TT","Darren Sammy":"LC","Daryl Mitchell":"NZ","David Griffiths":"GB","David Hussey":"AU","David Miller":"ZA","David Warner":"AU","David Wiese":"NA","Deepak Chahar":"IN","Deepak Hooda":"IN","Denesh Ramdin":"TT","Devon Conway":"NZ","Dhruv Jurel":"IN","Dimitri Mascarenhas":"GB","Dinesh Karthik":"IN","Dominic Cork":"GB","Doug Bollinger":"AU","Dwaine Pretorius":"ZA","Dwayne Bravo":"TT","Eoin Morgan":"IE","Faf du Plessis":"ZA","Faheem Ashraf":"PK","Fakhar Zaman":"PK","Fawad Ahmed":"AU","Gautam Gambhir":"IN","George Bailey":"AU","Gerald Coetzee":"ZA","Glenn Maxwell":"AU","Graeme Smith":"ZA","Hammad Azam":"PK","Hardik Pandya":"IN","Haris Rauf":"PK","Harry Brook":"GB","Harry Gurney":"GB","Harshit Rana":"IN","Hasan Ali":"PK","Hayden Kerr":"AU","Heinrich Klaasen":"ZA","Henry Hunt":"AU","Hussain Talat":"PK","Ian Bell":"GB","Iftikhar Ahmed":"PK","Ihsanullah":"PK","Imad Wasim":"PK","Imran Khan":"PK","Imran Tahir":"ZA","Iqbal Abdulla":"IN","Ishan Kishan":"IN","JP Duminy":"ZA","Jackson Bird":"AU","Jacques Kallis":"ZA","Jake Ball":"GB","Jake Fraser-McGurk":"AU","James Hopes":"AU","James Pattinson":"AU","James Vince":"GB","Jamie Overton":"GB","Jason Behrendorff":"AU","Jasprit Bumrah":"IN","Jayden Seales":"TT","Jeetan Patel":"NZ","Jimmy Adams":"JM","Jimmy Peirson":"AU","Jitesh Sharma":"IN","Joe Burns":"AU","John Hastings":"AU","Jordan Silk":"AU","Jos Buttler":"GB","Josh Brown":"AU","Josh Hazlewood":"AU","Josh Inglis":"AU","Josh Philippe":"AU","KL Rahul":"IN","Kagiso Rabada":"ZA","Kamran Akmal":"PK","Kamran Ghulam":"PK","Karanveer Singh":"IN","Karn Sharma":"IN","Keemo Paul":"GY","Kevin Pietersen":"GB","Kevon Cooper":"TT","Khary Pierre":"TT","Khushdil Shah":"PK","Kieron Pollard":"TT","Krunal Pandya":"IN","Kurtis Patterson":"AU","Kusal Perera":"LK","Kyle Mayers":"BB","Lakshmipathy Balaji":"IN","Lance Morris":"AU","Lasith Malinga":"LK","Laurie Evans":"GB","Lendl Simmons":"TT","Liam Dawson":"GB","Liam Livingstone":"GB","Lockie Ferguson":"NZ","Luke Pomersbach":"AU","Luke Ronchi":"NZ","Luke Wood":"GB","Luke Wright":"GB","MS Dhoni":"IN","Maheesh Theekshana":"LK","Mahesh Rawat":"IN","Mahipal Lomror":"IN","Manan Vohra":"IN","Manish Pandey":"IN","Manvinder Bisla":"IN","Marcus Stoinis":"AU","Mark Boucher":"ZA","Mark Wood":"GB","Marnus Labuschagne":"AU","Martin Guptill":"NZ","Matheesha Pathirana":"LK","Matt Renshaw":"AU","Matt Short":"AU","Matthew Carter":"GB","Matthew Hayden":"AU","Matthew Wade":"AU","Mayank Markande":"IN","Michael Beer":"AU","Michael Klinger":"AU","Michael Lumb":"GB","Michael Neser":"AU","Mike Hussey":"AU","Mitchell Johnson":"AU","Mitchell Marsh":"AU","Mitchell McClenaghan":"NZ","Mitchell Owen":"AU","Mitchell Starc":"AU","Mitchell Swepson":"AU","Moeen Ali":"GB","Mohammad Amir":"PK","Mohammad Hafeez":"PK","Mohammad Hasnain":"PK","Mohammad Kaif":"IN","Mohammad Nabi":"AF","Mohammad Nawaz":"PK","Mohammad Rizwan":"PK","Mohammad Sami":"PK","Mohammed Shami":"IN","Mohammed Siraj":"IN","Moises Henriques":"AU","Morne Morkel":"ZA","Mubasir Khan":"PK","Munaf Patel":"IN","Murali Vijay":"IN","Mustafizur Rahman":"BD","Muthiah Muralitharan":"LK","Naman Ojha":"IN","Naseem Shah":"PK","Nathan Ellis":"AU","Nathan Hauritz":"AU","Nathan Lyon":"AU","Nathan McSweeney":"AU","Naveen-ul-Haq":"AF","Neil McKenzie":"ZA","Nic Pothas":"ZA","Nicholas Pooran":"TT","Nikhil Chaudhary":"US","Nitish Reddy":"IN","Ottneil Baartman":"ZA","Paddy Dooley":"IE","Pat Cummins":"AU","Paul Walter":"GB","Peter Handscomb":"AU","Peter Hatzoglou":"AU","Peter Siddle":"AU","Phil Salt":"GB","Piyush Chawla":"IN","Praveen Kumar":"IN","Pravin Tambe":"IN","Prithvi Shaw":"IN","Quinton de Kock":"ZA","Rahmanullah Gurbaz":"AF","Rahul Chahar":"IN","Rahul Dravid":"IN","Rahul Tewatia":"IN","Rahul Tripathi":"IN","Rajat Bhatia":"IN","Rajat Patidar":"IN","Rajesh Bishnoi":"IN","Ramandeep Singh":"IN","Rashid Khan":"AF","Ravi Bishnoi":"IN","Ravichandran Ashwin":"IN","Ravindra Jadeja":"IN","Recordo Gordon":"AG","Reece Topley":"GB","Riki Wessels":"GB","Rikki Clarke":"GB","Rilee Rossouw":"ZA","Riley Meredith":"AU","Rinku Singh":"IN","Rishabh Pant":"IN","Rishad Hossain":"BD","Riyan Parag":"IN","Robin Uthappa":"IN","Rohit Sharma":"IN","Romario Shepherd":"GY","Ross Taylor":"NZ","Rumman Raees":"PK","Ruturaj Gaikwad":"IN","Ryan Carters":"AU","Ryan Harris":"AU","Ryan ten Doeschate":"NL","S Aravind":"IN","S Badrinath":"IN","Sahibzada Farhan":"PK","Saim Ayub":"PK","Salman Irshad":"PK","Sam Billings":"GB","Sam Whiteman":"AU","Sameer Rizvi":"IN","Samit Patel":"GB","Sandeep Sharma":"IN","Sanju Samson":"IN","Sarfaraz Ahmed":"PK","Saurabh Tiwary":"IN","Sean Abbott":"AU","Sean Ervine":"ZW","Shadab Jakati":"IN","Shadab Khan":"PK","Shahbaz Ahmed":"IN","Shaheen Afridi":"PK","Shahid Afridi":"PK","Shahnawaz Dahani":"PK","Shai Hope":"BB","Shakib Al Hasan":"BD","Shan Masood":"PK","Shane Warne":"AU","Shane Watson":"AU","Shardul Thakur":"IN","Sharjeel Khan":"PK","Shaun Marsh":"AU","Shikhar Dhawan":"IN","Shimron Hetmyer":"GY","Shivam Dube":"IN","Shreyas Iyer":"IN","Shubman Gill":"IN","Siddharth Trivedi":"IN","Sikandar Raza":"ZW","Sohaib Maqsood":"PK","Sohail Tanvir":"PK","Spencer Johnson":"AU","Sreenath Aravind":"IN","Steve O'Keefe":"AU","Steve Smith":"AU","Steven Mullaney":"GB","Stuart Binny":"IN","Sunil Narine":"TT","Suresh Raina":"IN","Suryakumar Yadav":"IN","Suyash Sharma":"IN","T. Natarajan":"IN","Tabraiz Shamsi":"ZA","Tamim Iqbal":"BD","Tilak Varma":"IN","Tillakaratne Dilshan":"LK","Tim Ambrose":"GB","Tim David":"AU","Tim Seifert":"NZ","Tion Webster":"TT","Todd Murphy":"AU","Tom Curran":"GB","Travis Head":"AU","Trent Boult":"NZ","Tushar Deshpande":"IN","Umar Akmal":"PK","Umesh Yadav":"IN","Usama Mir":"PK","Usman Khan":"AE","Usman Khawaja":"AU","Vaibhav Arora":"IN","Varun Aaron":"IN","Varun Chakaravarthy":"IN","Varun Chopra":"GB","Venkatesh Iyer":"IN","Virat Kohli":"IN","Virender Sehwag":"IN","Wahab Riaz":"PK","Waqas Maqsood":"PK","Wes Agar":"AU","William Porterfield":"IE","Wriddhiman Saha":"IN","Xavier Bartlett":"AU","Yash Dayal":"IN","Yashasvi Jaiswal":"IN","Yasir Arafat":"PK","Yusuf Pathan":"IN","Yuvraj Singh":"IN","Yuzvendra Chahal":"IN","Zaheer Khan":"IN","Zaman Khan":"PK"};
+function flagEmoji(cc){
+  if (!cc || cc.length !== 2) return "";
+  return String.fromCodePoint(...[...cc.toUpperCase()].map(c => 0x1F1E6 + c.charCodeAt(0) - 65));
+}
+function playerFlag(player){ return flagEmoji(PLAYER_NAT[player && player.n]); }
+
 function avatarHTML(player, size=48){
-  const team = (player.from && player.from.team) || player.team || "";
-  const grad = COUNTRY_GRAD[team] || "linear-gradient(135deg,#5aa9ff,#3a89e0)";
-  const flag = COUNTRY_FLAGS[team] || "🏏";
-  const fs = Math.round(size*0.36);
-  return `<div class="avatar" data-pname="${escHTML(player.n)}" style="width:${size}px;height:${size}px;font-size:${fs}px;background:${grad}"><span class="ini">${initials(player.n)}</span><span class="flag">${flag}</span></div>`;
+  const flag = playerFlag(player);
+  if (flag){
+    const fs = Math.round(size*0.52);
+    return `<div class="avatar flag-av" data-pname="${escHTML(player.n)}" style="width:${size}px;height:${size}px;font-size:${fs}px">${flag}</div>`;
+  }
+  // Unknown nationality -> initials on a neutral gradient.
+  const ifs = Math.round(size*0.36);
+  return `<div class="avatar" data-pname="${escHTML(player.n)}" style="width:${size}px;height:${size}px;font-size:${ifs}px;background:linear-gradient(135deg,#5aa9ff,#3a89e0)"><span class="ini">${initials(player.n)}</span></div>`;
 }
 
 // Player photos removed — initials avatars only for cleaner shareability
@@ -2401,7 +2414,7 @@ function buildShareCard({title, subtitle, trophyEmoji, headline, body, footer}){
   S.squad.forEach((s,i) => {
     if (!s.player) return;
     const r = ratingOf(s.player);
-    const flag = COUNTRY_FLAGS[s.player.from.team] || "🏏";
+    const flag = playerFlag(s.player) || "🏏";
     xi.append(el(`<div class="row">
       <div class="num">${i+1}</div>
       <div style="font-size:14px">${flag}</div>
@@ -2743,7 +2756,7 @@ function renderHub(){
         const card = el(`<div class="stat-card ${st.motm?'motm-card':''}">
           <div class="h">
             ${avatarHTML(p, 28)}
-            <div class="info"><b>${n} ${st.motm?'🏅×'+st.motm:''}</b><small>${flagChip((p.from&&p.from.team)||'')} · ${st.matches} match${st.matches===1?'':'es'}</small></div>
+            <div class="info"><b>${n} ${st.motm?'🏅×'+st.motm:''}</b><small>${st.matches} match${st.matches===1?'':'es'}</small></div>
           </div>
           <div class="stats">
             <span>Runs <b>${st.runs}</b></span>
@@ -3323,7 +3336,7 @@ function renderOrder(){
     const row = el(`<div class="order-row">
       <div class="pos">${i+1}</div>
       <div class="av">${avatarHTML(p, 36)}</div>
-      <div class="nm"><b>${p.n}</b><small>${flagChip(p.from.team)} ${p.from.year} · ${p.roles.join(' / ')}</small></div>
+      <div class="nm"><b>${p.n}</b><small>${stripYear(p.from.team)} · ${p.from.year} · ${p.roles.join(' / ')}</small></div>
       <div class="ctrl">
         <button class="ghost" ${i===0?'disabled':''} title="Move up">▲</button>
         <button class="ghost" ${i===S.tour.battingOrder.length-1?'disabled':''} title="Move down">▼</button>
@@ -3377,7 +3390,7 @@ function renderAwards(){
       <div class="lbl">${c.lbl}</div>
       ${avatarHTML(p, 88)}
       <div class="nm">${c.a.n}</div>
-      <div class="from">${flagChip(c.a.team)}${p.from && p.from.year && p.from.year !== "All-time" ? ' · '+p.from.year : ''}</div>
+      <div class="from">${p.from && p.from.year && p.from.year !== "All-time" ? p.from.year : ''}</div>
       <div class="roles">${tags}</div>
       <div class="fig">${awardFig(c.a, c.kind)}</div>
     </div>`);
@@ -3562,6 +3575,18 @@ function renderScorecard(){
     }</tbody>`;
     wrap.append(bw);
   });
+
+  // Match awards — kept at the bottom of the scorecard.
+  const aw = S.tour.lastAwards;
+  if (aw && (aw.motm || aw.bestBat || aw.bestBowl)){
+    wrap.append(el(`<h2 style="margin-top:22px">Match Awards</h2>`));
+    const ag = el(`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px"></div>`);
+    if (aw.motm) ag.append(el(`<div class="stat-card motm-card"><div class="h"><b>🏅 Player of the Match</b></div><div style="margin-top:4px"><b>${aw.motm.n}</b><br><span class="muted" style="font-size:12px">${awardFig(aw.motm,'motm')}</span></div></div>`));
+    if (aw.bestBat && aw.bestBat.runs>0) ag.append(el(`<div class="stat-card"><div class="h"><b>🏏 Top Batter</b></div><div style="margin-top:4px"><b>${aw.bestBat.n}</b><br><span class="muted" style="font-size:12px">${awardFig(aw.bestBat,'bat')}</span></div></div>`));
+    if (aw.bestBowl && aw.bestBowl.wickets>0) ag.append(el(`<div class="stat-card"><div class="h"><b>🎯 Top Bowler</b></div><div style="margin-top:4px"><b>${aw.bestBowl.n}</b><br><span class="muted" style="font-size:12px">${awardFig(aw.bestBowl,'bowl')}</span></div></div>`));
+    wrap.append(ag);
+  }
+
   const row = el(`<div class="row" style="justify-content:space-between;margin-top:24px;gap:8px"></div>`);
   const back = el(`<button class="ghost">← Abandon tournament</button>`);
   back.onclick = () => {
