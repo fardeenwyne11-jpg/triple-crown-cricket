@@ -131,7 +131,12 @@
   .slot .rating{font-weight:900;color:var(--gold-deep);font-size:14px}
   .slot .empty{color:#b3a987;font-style:italic}
   .strength-card{margin-top:14px;background:var(--bg-alt);border:1px solid var(--line);border-radius:10px;padding:12px}
-  .strength-card .ts-title{font-size:10px;letter-spacing:1.5px;font-weight:800;color:var(--muted);margin-bottom:9px}
+  .strength-card .ts-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .strength-card .ts-title{font-size:10px;letter-spacing:1.5px;font-weight:800;color:var(--muted)}
+  .ts-overall{font-size:24px;font-weight:900;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums;display:inline-flex;align-items:baseline;gap:3px}
+  .ts-overall small{font-size:9px;font-weight:800;color:var(--muted);letter-spacing:1px}
+  .reroll-btn{background:rgba(245,196,81,.08);color:var(--gold);border:1px solid var(--gold-deep);border-radius:999px;padding:8px 18px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:none}
+  .reroll-btn:hover{background:rgba(245,196,81,.18)}
   .ts-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
   .ts-row:last-child{margin-bottom:0}
   .ts-lbl{font-size:11px;font-weight:800;color:var(--ink);width:74px;flex-shrink:0}
@@ -1536,7 +1541,7 @@ const TEST_NATIONS = ["Australia","India","England","New Zealand","Pakistan","So
 function newSave(){
   return {
     screen:"setup",
-    setup:{ showRatings:true, draftMode:"spin" },
+    setup:{ showRatings:null, draftMode:null },
     rerollsLeft:1, rerollsTotal:1,
     squad: SLOTS.map(s => ({ id:s.id, label:s.label, player:null })),
     currentSpin:null,
@@ -2761,6 +2766,7 @@ function squadStrengths(){
   const bowl = players.filter(p=>has(p,["PAC","SPN","AR"])).map(ratingOf).sort((a,b)=>b-a).slice(0,5);
   const arCount = players.filter(p=>p.roles.includes("AR")).length;
   return {
+    overall: clamp(mean(players.map(ratingOf))),
     batting: clamp(mean(bat)),
     bowling: clamp(mean(bowl)),
     fielding: clamp(mean(players.map(ratingOf)) + arCount*0.7 + (players.some(p=>p.roles.includes("WK"))?1:0))
@@ -2770,7 +2776,6 @@ function renderSidebar(){
   const filled = squadPicks().length;
   const side = el(`<aside class="sidebar ${S.drawerOpen?'open':''}"></aside>`);
   side.append(el(`<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:13px;letter-spacing:1px">YOUR XI</b><span class="pill ${filled===SQUAD_SIZE?'ok':''}">${filled}/${SQUAD_SIZE}</span></div>`));
-  if (S.screen === "draft") side.append(el(`<div style="margin-top:8px"><span class="pill reroll">↻ Rerolls ${S.rerollsLeft}/${S.rerollsTotal}</span></div>`));
 
   // Role tally chip row — visualise XI composition as user picks
   if (filled > 0 || S.screen === "draft"){
@@ -2804,7 +2809,7 @@ function renderSidebar(){
     const w = v => Math.max(6, Math.min(100, (v-50)/49*100));
     const row = (lbl,val,cls) => `<div class="ts-row"><span class="ts-lbl">${lbl}</span><div class="ts-bar"><i class="${cls}" style="width:${w(val)}%"></i></div><b class="ts-val">${Math.round(val)}</b></div>`;
     side.append(el(`<div class="strength-card">
-      <div class="ts-title">TEAM STRENGTH</div>
+      <div class="ts-head"><span class="ts-title">TEAM STRENGTH</span><span class="ts-overall">${Math.round(st.overall)}<small>OVR</small></span></div>
       ${row("🏏 Batting", st.batting, "bat")}
       ${row("🔴 Bowling", st.bowling, "bowl")}
       ${row("🧤 Fielding", st.fielding, "field")}
@@ -2927,7 +2932,7 @@ function renderDraft(){
     <div class="lbl">${S.spinning?'SPINNING…':'SQUAD SPUN'}</div>
     ${S.spinning ? spinning : landed}
     ${!S.spinning ? (ts.trophy ? `<div class="trophy-label">${ts.trophy}</div>` : `<div class="spun-league">${LEAGUE_NAMES[ts.league]||""}</div>`) : ''}
-    ${!S.spinning ? `<div class="reroll">Rerolls left: <b>${S.rerollsLeft}</b> ${S.rerollsLeft>0?'· <a id="rr">Reroll squad</a>':''}</div>` : ''}
+    ${!S.spinning ? (S.rerollsLeft>0 ? `<div style="margin-top:10px"><button class="reroll-btn" id="rr">↻ Reroll squad · ${S.rerollsLeft} left</button></div>` : `<div class="reroll" style="margin-top:10px">No rerolls left</div>`) : ''}
   </div>`);
   const rr = reveal.querySelector("#rr"); if (rr) rr.onclick = e => { e.preventDefault(); reroll(); };
   wrap.append(reveal);
