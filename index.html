@@ -411,6 +411,8 @@
   .avatar{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;color:#fff;position:relative;box-shadow:0 4px 12px rgba(0,0,0,.18);text-shadow:0 1px 2px rgba(0,0,0,.4);border:3px solid #fff}
   .avatar .flag{position:absolute;bottom:-4px;right:-4px;font-size:18px;background:var(--panel);border-radius:50%;padding:0 3px;border:2px solid var(--gold);line-height:1.2}
   .avatar.flag-av{background:transparent;border:0;box-shadow:none;text-shadow:none;line-height:1}
+  .ric{width:1.05em;height:1.05em;vertical-align:-0.2em;display:inline-block}
+  .ric-ar{width:1.5em}
   .award .nm{font-weight:900;font-size:18px;color:var(--ink);margin-top:8px}
   .award .from{color:var(--muted);font-size:11px;margin:2px 0 8px;font-weight:700}
   .award .fig{font-size:15px;font-weight:800;margin-top:8px;color:var(--ink);background:var(--panel);padding:6px 10px;border-radius:8px;display:inline-block;border:1px solid var(--line)}
@@ -1210,6 +1212,201 @@ const TEAM_SEASONS = [
     { n:"Dimitri Mascarenhas",roles:["AR","PAC"], season:78, prime:80 },
     { n:"David Griffiths",   roles:["PAC"], season:74, prime:76 },
     { n:"Liam Dawson",       roles:["AR","SPN"], season:78, prime:80 }
+  ]},
+  { team:"Pune Warriors India", year:2013, fmt:"t20", league:"ipl", trophy:"IPL — Wooden spoon (last)", squad:[
+    { n:"Robin Uthappa", roles:["WK","OPN"], season:80, prime:82 },
+    { n:"Aaron Finch", roles:["OPN"], season:81, prime:83 },
+    { n:"Yuvraj Singh", roles:["BAT","AR"], season:82, prime:84 },
+    { n:"Steven Smith", roles:["BAT"], season:78, prime:80 },
+    { n:"Manish Pandey", roles:["BAT"], season:75, prime:77 },
+    { n:"Angelo Mathews", roles:["AR"], season:80, prime:82 },
+    { n:"Mitchell Marsh", roles:["AR","PAC"], season:74, prime:76 },
+    { n:"Rahul Sharma", roles:["SPN"], season:74, prime:76 },
+    { n:"Bhuvneshwar Kumar", roles:["PAC"], season:80, prime:82 },
+    { n:"Ashok Dinda", roles:["PAC"], season:75, prime:77 },
+    { n:"Ali Murtaza", roles:["SPN"], season:70, prime:72 }
+  ]},
+  { team:"Kochi Tuskers Kerala", year:2011, fmt:"t20", league:"ipl", trophy:"IPL — 8th", squad:[
+    { n:"Brendon McCullum", roles:["WK","OPN"], season:83, prime:85 },
+    { n:"Mahela Jayawardene", roles:["BAT"], season:83, prime:85 },
+    { n:"Brad Hodge", roles:["BAT"], season:80, prime:82 },
+    { n:"Parthiv Patel", roles:["WK","OPN"], season:74, prime:76 },
+    { n:"Raiphi Gomez", roles:["BAT"], season:68, prime:70 },
+    { n:"Ravindra Jadeja", roles:["AR","SPN"], season:78, prime:80 },
+    { n:"Steven Smith", roles:["AR","BAT"], season:74, prime:76 },
+    { n:"R. Vinay Kumar", roles:["PAC"], season:80, prime:82 },
+    { n:"S. Sreesanth", roles:["PAC"], season:76, prime:78 },
+    { n:"RP Singh", roles:["PAC"], season:75, prime:77 },
+    { n:"Muttiah Muralitharan", roles:["SPN"], season:82, prime:84 }
+  ]},
+  { team:"Gujarat Lions", year:2017, fmt:"t20", league:"ipl", trophy:"IPL — 7th", squad:[
+    { n:"Brendon McCullum", roles:["WK","OPN"], season:78, prime:80 },
+    { n:"Dwayne Smith", roles:["OPN"], season:74, prime:76 },
+    { n:"Suresh Raina", roles:["BAT"], season:81, prime:83 },
+    { n:"Aaron Finch", roles:["BAT"], season:78, prime:80 },
+    { n:"Dinesh Karthik", roles:["WK","BAT"], season:79, prime:81 },
+    { n:"Ravindra Jadeja", roles:["AR","SPN"], season:80, prime:82 },
+    { n:"Dwayne Bravo", roles:["AR","FIN"], season:80, prime:82 },
+    { n:"Andrew Tye", roles:["PAC"], season:81, prime:83 },
+    { n:"Basil Thampi", roles:["PAC"], season:76, prime:78 },
+    { n:"Praveen Kumar", roles:["PAC"], season:72, prime:74 },
+    { n:"Shadab Jakati", roles:["SPN"], season:70, prime:72 }
+  ]},
+  { team:"Delhi Daredevils", year:2013, fmt:"t20", league:"ipl", trophy:"IPL — Wooden spoon (9th/last)", squad:[
+    { n:"David Warner", roles:["OPN"], season:84, prime:86 },
+    { n:"Unmukt Chand", roles:["OPN","BAT"], season:72, prime:74 },
+    { n:"Mahela Jayawardene", roles:["BAT"], season:78, prime:80 },
+    { n:"Kevin Pietersen", roles:["BAT"], season:75, prime:77 },
+    { n:"Ross Taylor", roles:["BAT"], season:74, prime:76 },
+    { n:"Ben Rohrer", roles:["BAT","AR"], season:71, prime:73 },
+    { n:"Naman Ojha", roles:["WK","BAT"], season:76, prime:78 },
+    { n:"Irfan Pathan", roles:["AR","PAC"], season:74, prime:76 },
+    { n:"Umesh Yadav", roles:["PAC"], season:78, prime:80 },
+    { n:"Morne Morkel", roles:["PAC"], season:80, prime:82 },
+    { n:"Shahbaz Nadeem", roles:["SPN"], season:74, prime:76 }
+  ]},
+  { team:"Royal Challengers Bangalore", year:2017, fmt:"t20", league:"ipl", trophy:"IPL — Wooden spoon (8th/last)", squad:[
+    { n:"Virat Kohli", roles:["BAT"], season:85, prime:87 },
+    { n:"AB de Villiers", roles:["BAT","WK"], season:86, prime:88 },
+    { n:"Chris Gayle", roles:["OPN"], season:76, prime:78 },
+    { n:"Mandeep Singh", roles:["OPN","BAT"], season:73, prime:75 },
+    { n:"Kedar Jadhav", roles:["BAT","AR"], season:74, prime:76 },
+    { n:"Stuart Binny", roles:["AR"], season:72, prime:74 },
+    { n:"Shane Watson", roles:["AR","PAC"], season:76, prime:78 },
+    { n:"Sarfaraz Khan", roles:["BAT"], season:74, prime:76 },
+    { n:"Yuzvendra Chahal", roles:["SPN"], season:82, prime:84 },
+    { n:"Samuel Badree", roles:["SPN"], season:75, prime:77 },
+    { n:"Tymal Mills", roles:["PAC"], season:74, prime:76 }
+  ]},
+  { team:"Mumbai Indians", year:2022, fmt:"t20", league:"ipl", trophy:"IPL — Wooden spoon (10th/last)", squad:[
+    { n:"Rohit Sharma", roles:["OPN","BAT"], season:80, prime:82 },
+    { n:"Ishan Kishan", roles:["WK","OPN"], season:78, prime:80 },
+    { n:"Dewald Brevis", roles:["BAT"], season:74, prime:76 },
+    { n:"Suryakumar Yadav", roles:["BAT"], season:83, prime:85 },
+    { n:"Tilak Varma", roles:["BAT","AR"], season:80, prime:82 },
+    { n:"Kieron Pollard", roles:["AR","FIN"], season:68, prime:70 },
+    { n:"Tim David", roles:["BAT","FIN"], season:76, prime:78 },
+    { n:"Daniel Sams", roles:["AR","PAC"], season:73, prime:75 },
+    { n:"Jasprit Bumrah", roles:["PAC"], season:85, prime:87 },
+    { n:"Murugan Ashwin", roles:["SPN"], season:73, prime:75 },
+    { n:"Jaydev Unadkat", roles:["PAC"], season:74, prime:76 }
+  ]},
+  { team:"Lahore Qalandars", year:2018, fmt:"t20", league:"psl", trophy:"PSL — Wooden spoon (last)", squad:[
+    { n:"Fakhar Zaman", roles:["OPN"], season:84, prime:86 },
+    { n:"Brendon McCullum", roles:["OPN","BAT"], season:83, prime:85 },
+    { n:"AB de Villiers", roles:["BAT","WK"], season:89, prime:91 },
+    { n:"Umar Akmal", roles:["BAT","WK"], season:78, prime:80 },
+    { n:"Agha Salman", roles:["AR"], season:72, prime:74 },
+    { n:"Cameron Delport", roles:["AR"], season:73, prime:75 },
+    { n:"Sohail Khan", roles:["PAC"], season:74, prime:76 },
+    { n:"Yasir Shah", roles:["SPN"], season:76, prime:78 },
+    { n:"Shaheen Afridi", roles:["PAC"], season:78, prime:80 },
+    { n:"Raza Hasan", roles:["SPN"], season:70, prime:72 },
+    { n:"Mohammad Irfan", roles:["PAC"], season:74, prime:76 }
+  ]},
+  { team:"Quetta Gladiators", year:2021, fmt:"t20", league:"psl", trophy:"PSL — Wooden spoon (last)", squad:[
+    { n:"Saim Ayub", roles:["OPN"], season:70, prime:72 },
+    { n:"Ahsan Ali", roles:["OPN","BAT"], season:72, prime:74 },
+    { n:"Sarfaraz Ahmed", roles:["WK","BAT"], season:80, prime:82 },
+    { n:"Azam Khan", roles:["WK","BAT"], season:76, prime:78 },
+    { n:"Faf du Plessis", roles:["BAT"], season:85, prime:87 },
+    { n:"Mohammad Nawaz", roles:["AR","SPN"], season:78, prime:80 },
+    { n:"Cameron Delport", roles:["AR"], season:72, prime:74 },
+    { n:"Mohammad Hasnain", roles:["PAC"], season:77, prime:79 },
+    { n:"Naseem Shah", roles:["PAC"], season:79, prime:81 },
+    { n:"Zahid Mahmood", roles:["SPN"], season:74, prime:76 },
+    { n:"Khurram Shahzad", roles:["PAC"], season:70, prime:72 }
+  ]},
+  { team:"Karachi Kings", year:2022, fmt:"t20", league:"psl", trophy:"PSL — Wooden spoon (last)", squad:[
+    { n:"Babar Azam", roles:["OPN","BAT"], season:89, prime:91 },
+    { n:"Sharjeel Khan", roles:["OPN"], season:76, prime:78 },
+    { n:"Joe Clarke", roles:["BAT","WK"], season:75, prime:77 },
+    { n:"Mohammad Nabi", roles:["AR","SPN"], season:80, prime:82 },
+    { n:"Imad Wasim", roles:["AR","SPN"], season:80, prime:82 },
+    { n:"Lewis Gregory", roles:["AR","PAC"], season:74, prime:76 },
+    { n:"Mohammad Rizwan", roles:["WK","BAT"], season:72, prime:74 },
+    { n:"Aamer Yamin", roles:["AR","PAC"], season:70, prime:72 },
+    { n:"Umaid Asif", roles:["PAC"], season:71, prime:73 },
+    { n:"Mohammad Ilyas", roles:["PAC"], season:70, prime:72 },
+    { n:"Qasim Akram", roles:["AR","SPN"], season:68, prime:70 }
+  ]},
+  { team:"Melbourne Renegades", year:2021, fmt:"t20", league:"bbl", trophy:"Big Bash — Bottom of the table", squad:[
+    { n:"Aaron Finch", roles:["OPN"], season:84, prime:86 },
+    { n:"Shaun Marsh", roles:["BAT","OPN"], season:82, prime:84 },
+    { n:"Sam Harper", roles:["WK"], season:76, prime:78 },
+    { n:"Mackenzie Harvey", roles:["BAT"], season:74, prime:76 },
+    { n:"Beau Webster", roles:["AR"], season:76, prime:78 },
+    { n:"Jonathan Wells", roles:["BAT"], season:73, prime:75 },
+    { n:"Mohammad Nabi", roles:["AR","SPN"], season:80, prime:82 },
+    { n:"Cameron Boyce", roles:["SPN"], season:76, prime:78 },
+    { n:"Kane Richardson", roles:["PAC","FIN"], season:81, prime:83 },
+    { n:"Zak Evans", roles:["PAC"], season:72, prime:74 },
+    { n:"Reece Topley", roles:["PAC"], season:74, prime:76 }
+  ]},
+  { team:"Sydney Thunder", year:2014, fmt:"t20", league:"bbl", trophy:"Big Bash — Wooden spoon (last)", squad:[
+    { n:"Mike Hussey", roles:["BAT","OPN"], season:82, prime:84 },
+    { n:"Usman Khawaja", roles:["BAT","OPN"], season:80, prime:82 },
+    { n:"Aiden Blizzard", roles:["OPN"], season:73, prime:75 },
+    { n:"Ben Rohrer", roles:["BAT"], season:74, prime:76 },
+    { n:"Chris Hartley", roles:["WK"], season:72, prime:74 },
+    { n:"Ryan Carters", roles:["WK","BAT"], season:72, prime:74 },
+    { n:"Chris Tremain", roles:["PAC"], season:72, prime:74 },
+    { n:"Dirk Nannes", roles:["PAC"], season:76, prime:78 },
+    { n:"Jon Holland", roles:["SPN"], season:71, prime:73 },
+    { n:"Steve Magoffin", roles:["PAC"], season:74, prime:76 },
+    { n:"Nathan McCullum", roles:["AR","SPN"], season:75, prime:77 }
+  ]},
+  { team:"Melbourne Stars", year:2023, fmt:"t20", league:"bbl", trophy:"Big Bash — Last place", squad:[
+    { n:"Joe Clarke", roles:["WK","BAT"], season:81, prime:83 },
+    { n:"Thomas Rogers", roles:["OPN","BAT"], season:78, prime:80 },
+    { n:"Glenn Maxwell", roles:["AR","BAT"], season:85, prime:87 },
+    { n:"Marcus Stoinis", roles:["AR"], season:83, prime:85 },
+    { n:"Nick Larkin", roles:["BAT"], season:73, prime:75 },
+    { n:"Beau Webster", roles:["AR","SPN"], season:76, prime:78 },
+    { n:"Hilton Cartwright", roles:["BAT","AR"], season:74, prime:76 },
+    { n:"Adam Zampa", roles:["SPN"], season:82, prime:84 },
+    { n:"Brody Couch", roles:["PAC"], season:72, prime:74 },
+    { n:"Nathan Coulter-Nile", roles:["PAC","FIN"], season:77, prime:79 },
+    { n:"Trent Boult", roles:["PAC"], season:83, prime:85 }
+  ]},
+  { team:"St Kitts and Nevis Patriots", year:2017, fmt:"t20", league:"cpl", trophy:"CPL — Group stage", squad:[
+    { n:"Evin Lewis", roles:["OPN"], season:85, prime:87 },
+    { n:"Devon Thomas", roles:["WK","BAT"], season:76, prime:78 },
+    { n:"Marlon Samuels", roles:["BAT","SPN"], season:78, prime:80 },
+    { n:"Carlos Brathwaite", roles:["AR","PAC"], season:80, prime:82 },
+    { n:"Mohammad Nabi", roles:["AR","SPN"], season:79, prime:81 },
+    { n:"Shamarh Brooks", roles:["BAT"], season:72, prime:74 },
+    { n:"Ben Cutting", roles:["AR","PAC"], season:76, prime:78 },
+    { n:"Tabraiz Shamsi", roles:["SPN"], season:78, prime:80 },
+    { n:"Sheldon Cottrell", roles:["PAC"], season:77, prime:79 },
+    { n:"Jeremiah Louis", roles:["PAC","AR"], season:70, prime:72 },
+    { n:"Alzarri Joseph", roles:["PAC"], season:75, prime:77 }
+  ]},
+  { team:"Barbados Tridents", year:2019, fmt:"t20", league:"cpl", trophy:"CPL — Group stage", squad:[
+    { n:"Johnson Charles", roles:["OPN","WK"], season:75, prime:77 },
+    { n:"Shai Hope", roles:["WK","BAT"], season:78, prime:80 },
+    { n:"Jonathan Carter", roles:["BAT","AR"], season:74, prime:76 },
+    { n:"Shimron Hetmyer", roles:["BAT"], season:81, prime:83 },
+    { n:"Jason Holder", roles:["AR","PAC"], season:82, prime:84 },
+    { n:"Ashley Nurse", roles:["SPN","AR"], season:74, prime:76 },
+    { n:"Hayden Walsh", roles:["SPN"], season:77, prime:79 },
+    { n:"Harry Gurney", roles:["PAC","FIN"], season:78, prime:80 },
+    { n:"Raymon Reifer", roles:["AR","PAC"], season:72, prime:74 },
+    { n:"Justin Greaves", roles:["AR"], season:70, prime:72 },
+    { n:"Mitchell Santner", roles:["SPN","AR"], season:78, prime:80 }
+  ]},
+  { team:"Surrey", year:2019, fmt:"t20", league:"blast", trophy:"T20 Blast — Mid-table", squad:[
+    { n:"Jason Roy", roles:["OPN"], season:85, prime:87 },
+    { n:"Aaron Finch", roles:["OPN","BAT"], season:83, prime:85 },
+    { n:"Ollie Pope", roles:["BAT","WK"], season:77, prime:79 },
+    { n:"Ben Foakes", roles:["WK","BAT"], season:78, prime:80 },
+    { n:"Sam Curran", roles:["AR","PAC"], season:80, prime:82 },
+    { n:"Rikki Clarke", roles:["AR"], season:72, prime:74 },
+    { n:"Will Jacks", roles:["AR","BAT"], season:70, prime:72 },
+    { n:"Gareth Batty", roles:["SPN"], season:71, prime:73 },
+    { n:"Morne Morkel", roles:["PAC"], season:81, prime:83 },
+    { n:"Jade Dernbach", roles:["PAC","FIN"], season:73, prime:75 },
+    { n:"Imran Tahir", roles:["SPN"], season:82, prime:84 }
   ]}
 ];
 
@@ -1383,7 +1580,7 @@ function initials(name){
 function escHTML(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 // Player nationality (ISO 3166-1 alpha-2). West Indians use their island nation;
 // England/Scotland/Wales use GB. ~6 obscure players are unmapped -> initials fallback.
-const PLAYER_NAT = {"AB de Villiers":"ZA","Aamer Yamin":"PK","Aaron Hardie":"AU","Abbas Afridi":"PK","Abdullah Shafique":"PK","Abhinav Manohar":"IN","Abhishek Sharma":"IN","Adam Voges":"AU","Adam Zampa":"AU","Ahmed Shehzad":"PK","Aiden Blizzard":"AU","Aiden Markram":"ZA","Ajinkya Rahane":"IN","Akash Madhwal":"IN","Akeal Hosein":"TT","Akif Javed":"PK","Akshar Patel":"IN","Albie Morkel":"ZA","Alex Carey":"AU","Alex Hales":"GB","Ali Khan":"US","Alzarri Joseph":"AG","Ambati Rayudu":"IN","Andre Russell":"JM","Andrew Tye":"AU","Anil Kumble":"IN","Anrich Nortje":"ZA","Anwar Ali":"PK","Arshad Iqbal":"PK","Ashton Agar":"AU","Ashton Turner":"AU","Asif Afridi":"PK","Asif Ali":"PK","Ateeq Javid":"GB","Avesh Khan":"IN","Axar Patel":"IN","Azam Khan":"PK","Babar Azam":"PK","Barinder Sran":"IN","Ben Cutting":"AU","Ben Dwarshuis":"AU","Ben Hilfenhaus":"AU","Ben Manenti":"AU","Ben McDermott":"AU","Bhuvneshwar Kumar":"IN","Boyd Rankin":"IE","Brad Hogg":"AU","Brendan Drew":"AU","Brendan Taylor":"ZW","Brendon McCullum":"NZ","Brett Lee":"AU","Caleb Jewell":"AU","Cameron Boyce":"AU","Cameron Delport":"ZA","Cameron Gannon":"AU","Cameron Green":"AU","Carlos Brathwaite":"BB","Chadwick Walton":"JM","Cheteshwar Pujara":"IN","Chris Benham":"AU","Chris Gayle":"JM","Chris Green":"AU","Chris Jordan":"GB","Chris Lynn":"AU","Chris Woakes":"GB","Clint McKay":"AU","Colin Munro":"NZ","D'Arcy Short":"AU","Dale Steyn":"ZA","Daniel Christian":"AU","Daniel Hughes":"AU","Daniel Vettori":"NZ","Daniel Worrall":"AU","Darren Bravo":"TT","Darren Sammy":"LC","Daryl Mitchell":"NZ","David Griffiths":"GB","David Hussey":"AU","David Miller":"ZA","David Warner":"AU","David Wiese":"NA","Deepak Chahar":"IN","Deepak Hooda":"IN","Denesh Ramdin":"TT","Devon Conway":"NZ","Dhruv Jurel":"IN","Dimitri Mascarenhas":"GB","Dinesh Karthik":"IN","Dominic Cork":"GB","Doug Bollinger":"AU","Dwaine Pretorius":"ZA","Dwayne Bravo":"TT","Eoin Morgan":"IE","Faf du Plessis":"ZA","Faheem Ashraf":"PK","Fakhar Zaman":"PK","Fawad Ahmed":"AU","Gautam Gambhir":"IN","George Bailey":"AU","Gerald Coetzee":"ZA","Glenn Maxwell":"AU","Graeme Smith":"ZA","Hammad Azam":"PK","Hardik Pandya":"IN","Haris Rauf":"PK","Harry Brook":"GB","Harry Gurney":"GB","Harshit Rana":"IN","Hasan Ali":"PK","Hayden Kerr":"AU","Heinrich Klaasen":"ZA","Henry Hunt":"AU","Hussain Talat":"PK","Ian Bell":"GB","Iftikhar Ahmed":"PK","Ihsanullah":"PK","Imad Wasim":"PK","Imran Khan":"PK","Imran Tahir":"ZA","Iqbal Abdulla":"IN","Ishan Kishan":"IN","JP Duminy":"ZA","Jackson Bird":"AU","Jacques Kallis":"ZA","Jake Ball":"GB","Jake Fraser-McGurk":"AU","James Hopes":"AU","James Pattinson":"AU","James Vince":"GB","Jamie Overton":"GB","Jason Behrendorff":"AU","Jasprit Bumrah":"IN","Jayden Seales":"TT","Jeetan Patel":"NZ","Jimmy Adams":"JM","Jimmy Peirson":"AU","Jitesh Sharma":"IN","Joe Burns":"AU","John Hastings":"AU","Jordan Silk":"AU","Jos Buttler":"GB","Josh Brown":"AU","Josh Hazlewood":"AU","Josh Inglis":"AU","Josh Philippe":"AU","KL Rahul":"IN","Kagiso Rabada":"ZA","Kamran Akmal":"PK","Kamran Ghulam":"PK","Karanveer Singh":"IN","Karn Sharma":"IN","Keemo Paul":"GY","Kevin Pietersen":"GB","Kevon Cooper":"TT","Khary Pierre":"TT","Khushdil Shah":"PK","Kieron Pollard":"TT","Krunal Pandya":"IN","Kurtis Patterson":"AU","Kusal Perera":"LK","Kyle Mayers":"BB","Lakshmipathy Balaji":"IN","Lance Morris":"AU","Lasith Malinga":"LK","Laurie Evans":"GB","Lendl Simmons":"TT","Liam Dawson":"GB","Liam Livingstone":"GB","Lockie Ferguson":"NZ","Luke Pomersbach":"AU","Luke Ronchi":"NZ","Luke Wood":"GB","Luke Wright":"GB","MS Dhoni":"IN","Maheesh Theekshana":"LK","Mahesh Rawat":"IN","Mahipal Lomror":"IN","Manan Vohra":"IN","Manish Pandey":"IN","Manvinder Bisla":"IN","Marcus Stoinis":"AU","Mark Boucher":"ZA","Mark Wood":"GB","Marnus Labuschagne":"AU","Martin Guptill":"NZ","Matheesha Pathirana":"LK","Matt Renshaw":"AU","Matt Short":"AU","Matthew Carter":"GB","Matthew Hayden":"AU","Matthew Wade":"AU","Mayank Markande":"IN","Michael Beer":"AU","Michael Klinger":"AU","Michael Lumb":"GB","Michael Neser":"AU","Mike Hussey":"AU","Mitchell Johnson":"AU","Mitchell Marsh":"AU","Mitchell McClenaghan":"NZ","Mitchell Owen":"AU","Mitchell Starc":"AU","Mitchell Swepson":"AU","Moeen Ali":"GB","Mohammad Amir":"PK","Mohammad Hafeez":"PK","Mohammad Hasnain":"PK","Mohammad Kaif":"IN","Mohammad Nabi":"AF","Mohammad Nawaz":"PK","Mohammad Rizwan":"PK","Mohammad Sami":"PK","Mohammed Shami":"IN","Mohammed Siraj":"IN","Moises Henriques":"AU","Morne Morkel":"ZA","Mubasir Khan":"PK","Munaf Patel":"IN","Murali Vijay":"IN","Mustafizur Rahman":"BD","Muthiah Muralitharan":"LK","Naman Ojha":"IN","Naseem Shah":"PK","Nathan Ellis":"AU","Nathan Hauritz":"AU","Nathan Lyon":"AU","Nathan McSweeney":"AU","Naveen-ul-Haq":"AF","Neil McKenzie":"ZA","Nic Pothas":"ZA","Nicholas Pooran":"TT","Nikhil Chaudhary":"US","Nitish Reddy":"IN","Ottneil Baartman":"ZA","Paddy Dooley":"IE","Pat Cummins":"AU","Paul Walter":"GB","Peter Handscomb":"AU","Peter Hatzoglou":"AU","Peter Siddle":"AU","Phil Salt":"GB","Piyush Chawla":"IN","Praveen Kumar":"IN","Pravin Tambe":"IN","Prithvi Shaw":"IN","Quinton de Kock":"ZA","Rahmanullah Gurbaz":"AF","Rahul Chahar":"IN","Rahul Dravid":"IN","Rahul Tewatia":"IN","Rahul Tripathi":"IN","Rajat Bhatia":"IN","Rajat Patidar":"IN","Rajesh Bishnoi":"IN","Ramandeep Singh":"IN","Rashid Khan":"AF","Ravi Bishnoi":"IN","Ravichandran Ashwin":"IN","Ravindra Jadeja":"IN","Recordo Gordon":"AG","Reece Topley":"GB","Riki Wessels":"GB","Rikki Clarke":"GB","Rilee Rossouw":"ZA","Riley Meredith":"AU","Rinku Singh":"IN","Rishabh Pant":"IN","Rishad Hossain":"BD","Riyan Parag":"IN","Robin Uthappa":"IN","Rohit Sharma":"IN","Romario Shepherd":"GY","Ross Taylor":"NZ","Rumman Raees":"PK","Ruturaj Gaikwad":"IN","Ryan Carters":"AU","Ryan Harris":"AU","Ryan ten Doeschate":"NL","S Aravind":"IN","S Badrinath":"IN","Sahibzada Farhan":"PK","Saim Ayub":"PK","Salman Irshad":"PK","Sam Billings":"GB","Sam Whiteman":"AU","Sameer Rizvi":"IN","Samit Patel":"GB","Sandeep Sharma":"IN","Sanju Samson":"IN","Sarfaraz Ahmed":"PK","Saurabh Tiwary":"IN","Sean Abbott":"AU","Sean Ervine":"ZW","Shadab Jakati":"IN","Shadab Khan":"PK","Shahbaz Ahmed":"IN","Shaheen Afridi":"PK","Shahid Afridi":"PK","Shahnawaz Dahani":"PK","Shai Hope":"BB","Shakib Al Hasan":"BD","Shan Masood":"PK","Shane Warne":"AU","Shane Watson":"AU","Shardul Thakur":"IN","Sharjeel Khan":"PK","Shaun Marsh":"AU","Shikhar Dhawan":"IN","Shimron Hetmyer":"GY","Shivam Dube":"IN","Shreyas Iyer":"IN","Shubman Gill":"IN","Siddharth Trivedi":"IN","Sikandar Raza":"ZW","Sohaib Maqsood":"PK","Sohail Tanvir":"PK","Spencer Johnson":"AU","Sreenath Aravind":"IN","Steve O'Keefe":"AU","Steve Smith":"AU","Steven Mullaney":"GB","Stuart Binny":"IN","Sunil Narine":"TT","Suresh Raina":"IN","Suryakumar Yadav":"IN","Suyash Sharma":"IN","T. Natarajan":"IN","Tabraiz Shamsi":"ZA","Tamim Iqbal":"BD","Tilak Varma":"IN","Tillakaratne Dilshan":"LK","Tim Ambrose":"GB","Tim David":"AU","Tim Seifert":"NZ","Tion Webster":"TT","Todd Murphy":"AU","Tom Curran":"GB","Travis Head":"AU","Trent Boult":"NZ","Tushar Deshpande":"IN","Umar Akmal":"PK","Umesh Yadav":"IN","Usama Mir":"PK","Usman Khan":"AE","Usman Khawaja":"AU","Vaibhav Arora":"IN","Varun Aaron":"IN","Varun Chakaravarthy":"IN","Varun Chopra":"GB","Venkatesh Iyer":"IN","Virat Kohli":"IN","Virender Sehwag":"IN","Wahab Riaz":"PK","Waqas Maqsood":"PK","Wes Agar":"AU","William Porterfield":"IE","Wriddhiman Saha":"IN","Xavier Bartlett":"AU","Yash Dayal":"IN","Yashasvi Jaiswal":"IN","Yasir Arafat":"PK","Yusuf Pathan":"IN","Yuvraj Singh":"IN","Yuzvendra Chahal":"IN","Zaheer Khan":"IN","Zaman Khan":"PK"};
+const PLAYER_NAT = {"Robin Uthappa":"IN","Aaron Finch":"AU","Yuvraj Singh":"IN","Steven Smith":"AU","Manish Pandey":"IN","Angelo Mathews":"LK","Mitchell Marsh":"AU","Rahul Sharma":"IN","Bhuvneshwar Kumar":"IN","Ashok Dinda":"IN","Ali Murtaza":"IN","Brendon McCullum":"NZ","Mahela Jayawardene":"LK","Brad Hodge":"AU","Parthiv Patel":"IN","Raiphi Gomez":"IN","Ravindra Jadeja":"IN","R. Vinay Kumar":"IN","S. Sreesanth":"IN","RP Singh":"IN","Muttiah Muralitharan":"LK","Dwayne Smith":"BB","Suresh Raina":"IN","Dinesh Karthik":"IN","Dwayne Bravo":"TT","Andrew Tye":"AU","Basil Thampi":"IN","Praveen Kumar":"IN","Shadab Jakati":"IN","David Warner":"AU","Unmukt Chand":"IN","Kevin Pietersen":"GB","Ross Taylor":"NZ","Ben Rohrer":"AU","Naman Ojha":"IN","Irfan Pathan":"IN","Umesh Yadav":"IN","Morne Morkel":"ZA","Shahbaz Nadeem":"IN","Virat Kohli":"IN","AB de Villiers":"ZA","Chris Gayle":"JM","Mandeep Singh":"IN","Kedar Jadhav":"IN","Stuart Binny":"IN","Shane Watson":"AU","Sarfaraz Khan":"IN","Yuzvendra Chahal":"IN","Samuel Badree":"TT","Tymal Mills":"GB","Rohit Sharma":"IN","Ishan Kishan":"IN","Dewald Brevis":"ZA","Suryakumar Yadav":"IN","Tilak Varma":"IN","Kieron Pollard":"TT","Tim David":"AU","Daniel Sams":"AU","Jasprit Bumrah":"IN","Murugan Ashwin":"IN","Jaydev Unadkat":"IN","Fakhar Zaman":"PK","Umar Akmal":"PK","Agha Salman":"PK","Cameron Delport":"ZA","Sohail Khan":"PK","Yasir Shah":"PK","Shaheen Afridi":"PK","Raza Hasan":"PK","Mohammad Irfan":"PK","Saim Ayub":"PK","Ahsan Ali":"PK","Sarfaraz Ahmed":"PK","Azam Khan":"PK","Faf du Plessis":"ZA","Mohammad Nawaz":"PK","Mohammad Hasnain":"PK","Naseem Shah":"PK","Zahid Mahmood":"PK","Khurram Shahzad":"PK","Babar Azam":"PK","Sharjeel Khan":"PK","Joe Clarke":"GB","Mohammad Nabi":"AF","Imad Wasim":"PK","Lewis Gregory":"GB","Mohammad Rizwan":"PK","Aamer Yamin":"PK","Umaid Asif":"PK","Mohammad Ilyas":"PK","Qasim Akram":"PK","Shaun Marsh":"AU","Sam Harper":"AU","Mackenzie Harvey":"AU","Beau Webster":"AU","Jonathan Wells":"AU","Cameron Boyce":"AU","Kane Richardson":"AU","Zak Evans":"AU","Reece Topley":"GB","Mike Hussey":"AU","Usman Khawaja":"AU","Aiden Blizzard":"AU","Chris Hartley":"AU","Ryan Carters":"AU","Chris Tremain":"AU","Dirk Nannes":"AU","Jon Holland":"AU","Steve Magoffin":"AU","Nathan McCullum":"NZ","Thomas Rogers":"AU","Glenn Maxwell":"AU","Marcus Stoinis":"AU","Nick Larkin":"AU","Hilton Cartwright":"AU","Adam Zampa":"AU","Brody Couch":"AU","Nathan Coulter-Nile":"AU","Trent Boult":"NZ","Evin Lewis":"TT","Devon Thomas":"AG","Marlon Samuels":"JM","Carlos Brathwaite":"BB","Shamarh Brooks":"BB","Ben Cutting":"AU","Tabraiz Shamsi":"ZA","Sheldon Cottrell":"JM","Jeremiah Louis":"AG","Alzarri Joseph":"AG","Johnson Charles":"LC","Shai Hope":"BB","Jonathan Carter":"BB","Shimron Hetmyer":"GY","Jason Holder":"BB","Ashley Nurse":"BB","Hayden Walsh":"AG","Harry Gurney":"GB","Raymon Reifer":"GY","Justin Greaves":"BB","Mitchell Santner":"NZ","Jason Roy":"GB","Ollie Pope":"GB","Ben Foakes":"GB","Sam Curran":"GB","Rikki Clarke":"GB","Will Jacks":"GB","Gareth Batty":"GB","Jade Dernbach":"GB","Imran Tahir":"ZA","AB de Villiers":"ZA","Aamer Yamin":"PK","Aaron Hardie":"AU","Abbas Afridi":"PK","Abdullah Shafique":"PK","Abhinav Manohar":"IN","Abhishek Sharma":"IN","Adam Voges":"AU","Adam Zampa":"AU","Ahmed Shehzad":"PK","Aiden Blizzard":"AU","Aiden Markram":"ZA","Ajinkya Rahane":"IN","Akash Madhwal":"IN","Akeal Hosein":"TT","Akif Javed":"PK","Akshar Patel":"IN","Albie Morkel":"ZA","Alex Carey":"AU","Alex Hales":"GB","Ali Khan":"US","Alzarri Joseph":"AG","Ambati Rayudu":"IN","Andre Russell":"JM","Andrew Tye":"AU","Anil Kumble":"IN","Anrich Nortje":"ZA","Anwar Ali":"PK","Arshad Iqbal":"PK","Ashton Agar":"AU","Ashton Turner":"AU","Asif Afridi":"PK","Asif Ali":"PK","Ateeq Javid":"GB","Avesh Khan":"IN","Axar Patel":"IN","Azam Khan":"PK","Babar Azam":"PK","Barinder Sran":"IN","Ben Cutting":"AU","Ben Dwarshuis":"AU","Ben Hilfenhaus":"AU","Ben Manenti":"AU","Ben McDermott":"AU","Bhuvneshwar Kumar":"IN","Boyd Rankin":"IE","Brad Hogg":"AU","Brendan Drew":"AU","Brendan Taylor":"ZW","Brendon McCullum":"NZ","Brett Lee":"AU","Caleb Jewell":"AU","Cameron Boyce":"AU","Cameron Delport":"ZA","Cameron Gannon":"AU","Cameron Green":"AU","Carlos Brathwaite":"BB","Chadwick Walton":"JM","Cheteshwar Pujara":"IN","Chris Benham":"AU","Chris Gayle":"JM","Chris Green":"AU","Chris Jordan":"GB","Chris Lynn":"AU","Chris Woakes":"GB","Clint McKay":"AU","Colin Munro":"NZ","D'Arcy Short":"AU","Dale Steyn":"ZA","Daniel Christian":"AU","Daniel Hughes":"AU","Daniel Vettori":"NZ","Daniel Worrall":"AU","Darren Bravo":"TT","Darren Sammy":"LC","Daryl Mitchell":"NZ","David Griffiths":"GB","David Hussey":"AU","David Miller":"ZA","David Warner":"AU","David Wiese":"NA","Deepak Chahar":"IN","Deepak Hooda":"IN","Denesh Ramdin":"TT","Devon Conway":"NZ","Dhruv Jurel":"IN","Dimitri Mascarenhas":"GB","Dinesh Karthik":"IN","Dominic Cork":"GB","Doug Bollinger":"AU","Dwaine Pretorius":"ZA","Dwayne Bravo":"TT","Eoin Morgan":"IE","Faf du Plessis":"ZA","Faheem Ashraf":"PK","Fakhar Zaman":"PK","Fawad Ahmed":"AU","Gautam Gambhir":"IN","George Bailey":"AU","Gerald Coetzee":"ZA","Glenn Maxwell":"AU","Graeme Smith":"ZA","Hammad Azam":"PK","Hardik Pandya":"IN","Haris Rauf":"PK","Harry Brook":"GB","Harry Gurney":"GB","Harshit Rana":"IN","Hasan Ali":"PK","Hayden Kerr":"AU","Heinrich Klaasen":"ZA","Henry Hunt":"AU","Hussain Talat":"PK","Ian Bell":"GB","Iftikhar Ahmed":"PK","Ihsanullah":"PK","Imad Wasim":"PK","Imran Khan":"PK","Imran Tahir":"ZA","Iqbal Abdulla":"IN","Ishan Kishan":"IN","JP Duminy":"ZA","Jackson Bird":"AU","Jacques Kallis":"ZA","Jake Ball":"GB","Jake Fraser-McGurk":"AU","James Hopes":"AU","James Pattinson":"AU","James Vince":"GB","Jamie Overton":"GB","Jason Behrendorff":"AU","Jasprit Bumrah":"IN","Jayden Seales":"TT","Jeetan Patel":"NZ","Jimmy Adams":"JM","Jimmy Peirson":"AU","Jitesh Sharma":"IN","Joe Burns":"AU","John Hastings":"AU","Jordan Silk":"AU","Jos Buttler":"GB","Josh Brown":"AU","Josh Hazlewood":"AU","Josh Inglis":"AU","Josh Philippe":"AU","KL Rahul":"IN","Kagiso Rabada":"ZA","Kamran Akmal":"PK","Kamran Ghulam":"PK","Karanveer Singh":"IN","Karn Sharma":"IN","Keemo Paul":"GY","Kevin Pietersen":"GB","Kevon Cooper":"TT","Khary Pierre":"TT","Khushdil Shah":"PK","Kieron Pollard":"TT","Krunal Pandya":"IN","Kurtis Patterson":"AU","Kusal Perera":"LK","Kyle Mayers":"BB","Lakshmipathy Balaji":"IN","Lance Morris":"AU","Lasith Malinga":"LK","Laurie Evans":"GB","Lendl Simmons":"TT","Liam Dawson":"GB","Liam Livingstone":"GB","Lockie Ferguson":"NZ","Luke Pomersbach":"AU","Luke Ronchi":"NZ","Luke Wood":"GB","Luke Wright":"GB","MS Dhoni":"IN","Maheesh Theekshana":"LK","Mahesh Rawat":"IN","Mahipal Lomror":"IN","Manan Vohra":"IN","Manish Pandey":"IN","Manvinder Bisla":"IN","Marcus Stoinis":"AU","Mark Boucher":"ZA","Mark Wood":"GB","Marnus Labuschagne":"AU","Martin Guptill":"NZ","Matheesha Pathirana":"LK","Matt Renshaw":"AU","Matt Short":"AU","Matthew Carter":"GB","Matthew Hayden":"AU","Matthew Wade":"AU","Mayank Markande":"IN","Michael Beer":"AU","Michael Klinger":"AU","Michael Lumb":"GB","Michael Neser":"AU","Mike Hussey":"AU","Mitchell Johnson":"AU","Mitchell Marsh":"AU","Mitchell McClenaghan":"NZ","Mitchell Owen":"AU","Mitchell Starc":"AU","Mitchell Swepson":"AU","Moeen Ali":"GB","Mohammad Amir":"PK","Mohammad Hafeez":"PK","Mohammad Hasnain":"PK","Mohammad Kaif":"IN","Mohammad Nabi":"AF","Mohammad Nawaz":"PK","Mohammad Rizwan":"PK","Mohammad Sami":"PK","Mohammed Shami":"IN","Mohammed Siraj":"IN","Moises Henriques":"AU","Morne Morkel":"ZA","Mubasir Khan":"PK","Munaf Patel":"IN","Murali Vijay":"IN","Mustafizur Rahman":"BD","Muthiah Muralitharan":"LK","Naman Ojha":"IN","Naseem Shah":"PK","Nathan Ellis":"AU","Nathan Hauritz":"AU","Nathan Lyon":"AU","Nathan McSweeney":"AU","Naveen-ul-Haq":"AF","Neil McKenzie":"ZA","Nic Pothas":"ZA","Nicholas Pooran":"TT","Nikhil Chaudhary":"US","Nitish Reddy":"IN","Ottneil Baartman":"ZA","Paddy Dooley":"IE","Pat Cummins":"AU","Paul Walter":"GB","Peter Handscomb":"AU","Peter Hatzoglou":"AU","Peter Siddle":"AU","Phil Salt":"GB","Piyush Chawla":"IN","Praveen Kumar":"IN","Pravin Tambe":"IN","Prithvi Shaw":"IN","Quinton de Kock":"ZA","Rahmanullah Gurbaz":"AF","Rahul Chahar":"IN","Rahul Dravid":"IN","Rahul Tewatia":"IN","Rahul Tripathi":"IN","Rajat Bhatia":"IN","Rajat Patidar":"IN","Rajesh Bishnoi":"IN","Ramandeep Singh":"IN","Rashid Khan":"AF","Ravi Bishnoi":"IN","Ravichandran Ashwin":"IN","Ravindra Jadeja":"IN","Recordo Gordon":"AG","Reece Topley":"GB","Riki Wessels":"GB","Rikki Clarke":"GB","Rilee Rossouw":"ZA","Riley Meredith":"AU","Rinku Singh":"IN","Rishabh Pant":"IN","Rishad Hossain":"BD","Riyan Parag":"IN","Robin Uthappa":"IN","Rohit Sharma":"IN","Romario Shepherd":"GY","Ross Taylor":"NZ","Rumman Raees":"PK","Ruturaj Gaikwad":"IN","Ryan Carters":"AU","Ryan Harris":"AU","Ryan ten Doeschate":"NL","S Aravind":"IN","S Badrinath":"IN","Sahibzada Farhan":"PK","Saim Ayub":"PK","Salman Irshad":"PK","Sam Billings":"GB","Sam Whiteman":"AU","Sameer Rizvi":"IN","Samit Patel":"GB","Sandeep Sharma":"IN","Sanju Samson":"IN","Sarfaraz Ahmed":"PK","Saurabh Tiwary":"IN","Sean Abbott":"AU","Sean Ervine":"ZW","Shadab Jakati":"IN","Shadab Khan":"PK","Shahbaz Ahmed":"IN","Shaheen Afridi":"PK","Shahid Afridi":"PK","Shahnawaz Dahani":"PK","Shai Hope":"BB","Shakib Al Hasan":"BD","Shan Masood":"PK","Shane Warne":"AU","Shane Watson":"AU","Shardul Thakur":"IN","Sharjeel Khan":"PK","Shaun Marsh":"AU","Shikhar Dhawan":"IN","Shimron Hetmyer":"GY","Shivam Dube":"IN","Shreyas Iyer":"IN","Shubman Gill":"IN","Siddharth Trivedi":"IN","Sikandar Raza":"ZW","Sohaib Maqsood":"PK","Sohail Tanvir":"PK","Spencer Johnson":"AU","Sreenath Aravind":"IN","Steve O'Keefe":"AU","Steve Smith":"AU","Steven Mullaney":"GB","Stuart Binny":"IN","Sunil Narine":"TT","Suresh Raina":"IN","Suryakumar Yadav":"IN","Suyash Sharma":"IN","T. Natarajan":"IN","Tabraiz Shamsi":"ZA","Tamim Iqbal":"BD","Tilak Varma":"IN","Tillakaratne Dilshan":"LK","Tim Ambrose":"GB","Tim David":"AU","Tim Seifert":"NZ","Tion Webster":"TT","Todd Murphy":"AU","Tom Curran":"GB","Travis Head":"AU","Trent Boult":"NZ","Tushar Deshpande":"IN","Umar Akmal":"PK","Umesh Yadav":"IN","Usama Mir":"PK","Usman Khan":"AE","Usman Khawaja":"AU","Vaibhav Arora":"IN","Varun Aaron":"IN","Varun Chakaravarthy":"IN","Varun Chopra":"GB","Venkatesh Iyer":"IN","Virat Kohli":"IN","Virender Sehwag":"IN","Wahab Riaz":"PK","Waqas Maqsood":"PK","Wes Agar":"AU","William Porterfield":"IE","Wriddhiman Saha":"IN","Xavier Bartlett":"AU","Yash Dayal":"IN","Yashasvi Jaiswal":"IN","Yasir Arafat":"PK","Yusuf Pathan":"IN","Yuvraj Singh":"IN","Yuzvendra Chahal":"IN","Zaheer Khan":"IN","Zaman Khan":"PK"};
 function flagEmoji(cc){
   if (!cc || cc.length !== 2) return "";
   return String.fromCodePoint(...[...cc.toUpperCase()].map(c => 0x1F1E6 + c.charCodeAt(0) - 65));
@@ -1413,17 +1610,20 @@ function flagChip(team, withCode=true){
   const code = COUNTRY_CODES[team] || "—";
   return `<span class="cc"><span class="cc-flag">${flag}</span>${withCode?`<span class="cc-code">${code}</span>`:''}</span>`;
 }
-// Role-appropriate icon for a player: bat for batters, ball for bowlers,
-// gloves for keepers, bat+ball for all-rounders. (Squads are franchise-based,
-// so a country flag isn't meaningful here.)
+// Role icons — tiny inline SVGs so each role is crisp and distinct (there is no
+// "bat only" emoji; 🏏 is bat+ball). Batter = bat, bowler = ball, all-rounder =
+// bat+ball, keeper = gloves.
+const SVG_BAT  = `<svg class="ric" viewBox="0 0 24 24" aria-hidden="true"><g transform="rotate(45 12 12)"><rect x="10.6" y="3" width="2.8" height="5" rx="1.4" fill="#7a4a22"/><rect x="8.6" y="7.5" width="6.8" height="13" rx="3.4" fill="#d9b169" stroke="#a8843f" stroke-width=".8"/></g></svg>`;
+const SVG_BALL = `<svg class="ric" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="#c8102e"/><path d="M6.5 9.3 Q12 11.6 17.5 9.3 M6.5 14.7 Q12 12.4 17.5 14.7" stroke="#fff" stroke-width="1" fill="none" opacity=".8"/></svg>`;
+const SVG_ALLR = `<svg class="ric ric-ar" viewBox="0 0 32 24" aria-hidden="true"><g transform="rotate(45 9 12)"><rect x="7.8" y="3.5" width="2.4" height="4.4" rx="1.2" fill="#7a4a22"/><rect x="6" y="7.6" width="6" height="11.5" rx="3" fill="#d9b169" stroke="#a8843f" stroke-width=".7"/></g><circle cx="24" cy="15" r="6" fill="#c8102e"/><path d="M19.6 13.2 Q24 15.2 28.4 13.2" stroke="#fff" stroke-width=".9" fill="none" opacity=".8"/></svg>`;
 function roleIcon(player){
   const r = (player && player.roles) || [];
-  if (r.includes("WK")) return "🧤";                     // wicket-keeper → gloves
+  if (r.includes("WK")) return "🧤";                       // wicket-keeper → gloves
   const bowls = r.includes("PAC") || r.includes("SPN");
   const bats  = r.includes("OPN") || r.includes("BAT") || r.includes("FIN");
-  if (r.includes("AR") || (bats && bowls)) return "🏏"; // all-rounder → single bat-and-ball cricket icon
-  if (bowls) return "🔴";                                // bowler → ball
-  return "🏏";                                           // batter → bat
+  if (r.includes("AR") || (bats && bowls)) return SVG_ALLR; // all-rounder → bat + ball
+  if (bowls) return SVG_BALL;                               // bowler → ball
+  return SVG_BAT;                                           // batter → bat only
 }
 
 function ensurePlayerStat(name){
@@ -2002,7 +2202,7 @@ function simInnings({fmt, overs, base, bat, bowl, batTeam, bowlTeam, batRating, 
   const events = [];
 
   const isTest = fmt === "wtc";
-  const maxScore = fmt==="t20" ? 250 : fmt==="odi" ? 350 : 520;
+  const maxScore = fmt==="t20" ? 300 : fmt==="odi" ? 350 : 520;
   const expectedTotal = Math.min(maxScore, base * Math.pow(batRating/85, 1.0) * Math.pow(85/bowlRating, 0.6));
   const runRate = expectedTotal / overs;
   const maxOversPerBowler = fmt==="t20" ? 4 : fmt==="odi" ? 10 : 30;
@@ -2864,8 +3064,8 @@ function simSingleLeagueMatch(home, away){
   // Wider variance (±35) — underdogs deserve a chance, favourites can flop
   let hScore = base * Math.pow(home.r/85, 1.0) * Math.pow(85/away.r, 0.35) + (Math.random()-0.5)*70;
   let aScore = base * Math.pow(away.r/85, 1.0) * Math.pow(85/home.r, 0.35) + (Math.random()-0.5)*70;
-  hScore = Math.min(250, Math.max(60, Math.round(hScore)));
-  aScore = Math.min(250, Math.max(60, Math.round(aScore)));
+  hScore = Math.min(300, Math.max(60, Math.round(hScore)));
+  aScore = Math.min(300, Math.max(60, Math.round(aScore)));
   const winner = hScore >= aScore ? "home" : "away";
   // Overs faced — needed for a realistic Net Run Rate. The side batting first
   // uses the full 20 overs; a successful chase finishes early in proportion to
