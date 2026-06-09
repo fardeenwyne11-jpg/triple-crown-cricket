@@ -144,6 +144,13 @@
   .setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
   @media(max-width:760px){.setup-grid{grid-template-columns:1fr}}
   .setup-card{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 2px 0 var(--line-soft)}
+  .setup-step{margin-bottom:18px;animation:stepIn .28s ease}
+  .setup-step.done{opacity:.7}
+  .step-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .step-head b{font-size:16px;color:var(--ink)}
+  .step-no{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--green);color:#fff;font-weight:900;font-size:13px;flex-shrink:0}
+  .setup-step.done .step-no{background:var(--green-deep)}
+  @keyframes stepIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
   /* Spin */
   .spin-box{background:linear-gradient(135deg,rgba(45,122,77,.04),transparent 60%),var(--panel);border:2px solid var(--line);border-radius:16px;padding:36px 30px;text-align:center;margin:14px 0;position:relative;box-shadow:0 2px 0 var(--line-soft)}
@@ -403,7 +410,7 @@
   .award.motm .lbl{color:var(--gold-deep)}
   .avatar{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;color:#fff;position:relative;box-shadow:0 4px 12px rgba(0,0,0,.18);text-shadow:0 1px 2px rgba(0,0,0,.4);border:3px solid #fff}
   .avatar .flag{position:absolute;bottom:-4px;right:-4px;font-size:18px;background:var(--panel);border-radius:50%;padding:0 3px;border:2px solid var(--gold);line-height:1.2}
-  .avatar.flag-av{background:var(--panel2);text-shadow:none;overflow:hidden;line-height:1}
+  .avatar.flag-av{background:transparent;border:0;box-shadow:none;text-shadow:none;line-height:1}
   .award .nm{font-weight:900;font-size:18px;color:var(--ink);margin-top:8px}
   .award .from{color:var(--muted);font-size:11px;margin:2px 0 8px;font-weight:700}
   .award .fig{font-size:15px;font-weight:800;margin-top:8px;color:var(--ink);background:var(--panel);padding:6px 10px;border-radius:8px;display:inline-block;border:1px solid var(--line)}
@@ -1305,7 +1312,7 @@ const TEST_NATIONS = ["Australia","India","England","New Zealand","Pakistan","So
 function newSave(){
   return {
     screen:"setup",
-    setup:{ showRatings:true, eraMin:1975, eraMax:2026, draftMode:"spin" },
+    setup:{ showRatings:true, draftMode:"spin" },
     rerollsLeft:1, rerollsTotal:1,
     squad: SLOTS.map(s => ({ id:s.id, label:s.label, player:null })),
     currentSpin:null,
@@ -1321,21 +1328,17 @@ function newSave(){
 function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify({...S, spinning:false, tour: S.tour && !S.tour.live ? S.tour : null })); }catch(e){} }
 function load(){
   try {
-    const s = JSON.parse(localStorage.getItem(SAVE_KEY));
-    // Migration: pre-2026 saves capped the draft era at 2024, which hid the
-    // RCB 2025 and the new PSL 2026 squads. Bump old saves so returning
-    // players see them without having to re-tap an Era preset.
-    if (s && s.setup && s.setup.eraMax === 2024) s.setup.eraMax = 2026;
-    return s;
+    return JSON.parse(localStorage.getItem(SAVE_KEY));
   } catch(e){ return null; }
 }
-function reset(){ if(animTimer) clearTimeout(animTimer); S = newSave(); save(); render(); }
+let _setupStep = 0;
+function reset(){ if(animTimer) clearTimeout(animTimer); _setupStep = 0; S = newSave(); save(); render(); }
 
 /* =========== HELPERS =========== */
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 function ratingOf(p){ return p.season; }
 function ratingClass(r){ if(r>=90)return"r-90"; if(r>=85)return"r-85"; if(r>=80)return"r-80"; if(r>=75)return"r-75"; return"r-70"; }
-function filteredSeasons(){ return TEAM_SEASONS.map((t,i)=>({...t,_i:i})).filter(t => t.year >= S.setup.eraMin && t.year <= S.setup.eraMax); }
+function filteredSeasons(){ return TEAM_SEASONS.map((t,i)=>({...t,_i:i})); }
 function squadFull(){ return S.squad.every(s => s.player); }
 function squadPicks(){ return S.squad.filter(s => s.player); }
 function alreadyPicked(name){ return S.squad.some(s => s.player && s.player.n === name); }
@@ -1418,7 +1421,7 @@ function roleIcon(player){
   if (r.includes("WK")) return "🧤";                     // wicket-keeper → gloves
   const bowls = r.includes("PAC") || r.includes("SPN");
   const bats  = r.includes("OPN") || r.includes("BAT") || r.includes("FIN");
-  if (r.includes("AR") || (bats && bowls)) return "🏏🔴"; // all-rounder → bat + ball
+  if (r.includes("AR") || (bats && bowls)) return "🏏"; // all-rounder → single bat-and-ball cricket icon
   if (bowls) return "🔴";                                // bowler → ball
   return "🏏";                                           // batter → bat
 }
@@ -2457,44 +2460,42 @@ async function shareResult(opts){
 }
 
 function renderSetup(){
-  const wrap = el(`<div style="max-width:1100px;margin:0 auto;padding:40px 24px;width:100%"></div>`);
-  wrap.append(el(`<div class="hero"><h1>Whitewash</h1><p>Pick 11 cricketers from franchise squads. Build your dream XI. Win the Grand Slam — IPL, PSL, Big Bash, Champions League.</p></div>`));
-  const grid = el(`<div class="setup-grid"></div>`);
-  const left = el(`<div class="setup-card"></div>`);
-  left.append(el(`<h2>Show ratings</h2>`));
-  const sr = el(`<div class="opts"></div>`);
-  [[true,"On","Ratings visible"],[false,"Off","Blind mode"]].forEach(([v,n,d])=>{
-    const o = el(`<div class="opt ${S.setup.showRatings===v?'active':''}">${n}<small>${d}</small></div>`);
-    o.onclick = () => { S.setup.showRatings=v; save(); render(); };
-    sr.append(o);
-  });
-  left.append(sr);
-  const right = el(`<div class="setup-card"></div>`);
-  right.append(el(`<h2>Draft mode</h2>`));
-  const dm = el(`<div class="opts"></div>`);
-  [["spin","🏏 Spin Wheel","Random team-season offers"],["auction","💰 Auction","Bid credits for any player"]].forEach(([k,n,d])=>{
-    const o = el(`<div class="opt ${S.setup.draftMode===k?'active':''}">${n}<small>${d}</small></div>`);
-    o.onclick = () => { S.setup.draftMode=k; save(); render(); };
-    dm.append(o);
-  });
-  right.append(dm);
+  const wrap = el(`<div style="max-width:560px;margin:0 auto;padding:40px 24px;width:100%"></div>`);
+  wrap.append(el(`<div class="hero"><h1>Whitewash</h1><p>Pick 11 cricketers from franchise squads. Build your dream XI. Win all four — IPL, PSL, Big Bash, Champions League.</p></div>`));
 
-  right.append(el(`<h2>Era</h2>`));
-  const era = el(`<div class="opts"></div>`);
-  [[1975,2026,"All-time"],[2000,2026,"2000s+"],[2010,2026,"2010s+"],[2020,2026,"Modern"]].forEach(([a,b,n])=>{
-    const active = S.setup.eraMin===a && S.setup.eraMax===b;
-    const o = el(`<div class="opt ${active?'active':''}">${n}<small>${a}–${b}</small></div>`);
-    o.onclick = () => { S.setup.eraMin=a; S.setup.eraMax=b; save(); render(); };
-    era.append(o);
+  // Click-by-click setup: each step is revealed once the previous is answered.
+  const steps = [
+    { key:'draftMode', title:'How do you want to draft?',
+      opts:[["spin","🏏 Spin Wheel","Random team-season offers"],["auction","💰 Auction","Bid credits for any player"]] },
+    { key:'showRatings', title:'Show player ratings?',
+      opts:[[true,"On","See every rating"],[false,"Off","Blind mode — trust your gut"]] },
+  ];
+  if (_setupStep > steps.length) _setupStep = steps.length;
+
+  steps.forEach((step, idx) => {
+    if (idx > _setupStep) return;                 // not revealed yet
+    const done = idx < _setupStep;
+    const sec = el(`<div class="setup-step ${done?'done':'active'}"></div>`);
+    sec.append(el(`<div class="step-head"><span class="step-no">${done?'✓':idx+1}</span><b>${step.title}</b></div>`));
+    const opts = el(`<div class="opts"></div>`);
+    step.opts.forEach(([v,n,d])=>{
+      const sel = S.setup[step.key]===v;
+      const o = el(`<div class="opt ${sel?'active':''}">${n}<small>${d}</small></div>`);
+      o.onclick = () => { S.setup[step.key]=v; if (idx === _setupStep) _setupStep = idx+1; save(); render(); };
+      opts.append(o);
+    });
+    sec.append(opts);
+    wrap.append(sec);
   });
-  right.append(era);
-  grid.append(left, right);
-  wrap.append(grid);
-  const startWrap = el(`<div style="text-align:center;margin-top:24px"></div>`);
-  const start = el(`<button class="primary" style="padding:16px 40px;font-size:16px">Start Draft →</button>`);
-  start.onclick = startDraft;
-  startWrap.append(start);
-  wrap.append(startWrap);
+
+  if (_setupStep >= steps.length){
+    const startWrap = el(`<div class="setup-step active" style="text-align:center;margin-top:8px"></div>`);
+    const start = el(`<button class="primary" style="padding:16px 40px;font-size:16px;width:100%">Start Draft →</button>`);
+    start.onclick = startDraft;
+    startWrap.append(start);
+    wrap.append(startWrap);
+  }
+
   wrap.append(el(`<p class="muted" style="text-align:center;margin-top:24px;font-size:11px;line-height:1.5;max-width:560px;margin-left:auto;margin-right:auto">Whitewash is an independent project and is not affiliated with, endorsed by, or sponsored by the ICC, any national cricket board, or any player. All names are used for identification purposes only.<br/>Inspired by <a href="https://38-0.app" target="_blank">38-0</a>.</p>`));
   return wrap;
 }
@@ -2712,7 +2713,7 @@ function renderHub(){
   const tr = el(`<div class="trophies"></div>`);
   TOURNAMENTS.forEach(t => {
     tr.append(el(`<div class="trophy ${S.trophies[t.id]?'won':''}">
-      <div class="ic">${S.trophies[t.id]?'🏆':'⚪'}</div>
+      <div class="ic">${S.trophies[t.id]?'🏆':'<span style="filter:grayscale(1);opacity:.32">🏆</span>'}</div>
       <b>${t.name.replace('ICC ','')}</b>
       <div class="muted" style="font-size:11px;margin-top:2px">${S.trophies[t.id]?'Won':'Not yet'}</div>
     </div>`));
