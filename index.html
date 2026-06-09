@@ -82,7 +82,8 @@
   .muted{color:var(--muted)}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 
-  .pill{display:inline-block;padding:5px 10px;border-radius:6px;font-size:11px;color:var(--muted);border:1px solid var(--line);background:var(--panel2);font-weight:800;letter-spacing:.3px}
+  .pill{display:inline-block;padding:5px 12px;border-radius:999px;font-size:11px;color:var(--muted);border:1px solid var(--line);background:var(--panel2);font-weight:800;letter-spacing:.3px}
+  .pill.reroll{color:var(--gold);border-color:var(--gold-deep);background:rgba(245,196,81,.08)}
   .pill.warn{background:#f8d7da;color:var(--red);border-color:var(--red)}
   .pill.ok{background:#d4edda;color:var(--green-deep);border-color:var(--green)}
 
@@ -301,6 +302,12 @@
   .spin-btn:active{transform:translateY(0)}
 
   .reel{height:90px;display:block;position:relative;overflow:hidden;margin:8px 0 4px;border-radius:10px;background:var(--bg-alt);border:1px solid var(--line)}
+  /* Two-cell spin reels (CLUB + SEASON) */
+  .spin-box-stub.reel-cell{padding:6px 14px;min-height:62px}
+  .reel-mini{height:46px;width:100%;display:block;position:relative;overflow:hidden;border:0;background:transparent;margin:0;border-radius:0}
+  .reel-mini .reel-item{height:46px;justify-content:center}
+  .reel-mini .reel-item .t{font-size:15px;font-weight:800;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin:0}
+  .reel-mini .reel-item .y{font-size:18px;font-weight:900;color:var(--gold-deep);margin:0}
   .reel-track{display:flex;flex-direction:column;width:100%;will-change:transform}
   .reel-item{height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
   .reel-item .t{font-size:24px;font-weight:900;letter-spacing:.5px;color:var(--ink)}
@@ -1994,32 +2001,28 @@ function spin(){
   render();
   animateSpin(finalIdx);
 }
+const REEL_ITEM_H = 46;
 function animateSpin(finalIdx){
   const pool = filteredSeasons();
-  const reel = document.querySelector(".reel-track");
-  if (!reel) return;
-  const items = [];
-  const N = 24;
-  for (let i=0;i<N-1;i++) items.push(pool[Math.floor(Math.random()*pool.length)]._i);
-  items.push(finalIdx);
-  reel.innerHTML = items.map(i=>{
-    const ts = TEAM_SEASONS[i];
-    return `<div class="reel-item"><div class="t">${ts.team}</div><div class="y">${ts.year}</div><div class="f">${LEAGUE_NAMES[ts.league]||""}</div></div>`;
-  }).join("");
-  const totalY = (N-1)*90;
+  const club = document.querySelector("#reelClub .reel-track");
+  const season = document.querySelector("#reelSeason .reel-track");
+  if (!club || !season) return;
+  const N = 28;
+  const idxs = [];
+  for (let i=0;i<N-1;i++) idxs.push(pool[Math.floor(Math.random()*pool.length)]._i);
+  idxs.push(finalIdx);
+  club.innerHTML = idxs.map(i=>`<div class="reel-item"><div class="t">${TEAM_SEASONS[i].team}</div></div>`).join("");
+  season.innerHTML = idxs.map(i=>`<div class="reel-item"><div class="y">${TEAM_SEASONS[i].year}</div></div>`).join("");
+  const totalY = (N-1)*REEL_ITEM_H;
   const duration = 2400;
   const start = performance.now();
   function frame(t){
     const e = Math.min(1, (t-start)/duration);
     const eased = 1 - Math.pow(1-e, 3.2);
-    reel.style.transform = `translateY(${-totalY*eased}px)`;
+    const y = `translateY(${-totalY*eased}px)`;
+    club.style.transform = y; season.style.transform = y;
     if (e < 1) requestAnimationFrame(frame);
-    else {
-      S.spinning = false;
-      S.currentSpin.anim = false;
-      document.querySelector(".reel")?.classList.add("done");
-      render();
-    }
+    else { S.spinning = false; S.currentSpin.anim = false; render(); }
   }
   requestAnimationFrame(frame);
 }
@@ -2736,7 +2739,7 @@ function renderSidebar(){
   const filled = squadPicks().length;
   const side = el(`<aside class="sidebar ${S.drawerOpen?'open':''}"></aside>`);
   side.append(el(`<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:13px;letter-spacing:1px">YOUR XI</b><span class="pill ${filled===SQUAD_SIZE?'ok':''}">${filled}/${SQUAD_SIZE}</span></div>`));
-  if (S.screen === "draft") side.append(el(`<div class="muted" style="font-size:12px;margin-top:6px">Rerolls: <b style="color:var(--gold)">${S.rerollsLeft}</b>/${S.rerollsTotal}</div>`));
+  if (S.screen === "draft") side.append(el(`<div style="margin-top:8px"><span class="pill reroll">↻ Rerolls ${S.rerollsLeft}/${S.rerollsTotal}</span></div>`));
 
   // Role tally chip row — visualise XI composition as user picks
   if (filled > 0 || S.screen === "draft"){
@@ -2758,7 +2761,7 @@ function renderSidebar(){
       const tags = slot.player.roles.slice(0,2).map(rl=>`<span class="t-${rl}" style="font-size:9px;padding:2px 4px;border-radius:3px;font-weight:700;color:#fff">${rl}</span>`).join(' ');
       row.append(el(`<span class="name"><b>${slot.player.n}</b><small>${roleIcon(slot.player)} ${slot.player.from.year} · ${tags}</small></span>`));
       if (S.setup.showRatings) row.append(el(`<span class="rating">${r}</span>`));
-      if (S.screen === "draft"){ const x = el(`<button class="x" title="Remove">✕</button>`); x.onclick = () => removeFromSlot(slot.id); row.append(x); }
+      // Picks are locked in for the run — no removing players once chosen.
     } else row.append(el(`<span class="name empty">empty</span>`));
     list.append(row);
   });
@@ -2871,11 +2874,15 @@ function renderDraft(){
       <div class="spin-box-stub"><span class="lbl-mini">SEASON</span><div class="val">${ts.year}</div></div>
     </div>
     <div class="spun-league">${LEAGUE_NAMES[ts.league]||""}</div>`;
+  // Spinning: two reels (CLUB + SEASON) so it matches the two-box pre/post layout.
+  const spinning = `<div class="spin-boxes">
+      <div class="spin-box-stub reel-cell"><span class="lbl-mini">CLUB</span><div class="reel reel-mini" id="reelClub"><div class="reel-track"></div></div></div>
+      <span class="spin-x">×</span>
+      <div class="spin-box-stub reel-cell"><span class="lbl-mini">SEASON</span><div class="reel reel-mini" id="reelSeason"><div class="reel-track"></div></div></div>
+    </div>`;
   const reveal = el(`<div class="spin-box">
     <div class="lbl">${S.spinning?'SPINNING…':'SQUAD SPUN'}</div>
-    ${S.spinning
-      ? `<div class="reel"><div class="reel-track"><div class="reel-item"><div class="t">${ts.team}</div><div class="y">${ts.year}</div><div class="f">${LEAGUE_NAMES[ts.league]||""}</div></div></div></div>`
-      : landed}
+    ${S.spinning ? spinning : landed}
     ${!S.spinning && ts.trophy ? `<div class="trophy-label">${ts.trophy}</div>` : ''}
     ${!S.spinning ? `<div class="reroll">Rerolls left: <b>${S.rerollsLeft}</b> ${S.rerollsLeft>0?'· <a id="rr">Reroll squad</a>':''}</div>` : ''}
   </div>`);
