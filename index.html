@@ -2128,43 +2128,80 @@ function continueAfterAwards(){
 
 /* =========== RENDER =========== */
 function el(h){ const d=document.createElement("div"); d.innerHTML=h.trim(); return d.firstElementChild; }
-function render(){
-  if (animTimer && S.screen !== "live") { clearTimeout(animTimer); animTimer = null; }
-  const root = document.getElementById("app");
-  root.innerHTML = "";
-  if (S.screen === "setup") { root.append(renderSetup()); return; }
-  // Hamburger (mobile only via CSS)
-  const ham = el(`<button class="hamburger" title="Menu">☰</button>`);
-  ham.onclick = toggleDrawer;
-  root.append(ham);
-  // Scrim when drawer open on mobile
-  if (S.drawerOpen){
-    const sc = el(`<div class="scrim"></div>`);
-    sc.onclick = toggleDrawer;
-    root.append(sc);
-  }
-  root.append(renderSidebar());
-  const main = document.createElement("div"); main.className="main";
-  if (S.screen === "draft") main.append(renderDraft());
-  else if (S.screen === "auction") main.append(renderAuction());
-  else if (S.screen === "hub") main.append(renderHub());
-  else if (S.screen === "odds") main.append(renderOdds());
-  else if (S.screen === "summary") main.append(renderSummary());
-  else if (S.screen === "leaguesim") main.append(renderLeagueSim());
-  else if (S.screen === "order") main.append(renderOrder());
-  else if (S.screen === "watch-choice") main.append(renderWatchChoice());
-  else if (S.screen === "live") main.append(renderLive());
-  else if (S.screen === "scorecard") main.append(renderScorecard());
-  else if (S.screen === "awards") main.append(renderAwards());
-  else if (S.screen === "win") main.append(renderWin());
-  else if (S.screen === "gameover") main.append(renderGameOver());
-  root.append(main);
-  // Small floating feedback button (in-app form)
+let _sideSig = null;
+function ensureFab(){
+  // Floating feedback button lives on <body>, persists across renders.
   if (!document.getElementById("fab-feedback")){
     const fab = el(`<button id="fab-feedback" class="fab-feedback" title="Send feedback">💬</button>`);
     fab.onclick = openFeedbackModal;
     document.body.appendChild(fab);
   }
+}
+function sidebarSignature(){
+  // Everything renderSidebar() visibly depends on. While this is unchanged we
+  // leave the existing sidebar DOM in place, so the "YOUR XI" name list doesn't
+  // flicker or scroll-reset on every button press.
+  return [S.screen, S.setup.showRatings, S.setup.primeMode, S.rerollsLeft, S.rerollsTotal,
+    S.squad.map(s=>s.player?s.player.n:'-').join('|')].join('::');
+}
+function buildScreen(){
+  if (S.screen === "draft") return renderDraft();
+  if (S.screen === "auction") return renderAuction();
+  if (S.screen === "hub") return renderHub();
+  if (S.screen === "odds") return renderOdds();
+  if (S.screen === "summary") return renderSummary();
+  if (S.screen === "leaguesim") return renderLeagueSim();
+  if (S.screen === "order") return renderOrder();
+  if (S.screen === "watch-choice") return renderWatchChoice();
+  if (S.screen === "live") return renderLive();
+  if (S.screen === "scorecard") return renderScorecard();
+  if (S.screen === "awards") return renderAwards();
+  if (S.screen === "win") return renderWin();
+  if (S.screen === "gameover") return renderGameOver();
+  return el(`<div></div>`);
+}
+function render(){
+  if (animTimer && S.screen !== "live") { clearTimeout(animTimer); animTimer = null; }
+  const root = document.getElementById("app");
+
+  // Setup is a standalone full-screen view with no app shell.
+  if (S.screen === "setup") { root.innerHTML = ""; _sideSig = null; root.append(renderSetup()); ensureFab(); return; }
+
+  // Build the persistent shell (hamburger + sidebar + main container) once, then
+  // reuse it. Only the main panel is swapped on every render; the sidebar is
+  // rebuilt only when sidebarSignature() changes. This stops the name list from
+  // refreshing each time a button is pressed.
+  let main = root.querySelector(":scope > .main");
+  if (!main || !root.querySelector(":scope > .hamburger")){
+    root.innerHTML = ""; _sideSig = null;
+    const ham = el(`<button class="hamburger" title="Menu">☰</button>`);
+    ham.onclick = toggleDrawer;
+    root.append(ham, renderSidebar());
+    _sideSig = sidebarSignature();
+    main = document.createElement("div"); main.className = "main";
+    root.append(main);
+  }
+
+  // Drawer scrim (mobile): add/remove in place without disturbing siblings.
+  let scrim = root.querySelector(":scope > .scrim");
+  if (S.drawerOpen && !scrim){ scrim = el(`<div class="scrim"></div>`); scrim.onclick = toggleDrawer; root.querySelector(":scope > .hamburger").after(scrim); }
+  else if (!S.drawerOpen && scrim){ scrim.remove(); }
+
+  // Sidebar: rebuild only when its inputs actually changed.
+  const sig = sidebarSignature();
+  const sb = root.querySelector(":scope > .sidebar");
+  if (!sb || sig !== _sideSig){
+    const fresh = renderSidebar();
+    if (sb) sb.replaceWith(fresh); else root.querySelector(":scope > .hamburger").after(fresh);
+    _sideSig = sig;
+  } else {
+    sb.classList.toggle("open", !!S.drawerOpen); // keep drawer state in sync
+  }
+
+  // Main panel: always refreshed (this is the part that changes per interaction).
+  main.innerHTML = "";
+  main.append(buildScreen());
+  ensureFab();
 }
 
 function openFeedbackModal(){
