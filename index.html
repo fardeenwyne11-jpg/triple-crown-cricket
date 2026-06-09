@@ -1378,6 +1378,18 @@ function flagChip(team, withCode=true){
   const code = COUNTRY_CODES[team] || "—";
   return `<span class="cc"><span class="cc-flag">${flag}</span>${withCode?`<span class="cc-code">${code}</span>`:''}</span>`;
 }
+// Role-appropriate icon for a player: bat for batters, ball for bowlers,
+// gloves for keepers, bat+ball for all-rounders. (Squads are franchise-based,
+// so a country flag isn't meaningful here.)
+function roleIcon(player){
+  const r = (player && player.roles) || [];
+  if (r.includes("WK")) return "🧤";                     // wicket-keeper → gloves
+  const bowls = r.includes("PAC") || r.includes("SPN");
+  const bats  = r.includes("OPN") || r.includes("BAT") || r.includes("FIN");
+  if (r.includes("AR") || (bats && bowls)) return "🏏🔴"; // all-rounder → bat + ball
+  if (bowls) return "🔴";                                // bowler → ball
+  return "🏏";                                           // batter → bat
+}
 
 function ensurePlayerStat(name){
   if (!S.playerStats[name]) S.playerStats[name] = {
@@ -2420,7 +2432,7 @@ function renderSetup(){
   const right = el(`<div class="setup-card"></div>`);
   right.append(el(`<h2>Draft mode</h2>`));
   const dm = el(`<div class="opts"></div>`);
-  [["spin","🏧 Spin Wheel","Random team-season offers"],["auction","💰 Auction","Bid credits for any player"]].forEach(([k,n,d])=>{
+  [["spin","🏏 Spin Wheel","Random team-season offers"],["auction","💰 Auction","Bid credits for any player"]].forEach(([k,n,d])=>{
     const o = el(`<div class="opt ${S.setup.draftMode===k?'active':''}">${n}<small>${d}</small></div>`);
     o.onclick = () => { S.setup.draftMode=k; save(); render(); };
     dm.append(o);
@@ -2479,7 +2491,7 @@ function renderSidebar(){
     if (slot.player){
       const r = ratingOf(slot.player);
       const tags = slot.player.roles.slice(0,2).map(rl=>`<span class="t-${rl}" style="font-size:9px;padding:2px 4px;border-radius:3px;font-weight:700;color:#fff">${rl}</span>`).join(' ');
-      row.append(el(`<span class="name"><b>${slot.player.n}</b><small>${flagChip(slot.player.from.team)} ${slot.player.from.year} · ${tags}</small></span>`));
+      row.append(el(`<span class="name"><b>${slot.player.n}</b><small>${roleIcon(slot.player)} ${slot.player.from.year} · ${tags}</small></span>`));
       if (S.setup.showRatings) row.append(el(`<span class="rating">${r}</span>`));
       if (S.screen === "draft"){ const x = el(`<button class="x" title="Remove">✕</button>`); x.onclick = () => removeFromSlot(slot.id); row.append(x); }
     } else row.append(el(`<span class="name empty">empty</span>`));
@@ -2532,7 +2544,7 @@ function renderAuction(){
     <div class="lot-no">LOT · ${filled+1}/${SQUAD_SIZE}</div>
     <div class="auction-avatar">${avatarHTML({...lot.p, from:{team:lot.team}}, 88)}</div>
     <h2 class="nm">${lot.p.n}</h2>
-    <div class="src">${flagChip(lot.team)} ${lot.team} ${lot.year}</div>
+    <div class="src">${roleIcon(lot.p)} ${lot.team} ${lot.year}</div>
     <div class="roles">${lot.p.roles.map(r=>`<span class="tag t-${r}">${r}</span>`).join('')}</div>
     ${S.setup.showRatings?`<div style="margin:6px 0;color:var(--muted);font-size:13px">Rating <b style="color:var(--ink)">${ratingOf(lot.p)}</b></div>`:''}
     <div class="pricetag"><span class="lbl">PRICE</span><span class="px">${price}</span><span class="c">c</span></div>
@@ -2570,7 +2582,7 @@ function renderDraft(){
         <span class="spin-x">×</span>
         <div class="spin-box-stub"><span class="lbl-mini">SEASON</span><div class="val">—</div></div>
       </div>
-      <div><button class="spin-btn">🏧 Spin the Wheel</button></div>
+      <div><button class="spin-btn">🏏 Spin the Wheel</button></div>
       <div class="spin-tap-hint">or tap anywhere to spin</div>
     </div>`);
     box.querySelector(".spin-btn").onclick = spin;
@@ -2608,7 +2620,7 @@ function renderDraft(){
       const wkNeeded = wkOnly && p.roles.includes("WK");
       const row = el(`<div class="player ${disabled?'disabled':''} ${wkNeeded?'wk-needed':''}" title="${reason}">
         <div class="r ${S.setup.showRatings?ratingClass(r):'r-hide'}">${S.setup.showRatings?r:'?'}</div>
-        <div class="nm"><b>${p.n}</b><small>${flagChip(ts.team)} ${ts.year}</small></div>
+        <div class="nm"><b>${p.n}</b><small>${roleIcon(p)} ${ts.year}</small></div>
         <div class="tags">${p.roles.map(rl=>`<span class="tag t-${rl}">${rl}</span>`).join('')}</div>
       </div>`);
       if (!disabled) row.onclick = () => choosePlayer(p.n);
@@ -2761,7 +2773,7 @@ function startLeagueSim(){
   // happen in the same round, like a real league season.
   const fixtures = buildDoubleRoundRobin(allTeams);
   const perGw = Math.max(1, Math.floor(allTeams.length / 2));
-  const standings = allTeams.map(t => ({ team:t, P:0, W:0, L:0, F:0, A:0, pts:0, nrr:0 }));
+  const standings = allTeams.map(t => ({ team:t, P:0, W:0, L:0, F:0, A:0, oversFor:0, oversAgainst:0, pts:0, nrr:0 }));
   S.tour.league = { fixtures, standings, fixtureIdx:0, teams: allTeams, perGw, done:false };
   S.screen = "leaguesim";
   save(); render();
@@ -2807,6 +2819,16 @@ function buildDoubleRoundRobin(teams){
   return leg1.concat(leg2);
 }
 
+const LEAGUE_OVERS = 20;  // T20 league matches; used for Net Run Rate
+// Net Run Rate = (runs scored / overs faced) − (runs conceded / overs bowled).
+// Realistically lands in roughly ±3; back-compat falls back to overs = 20·P
+// for any standings row saved before overs were tracked.
+function nrrOf(s){
+  const oF = s.oversFor || (s.P * LEAGUE_OVERS);
+  const oA = s.oversAgainst || (s.P * LEAGUE_OVERS);
+  if (!oF || !oA) return 0;
+  return (s.F / oF) - (s.A / oA);
+}
 function simSingleLeagueMatch(home, away){
   // Two-innings T20 single-match outcome (compressed)
   const base = 170;
@@ -2815,7 +2837,21 @@ function simSingleLeagueMatch(home, away){
   let aScore = base * Math.pow(away.r/85, 1.0) * Math.pow(85/home.r, 0.35) + (Math.random()-0.5)*70;
   hScore = Math.min(250, Math.max(60, Math.round(hScore)));
   aScore = Math.min(250, Math.max(60, Math.round(aScore)));
-  return { homeScore:hScore, awayScore:aScore, winner: hScore >= aScore ? "home" : "away" };
+  const winner = hScore >= aScore ? "home" : "away";
+  // Overs faced — needed for a realistic Net Run Rate. The side batting first
+  // uses the full 20 overs; a successful chase finishes early in proportion to
+  // the winning margin (so dominant wins earn a healthier +NRR). Half the time
+  // the winner defended a total (batted first), so both sides face the full quota.
+  let homeOvers = LEAGUE_OVERS, awayOvers = LEAGUE_OVERS;
+  const winnerChased = Math.random() < 0.5;
+  if (winnerChased){
+    const winScore = winner === "home" ? hScore : aScore;
+    const chaseTarget = (winner === "home" ? aScore : hScore) + 1;
+    // Reach the target then stop; never quicker than 8 overs, never the full 20.
+    const used = Math.min(LEAGUE_OVERS - 0.1, Math.max(8, LEAGUE_OVERS * chaseTarget / Math.max(1, winScore)));
+    if (winner === "home") homeOvers = used; else awayOvers = used;
+  }
+  return { homeScore:hScore, awayScore:aScore, winner, homeOvers, awayOvers };
 }
 function startLeagueAnim(){
   if (_leagueInt) clearTimeout(_leagueInt);
@@ -2851,6 +2887,8 @@ function playLeagueMatch(){
   hs.P++; as.P++;
   hs.F += r.homeScore; hs.A += r.awayScore;
   as.F += r.awayScore; as.A += r.homeScore;
+  hs.oversFor += r.homeOvers; hs.oversAgainst += r.awayOvers;
+  as.oversFor += r.awayOvers; as.oversAgainst += r.homeOvers;
   if (r.winner === "home"){ hs.W++; hs.pts+=2; as.L++; }
   else { as.W++; as.pts+=2; hs.L++; }
   if (f.home.isMe || f.away.isMe){
@@ -2864,7 +2902,7 @@ function playLeagueMatch(){
   lg.fixtureIdx++;
   lg.standings.sort((a,b)=>{
     if (b.pts !== a.pts) return b.pts - a.pts;
-    return ((b.F-b.A)/Math.max(1,b.P)) - ((a.F-a.A)/Math.max(1,a.P));
+    return nrrOf(b) - nrrOf(a);
   });
   if (f.home.isMe || f.away.isMe) appendLeagueResult(f, r);
   updateStandingsTable();
@@ -2974,7 +3012,8 @@ function renderStandingsHTML(){
   const lg = S.tour.league;
   return `<table class="lg-tab"><thead><tr><th>#</th><th>Team</th><th class="r">P</th><th class="r">W</th><th class="r">L</th><th class="r">NRR</th><th class="r">Pts</th></tr></thead><tbody>${
     lg.standings.map((s,i)=>{
-      const nrr = s.P ? ((s.F-s.A)/s.P).toFixed(2) : '0.00';
+      const nrrVal = s.P ? nrrOf(s) : 0;
+      const nrr = (nrrVal>0?'+':'') + nrrVal.toFixed(2);
       return `<tr class="${s.team.isMe?'me ':''}${i<4?'qual ':''}"><td class="pos">${i+1}</td><td>${stripYear(s.team.n)}</td><td class="r">${s.P}</td><td class="r">${s.W}</td><td class="r">${s.L}</td><td class="r">${nrr}</td><td class="r">${s.pts}</td></tr>`;
     }).join("")
   }</tbody></table>`;
@@ -3030,6 +3069,8 @@ function renderLeagueSim(){
         hs.P++; as.P++;
         hs.F += r.homeScore; hs.A += r.awayScore;
         as.F += r.awayScore; as.A += r.homeScore;
+        hs.oversFor += r.homeOvers; hs.oversAgainst += r.awayOvers;
+        as.oversFor += r.awayOvers; as.oversAgainst += r.homeOvers;
         if (r.winner === "home"){ hs.W++; hs.pts+=2; as.L++; }
         else { as.W++; as.pts+=2; hs.L++; }
         // Distribute user-match stats when skipping too
@@ -3042,7 +3083,7 @@ function renderLeagueSim(){
       }
       S.tour.league.standings.sort((a,b)=>{
         if (b.pts !== a.pts) return b.pts - a.pts;
-        return ((b.F-b.A)/Math.max(1,b.P)) - ((a.F-a.A)/Math.max(1,a.P));
+        return nrrOf(b) - nrrOf(a);
       });
       finishLeagueSim();
     };
@@ -3344,7 +3385,7 @@ function renderWatchChoice(){
   const opp = S.tour.opps[S.tour.roundIdx];
   const wrap = el(`<div></div>`);
   wrap.append(el(`<div class="hero" style="padding:30px 20px;margin-bottom:18px">
-    <h1 style="font-size:32px">${t.icon} ${t.rounds[S.tour.roundIdx]}</h1>
+    <h1 style="font-size:32px;text-shadow:none">${t.icon} ${t.rounds[S.tour.roundIdx]}</h1>
     <p style="font-size:14px"><b style="color:var(--ink)">Your XI</b> vs <b style="color:var(--ink)">${opp.n}</b> · ${t.overs} overs</p>
   </div>`));
   wrap.append(el(`<h2 style="text-align:center;margin-top:0">🎬 How do you want to play this match?</h2>`));
