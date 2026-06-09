@@ -130,6 +130,17 @@
   .slot .name small{display:block;color:var(--muted);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .slot .rating{font-weight:900;color:var(--gold-deep);font-size:14px}
   .slot .empty{color:#b3a987;font-style:italic}
+  .strength-card{margin-top:14px;background:var(--bg-alt);border:1px solid var(--line);border-radius:10px;padding:12px}
+  .strength-card .ts-title{font-size:10px;letter-spacing:1.5px;font-weight:800;color:var(--muted);margin-bottom:9px}
+  .ts-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .ts-row:last-child{margin-bottom:0}
+  .ts-lbl{font-size:11px;font-weight:800;color:var(--ink);width:74px;flex-shrink:0}
+  .ts-bar{flex:1;height:7px;background:var(--panel2);border-radius:4px;overflow:hidden}
+  .ts-bar > i{display:block;height:100%;border-radius:4px;transition:width .35s ease}
+  .ts-bar > i.bat{background:#3a89e0}
+  .ts-bar > i.bowl{background:#c8102e}
+  .ts-bar > i.field{background:#3ddc97}
+  .ts-val{font-size:13px;font-weight:900;color:var(--ink);width:24px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
   .slot .x{background:transparent;border:0;color:var(--muted);padding:2px 6px;cursor:pointer;font-size:14px;box-shadow:none}
   .slot .x:hover{color:var(--red);transform:none;box-shadow:none;border-color:transparent}
 
@@ -2737,6 +2748,24 @@ function renderSetup(){
   return wrap;
 }
 
+// Live team strengths from the picked XI (all derived from season ratings):
+// batting = top-7 batters, bowling = top-5 of the attack, fielding = whole-XI
+// athleticism (everyone fields) nudged up by all-rounders + a specialist keeper.
+function squadStrengths(){
+  const players = squadPicks().map(s=>s.player);
+  if (!players.length) return null;
+  const has = (p,arr)=>p.roles.some(r=>arr.includes(r));
+  const mean = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
+  const clamp = x => Math.max(40, Math.min(99, x));
+  const bat = players.filter(p=>has(p,["OPN","BAT","FIN","WK","AR"])).map(ratingOf).sort((a,b)=>b-a).slice(0,7);
+  const bowl = players.filter(p=>has(p,["PAC","SPN","AR"])).map(ratingOf).sort((a,b)=>b-a).slice(0,5);
+  const arCount = players.filter(p=>p.roles.includes("AR")).length;
+  return {
+    batting: clamp(mean(bat)),
+    bowling: clamp(mean(bowl)),
+    fielding: clamp(mean(players.map(ratingOf)) + arCount*0.7 + (players.some(p=>p.roles.includes("WK"))?1:0))
+  };
+}
 function renderSidebar(){
   const filled = squadPicks().length;
   const side = el(`<aside class="sidebar ${S.drawerOpen?'open':''}"></aside>`);
@@ -2768,6 +2797,19 @@ function renderSidebar(){
     list.append(row);
   });
   side.append(list);
+
+  // Team strength card — batting / bowling / fielding, live as you draft.
+  const st = squadStrengths();
+  if (st){
+    const w = v => Math.max(6, Math.min(100, (v-50)/49*100));
+    const row = (lbl,val,cls) => `<div class="ts-row"><span class="ts-lbl">${lbl}</span><div class="ts-bar"><i class="${cls}" style="width:${w(val)}%"></i></div><b class="ts-val">${Math.round(val)}</b></div>`;
+    side.append(el(`<div class="strength-card">
+      <div class="ts-title">TEAM STRENGTH</div>
+      ${row("🏏 Batting", st.batting, "bat")}
+      ${row("🔴 Bowling", st.bowling, "bowl")}
+      ${row("🧤 Fielding", st.fielding, "field")}
+    </div>`));
+  }
 
   if (S.screen !== "setup") {
     const back = el(`<button class="ghost" style="width:100%;margin-top:16px;font-size:12px">← Setup</button>`);
