@@ -4,23 +4,25 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>11-0 — Cricket Squad Draft</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 <style>
   :root{
-    --bg:#ede0bd;             /* parchment */
-    --bg-alt:#f5ecd4;
-    --panel:#fdf6e3;          /* paper white */
-    --panel2:#f0e5c5;
-    --line:#d4c896;           /* faded gold */
-    --line-soft:#e6dab1;
-    --ink:#1a1a1a;
-    --ink-soft:#3a3a3a;
-    --muted:#7a7060;
-    --gold:#d49d2a;
-    --gold-bright:#f0b94a;
-    --gold-deep:#a87a0e;
+    --bg:#e8f0d6;             /* light pitch */
+    --bg-alt:#f0f6e4;
+    --panel:#fafdf2;          /* near-white with green hint */
+    --panel2:#e5eed3;
+    --line:#a8c98a;           /* light pitch-green border */
+    --line-soft:#cce0b8;
+    --ink:#1a2a18;
+    --ink-soft:#2d3a2a;
+    --muted:#6b7d60;
+    --gold:#b8a050;           /* muted gold (used sparingly) */
+    --gold-bright:#d4b860;
+    --gold-deep:#8a7530;
     --green:#4ca850;          /* cricket pitch */
     --green-deep:#2d7a4d;
     --green-light:#8dd17f;
+    --green-soft:#d4ecbf;
     --red:#c8102e;            /* cricket ball */
     --red-deep:#8a0a1f;
     --red-light:#e8606f;
@@ -28,13 +30,13 @@
     --teal:#2dd4bf; --purple:#a578f0;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:repeating-linear-gradient(135deg,transparent 0,transparent 60px,rgba(212,200,150,.08) 60px,rgba(212,200,150,.08) 61px),var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;min-height:100%}
+  html,body{margin:0;background:repeating-linear-gradient(135deg,transparent 0,transparent 60px,rgba(168,201,138,.18) 60px,rgba(168,201,138,.18) 61px),var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;min-height:100%}
   ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}::-webkit-scrollbar-track{background:transparent}
 
   .app{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
   @media(max-width:900px){.app{grid-template-columns:1fr}}
-  .sidebar{background:linear-gradient(180deg,var(--panel),var(--bg-alt));border-right:3px solid var(--gold);padding:18px;position:sticky;top:0;height:100vh;overflow:auto}
-  @media(max-width:900px){.sidebar{position:static;height:auto;border-right:0;border-bottom:3px solid var(--gold)}}
+  .sidebar{background:linear-gradient(180deg,var(--panel),var(--bg-alt));border-right:3px solid var(--green);padding:18px;position:sticky;top:0;height:100vh;overflow:auto}
+  @media(max-width:900px){.sidebar{position:static;height:auto;border-right:0;border-bottom:3px solid var(--green)}}
   .main{padding:30px 28px;max-width:1100px;margin:0 auto;width:100%}
 
   h1{font-size:30px;margin:0 0 4px;letter-spacing:.5px;color:var(--ink);font-weight:900}
@@ -104,7 +106,7 @@
   .hero{text-align:center;padding:40px 20px;background:linear-gradient(180deg,rgba(45,122,77,.08),transparent 60%),var(--panel);border:2px solid var(--line);border-radius:16px;margin-bottom:24px;position:relative;overflow:hidden;box-shadow:0 2px 0 var(--line-soft),0 8px 32px rgba(168,122,14,.08);animation:fadeIn .5s ease}
   @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:repeating-linear-gradient(90deg,var(--red) 0,var(--red) 14px,#fff 14px,#fff 28px);opacity:.85}
-  .hero h1{font-size:56px;letter-spacing:3px;margin-bottom:6px;color:var(--ink);font-weight:900;text-shadow:3px 3px 0 var(--gold-bright)}
+  .hero h1{font-size:56px;letter-spacing:3px;margin-bottom:6px;color:var(--ink);font-weight:900;text-shadow:3px 3px 0 var(--green-light)}
   .hero p{color:var(--muted);margin:0 0 18px;font-size:15px;max-width:560px;margin:0 auto}
 
   /* Setup */
@@ -225,7 +227,7 @@
   /* Order screen */
   .order-list{display:flex;flex-direction:column;gap:6px}
   .order-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:2px solid var(--line);border-left:5px solid var(--green);border-radius:10px;transition:all .15s ease;box-shadow:0 1px 0 var(--line-soft)}
-  .order-row .pos{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff8e1,var(--gold) 70%);color:#1a1300;font-weight:900;font-size:14px;text-align:center;flex-shrink:0}
+  .order-row .pos{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#e8f6d6,var(--green) 75%);color:#fff;font-weight:900;font-size:14px;text-align:center;flex-shrink:0;text-shadow:0 1px 2px rgba(0,0,0,.25)}
   .order-row .av{flex-shrink:0}
   .order-row .nm{flex:1;min-width:0}
   .order-row .nm b{display:block;font-size:14px;color:var(--ink);font-weight:800}
@@ -276,11 +278,11 @@
   @keyframes beat{0%,100%{transform:scale(1)}30%{transform:scale(1.15)}}
 
   /* Hamburger / drawer */
-  .hamburger{display:none;position:fixed;top:14px;right:14px;z-index:201;background:var(--panel);border:2px solid var(--gold);border-radius:10px;padding:8px 12px;cursor:pointer;font-size:18px;line-height:1;color:var(--ink);box-shadow:0 4px 16px rgba(168,122,14,.25)}
+  .hamburger{display:none;position:fixed;top:14px;right:14px;z-index:201;background:var(--panel);border:2px solid var(--green);border-radius:10px;padding:8px 12px;cursor:pointer;font-size:18px;line-height:1;color:var(--ink);box-shadow:0 4px 16px rgba(76,168,80,.25)}
   .scrim{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:199;backdrop-filter:blur(2px);animation:fadeIn .2s ease}
   @media(max-width:900px){
     .hamburger{display:block}
-    .sidebar{position:fixed;top:0;left:-320px;width:290px;height:100vh;z-index:200;transition:left .28s cubic-bezier(.32,.72,.32,1.02);border-right:3px solid var(--gold);border-bottom:0;padding-top:60px}
+    .sidebar{position:fixed;top:0;left:-320px;width:290px;height:100vh;z-index:200;transition:left .28s cubic-bezier(.32,.72,.32,1.02);border-right:3px solid var(--green);border-bottom:0;padding-top:60px}
     .sidebar.open{left:0;box-shadow:8px 0 32px rgba(0,0,0,.3)}
     .app{grid-template-columns:1fr}
     .main{padding-top:60px;padding-left:16px;padding-right:16px}
@@ -323,10 +325,39 @@
   .choice-card .title{font-size:22px;font-weight:900;margin-bottom:8px;color:var(--ink)}
   .choice-card .desc{color:var(--muted);font-size:13px;line-height:1.5}
 
-  /* Feedback FAB */
-  .fab-feedback{position:fixed;bottom:18px;right:18px;z-index:150;background:var(--red);color:#fff;border:0;border-radius:50px;padding:12px 20px;font-weight:900;font-size:13px;cursor:pointer;box-shadow:0 6px 20px rgba(200,16,46,.4);text-decoration:none;display:inline-flex;align-items:center;gap:6px;letter-spacing:.5px;transition:all .2s ease}
-  .fab-feedback:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(200,16,46,.5);color:#fff}
-  @media(max-width:600px){.fab-feedback{padding:10px 14px;font-size:12px;bottom:14px;right:14px}}
+  /* Feedback FAB (small icon) */
+  .fab-feedback{position:fixed;bottom:14px;right:14px;z-index:150;width:38px;height:38px;border-radius:50%;background:var(--red);color:#fff;border:0;font-size:16px;cursor:pointer;box-shadow:0 4px 12px rgba(200,16,46,.3);display:inline-flex;align-items:center;justify-content:center;padding:0;transition:all .2s ease;opacity:.85}
+  .fab-feedback:hover{transform:scale(1.12);opacity:1;color:#fff;box-shadow:0 6px 18px rgba(200,16,46,.5)}
+
+  /* Share button (results) */
+  .share-btn{display:inline-flex;align-items:center;gap:6px;background:var(--green);color:#fff;border:0;padding:10px 16px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 2px 0 var(--green-deep);transition:all .15s ease}
+  .share-btn:hover{transform:translateY(-1px);box-shadow:0 3px 0 var(--green-deep)}
+
+  /* Share card (hidden, used for export) */
+  .share-card{position:fixed;left:-10000px;top:0;width:600px;background:#fafdf2;padding:32px;border:8px solid var(--green);border-radius:24px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;color:var(--ink)}
+  .share-card .sc-head{text-align:center;margin-bottom:18px;padding-bottom:14px;border-bottom:3px dashed var(--green-light)}
+  .share-card .sc-head h1{font-size:48px;letter-spacing:3px;color:var(--green-deep);text-shadow:3px 3px 0 var(--gold-bright);margin:0;font-weight:900}
+  .share-card .sc-head .sub{font-size:14px;color:var(--muted);margin-top:6px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+  .share-card .sc-trophy{text-align:center;padding:18px;background:linear-gradient(160deg,#fff5d1,#fef8e1);border:3px solid var(--gold-bright);border-radius:16px;margin-bottom:18px}
+  .share-card .sc-trophy .big{font-size:80px;line-height:1}
+  .share-card .sc-trophy h2{font-size:24px;color:var(--gold-deep);margin:6px 0;font-weight:900;text-transform:none;letter-spacing:0}
+  .share-card .sc-trophy .res{font-size:14px;color:var(--ink);font-weight:700}
+  .share-card .sc-xi{background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+  .share-card .sc-xi .row{display:flex;align-items:center;gap:8px;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line-soft)}
+  .share-card .sc-xi .row:last-child{border-bottom:0}
+  .share-card .sc-xi .num{width:22px;color:var(--green-deep);font-weight:900;text-align:center}
+  .share-card .sc-xi .nm{flex:1;font-weight:800}
+  .share-card .sc-xi .src{color:var(--muted);font-size:11px;font-weight:600}
+  .share-card .sc-xi .rt{color:var(--gold-deep);font-weight:900}
+  .share-card .sc-footer{text-align:center;margin-top:14px;padding-top:12px;border-top:3px dashed var(--green-light);font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase}
+  .share-card .sc-footer b{color:var(--red);letter-spacing:.5px;text-transform:none;font-size:13px;display:block;margin-top:4px}
+
+  /* Feedback modal */
+  .fb-form{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+  .fb-form select,.fb-form textarea{width:100%;padding:10px 12px;border:2px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font-family:inherit;font-size:13px}
+  .fb-form textarea{min-height:120px;resize:vertical}
+  .fb-form select:focus,.fb-form textarea:focus{border-color:var(--green);outline:0}
+  .fb-status{font-size:12px;margin-top:6px;font-weight:700}
 </style>
 </head>
 <body>
@@ -2023,10 +2054,136 @@ function render(){
   else if (S.screen === "win") main.append(renderWin());
   else if (S.screen === "gameover") main.append(renderGameOver());
   root.append(main);
-  // Floating feedback button
+  // Small floating feedback button (in-app form)
   if (!document.getElementById("fab-feedback")){
-    const fab = el(`<a id="fab-feedback" class="fab-feedback" href="https://github.com/fardeenwyne11-jpg/triple-crown-cricket/issues/new?title=Feedback%20%2F%20Bug%20Report&body=%23%23%20Type%0A-%20%5B%20%5D%20Bug%0A-%20%5B%20%5D%20Feature%20request%0A-%20%5B%20%5D%20Feedback%0A%0A%23%23%20Details%0A" target="_blank" rel="noopener">💬 Feedback</a>`);
+    const fab = el(`<button id="fab-feedback" class="fab-feedback" title="Send feedback">💬</button>`);
+    fab.onclick = openFeedbackModal;
     document.body.appendChild(fab);
+  }
+}
+
+function openFeedbackModal(){
+  if (document.getElementById("fbModal")) return;
+  const modal = el(`<div class="modal" id="fbModal">
+    <div class="modal-box" style="max-width:440px">
+      <h3>💬 Send feedback</h3>
+      <p class="muted" style="font-size:12px;margin:0">Bug? Idea? Anything — goes straight to the dev. No email needed.</p>
+      <div class="fb-form">
+        <select id="fbType">
+          <option value="Bug">🐛 Bug report</option>
+          <option value="Feature">💡 Feature request</option>
+          <option value="Feedback">🗣 General feedback</option>
+        </select>
+        <textarea id="fbMsg" placeholder="What happened, or what would you like to see?"></textarea>
+      </div>
+      <p id="fbStatus" class="fb-status muted"></p>
+      <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
+        <button class="ghost" id="fbCancel">Cancel</button>
+        <button class="primary" id="fbSend">Send</button>
+      </div>
+    </div>
+  </div>`);
+  document.body.appendChild(modal);
+  const close = () => modal.remove();
+  modal.querySelector('#fbCancel').onclick = close;
+  modal.onclick = (e) => { if (e.target === modal) close(); };
+  modal.querySelector('#fbSend').onclick = async () => {
+    const type = modal.querySelector('#fbType').value;
+    const msg = modal.querySelector('#fbMsg').value.trim();
+    const st = modal.querySelector('#fbStatus');
+    if (!msg) { st.style.color = "var(--red)"; st.textContent = "Please write something."; return; }
+    st.style.color = "var(--muted)"; st.textContent = "Sending…";
+    const send = modal.querySelector('#fbSend'); send.disabled = true;
+    try{
+      const body = `Type: ${type}\n\n${msg}\n\n---\nScreen: ${S.screen}\nLives: ${S.lives}/${S.livesTotal}\nTrophies: ${["wtc","odi","t20"].filter(k=>S.trophies[k]).join(", ")||"none"}\nDifficulty: ${S.setup.difficulty}, Opp: ${S.setup.oppDifficulty}`;
+      const r = await fetch('https://formsubmit.co/ajax/fardeenwyne11@yahoo.com', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body: JSON.stringify({
+          _subject: `[11-0 Cricket] ${type}`,
+          _captcha:'false',
+          _template:'table',
+          message: body
+        })
+      });
+      const j = await r.json().catch(()=>({}));
+      if (j.success === "true" || j.success === true){
+        st.style.color = "var(--green-deep)"; st.textContent = "✓ Sent! Thanks for the feedback.";
+        setTimeout(close, 1400);
+      } else {
+        st.style.color = "var(--red)"; st.textContent = "Couldn't send right now. Try again later.";
+        send.disabled = false;
+      }
+    } catch(e){
+      st.style.color = "var(--red)"; st.textContent = "Network error. Try again later.";
+      send.disabled = false;
+    }
+  };
+}
+
+/* =========== SHARE =========== */
+function buildShareCard({title, subtitle, trophyEmoji, headline, body, footer}){
+  const url = "fardeenwyne11-jpg.github.io/triple-crown-cricket";
+  const card = el(`<div class="share-card" id="shareCard">
+    <div class="sc-head">
+      <h1>11-0</h1>
+      <div class="sub">${subtitle||'Cricket Squad Draft'}</div>
+    </div>
+    <div class="sc-trophy">
+      <div class="big">${trophyEmoji||'🏏'}</div>
+      <h2>${headline||title||''}</h2>
+      ${body ? `<div class="res">${body}</div>` : ''}
+    </div>
+    <div class="sc-xi"></div>
+    <div class="sc-footer">
+      Can you beat my run?
+      <b>▶ play at ${url}</b>
+    </div>
+  </div>`);
+  // XI list
+  const xi = card.querySelector('.sc-xi');
+  S.squad.forEach((s,i) => {
+    if (!s.player) return;
+    const r = ratingOf(s.player);
+    const flag = COUNTRY_FLAGS[s.player.from.team] || "🏏";
+    xi.append(el(`<div class="row">
+      <div class="num">${i+1}</div>
+      <div style="font-size:14px">${flag}</div>
+      <div class="nm">${s.player.n}</div>
+      <div class="src">${s.player.from.year}</div>
+      <div class="rt">${r}</div>
+    </div>`));
+  });
+  return card;
+}
+async function shareResult(opts){
+  if (typeof html2canvas === 'undefined'){ alert("Share library loading — please try again in a moment."); return; }
+  const card = buildShareCard(opts);
+  document.body.appendChild(card);
+  try{
+    const canvas = await html2canvas(card, { backgroundColor:'#fafdf2', scale:2, useCORS:true });
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+      const file = new File([blob], "cricket-11-0.png", { type:'image/png' });
+      const shareData = {
+        files: [file],
+        title: "11-0 Cricket",
+        text: opts.shareText || "I built an XI in 11-0 — can you beat it?\n\nPlay: https://fardeenwyne11-jpg.github.io/triple-crown-cricket/"
+      };
+      if (navigator.canShare && navigator.canShare(shareData)){
+        try{ await navigator.share(shareData); } catch(e){}
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = "cricket-11-0.png";
+        document.body.appendChild(a); a.click(); a.remove();
+      }
+    }, 'image/png');
+  } catch(e){
+    console.error(e);
+    alert("Couldn't generate the share image.");
+  } finally {
+    setTimeout(()=>card.remove(), 100);
   }
 }
 
@@ -2208,7 +2365,22 @@ function renderHub(){
   });
   wrap.append(status);
 
-  wrap.append(el(`<h2>Trophy Cabinet</h2>`));
+  const won = ["wtc","odi","t20"].filter(k=>S.trophies[k]);
+  const cabinetRow = el(`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:18px 0 10px">Trophy Cabinet</h2>${won.length?'<button class="share-btn" id="shareCab" style="padding:6px 12px;font-size:11px">📸 Share squad</button>':''}</div>`);
+  wrap.append(cabinetRow);
+  if (won.length){
+    cabinetRow.querySelector('#shareCab').onclick = () => {
+      const labels = { wtc:"WTC", odi:"ODI World Cup", t20:"T20 World Cup" };
+      shareResult({
+        title:"My XI",
+        subtitle: won.length===3 ? "TRIPLE CROWN WINNER" : `${won.length} ICC trophies won`,
+        trophyEmoji: won.length===3 ? "🏆🏆🏆" : "🏆",
+        headline: won.length===3 ? "TRIPLE CROWN!" : `${won.length} trophies won`,
+        body: won.map(k=>labels[k]).join(" · "),
+        shareText: `My XI in 11-0 Cricket — ${won.length} ICC trophies won so far. Beat me?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
+      });
+    };
+  }
   const tr = el(`<div class="trophies"></div>`);
   TOURNAMENTS.forEach(t => {
     tr.append(el(`<div class="trophy ${S.trophies[t.id]?'won':''}">
@@ -2349,14 +2521,26 @@ function renderAwards(){
   });
   wrap.append(awards);
 
-  const row = el(`<div class="row" style="justify-content:space-between;margin-top:18px"></div>`);
+  const row = el(`<div class="row" style="justify-content:space-between;margin-top:18px;gap:8px"></div>`);
   const back = el(`<button class="ghost">View scorecard</button>`);
   back.onclick = () => { S.screen="scorecard"; save(); render(); };
+  const share = el(`<button class="share-btn">📸 Share</button>`);
+  share.onclick = () => {
+    const motm = aw.motm;
+    shareResult({
+      title:"Match Awards",
+      subtitle:`${t.rounds[S.tour.roundIdx]} vs ${opp.n}`,
+      trophyEmoji: m.won ? "🏆" : "🏏",
+      headline: m.won ? `WIN vs ${opp.n}` : `Tough loss vs ${opp.n}`,
+      body: motm ? `Player of the Match: <b>${motm.n}</b> · ${awardFig(motm,'motm')}` : "",
+      shareText: `${motm?motm.n+' was Player of the Match':'Match result'} in 11-0 Cricket — can you do better?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
+    });
+  };
   const won = m.won;
   const nextLabel = !won ? "Back to Hub" : (S.tour.roundIdx+1 < t.rounds.length ? "Next round →" : "Lift the trophy 🏆");
   const cont = el(`<button class="primary">${nextLabel}</button>`);
   cont.onclick = continueAfterAwards;
-  row.append(back, cont);
+  row.append(back, share, cont);
   wrap.append(row);
   return wrap;
 }
@@ -2510,7 +2694,7 @@ function renderScorecard(){
     }</tbody>`;
     wrap.append(bw);
   });
-  const row = el(`<div class="row" style="justify-content:space-between;margin-top:24px"></div>`);
+  const row = el(`<div class="row" style="justify-content:space-between;margin-top:24px;gap:8px"></div>`);
   const back = el(`<button class="ghost">← Abandon tournament</button>`);
   back.onclick = () => {
     if (!m.won) S.lives--;
@@ -2518,9 +2702,20 @@ function renderScorecard(){
     if (S.lives < 0) S.screen = "gameover"; else S.screen = "hub";
     save(); render();
   };
+  const share = el(`<button class="share-btn">📸 Share</button>`);
+  share.onclick = () => {
+    shareResult({
+      title:"Match Result",
+      subtitle:`${t.rounds[S.tour.roundIdx]} vs ${opp.n}`,
+      trophyEmoji: m.won ? "🏆" : "🏏",
+      headline: m.won ? `WIN by ${margin}` : `Lost by ${margin}`,
+      body: `${m.innings[0].batTeam} ${m.innings[0].runs}/${m.innings[0].wickets}<br/>${m.innings[1].batTeam} ${m.innings[1].runs}/${m.innings[1].wickets}`,
+      shareText: `${m.won?'Won':'Lost'} ${t.rounds[S.tour.roundIdx]} vs ${opp.n} by ${margin}. Try to beat my XI in 11-0!\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
+    });
+  };
   const cont = el(`<button class="primary">View awards →</button>`);
   cont.onclick = continueAfterScorecard;
-  row.append(back, cont);
+  row.append(back, share, cont);
   wrap.append(row);
   return wrap;
 }
@@ -2574,10 +2769,21 @@ function renderWin(){
     <h1 style="font-size:48px;background:linear-gradient(180deg,#f5c451,#d4a435);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">TRIPLE CROWN</h1>
     <p>You won the WTC, ODI World Cup and T20 World Cup. Legendary career.</p>
   </div>`));
-  const row = el(`<div class="row" style="justify-content:center;margin-top:20px"></div>`);
+  const row = el(`<div class="row" style="justify-content:center;margin-top:20px;gap:10px"></div>`);
+  const share = el(`<button class="share-btn" style="padding:14px 24px;font-size:15px">📸 Share Triple Crown</button>`);
+  share.onclick = () => {
+    shareResult({
+      title:"TRIPLE CROWN",
+      subtitle:"All three ICC trophies",
+      trophyEmoji:"🏆🏆🏆",
+      headline:"I won the TRIPLE CROWN!",
+      body:"WTC · ODI World Cup · T20 World Cup",
+      shareText:"🏆🏆🏆 I just won the Triple Crown in 11-0 Cricket — WTC, ODI WC, T20 WC. Think you can match it?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/"
+    });
+  };
   const a = el(`<button class="primary" style="padding:14px 28px;font-size:15px">Start a new career</button>`);
   a.onclick = () => reset();
-  row.append(a);
+  row.append(share, a);
   wrap.append(row);
   return wrap;
 }
