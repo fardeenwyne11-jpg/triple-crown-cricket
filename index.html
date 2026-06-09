@@ -426,15 +426,6 @@
   .attempts-pill{display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800;background:var(--panel2);color:var(--gold-deep);border:1px solid var(--gold-bright);margin-left:6px;letter-spacing:.3px}
   .attempts-pill.zero{background:#f8d7da;color:var(--red);border-color:var(--red)}
 
-  /* Lives (red cricket balls) */
-  .lives{display:inline-flex;gap:5px;align-items:center}
-  .heart{display:inline-block;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#e5777f 0%,#c8102e 55%,#7a0a18 100%);box-shadow:inset 0 -2px 3px rgba(0,0,0,.4),0 0 0 1px rgba(0,0,0,.3),0 2px 4px rgba(200,16,46,.3);position:relative;font-size:0;color:transparent;animation:beat 1.6s ease-in-out infinite}
-  .heart::before,.heart::after{content:"";position:absolute;left:18%;right:18%;height:1px;background:var(--panel);opacity:.8;border-radius:1px}
-  .heart::before{top:42%}
-  .heart::after{top:58%}
-  .heart.lost{background:#d4c896;animation:none;opacity:.45;box-shadow:none}
-  .heart.lost::before,.heart.lost::after{display:none}
-  @keyframes beat{0%,100%{transform:scale(1)}30%{transform:scale(1.15)}}
 
   /* Hamburger / drawer */
   .hamburger{display:none;position:fixed;top:14px;right:14px;z-index:201;background:var(--panel);border:2px solid var(--green);border-radius:10px;padding:8px 12px;cursor:pointer;font-size:18px;line-height:1;color:var(--ink);box-shadow:0 4px 16px rgba(76,168,80,.25)}
@@ -458,11 +449,6 @@
   .live-box .p b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
   .live-box .p .fig{color:var(--muted);font-variant-numeric:tabular-nums;font-size:11px;flex-shrink:0;font-weight:700}
   .live-box .p.on .fig{color:var(--gold-deep)}
-
-  /* Game over */
-  .gameover{text-align:center;padding:50px 20px;background:var(--panel2);border-radius:16px;border:2px solid var(--red);box-shadow:0 2px 0 var(--line-soft)}
-  .gameover h1{font-size:48px;color:var(--red);letter-spacing:2px;margin-bottom:10px;text-shadow:2px 2px 0 #fff}
-  .gameover p{color:var(--muted);margin:0 0 18px;font-size:15px}
 
   .tour-diff{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:2px;margin-left:8px}
   .tour-diff button{padding:4px 10px;font-size:11px;border:0;background:transparent;border-radius:5px;color:var(--muted);font-weight:800;cursor:pointer;box-shadow:none}
@@ -1234,9 +1220,8 @@ const OPPONENTS = TEAM_SEASONS.map(ts => ({
   t20: Math.round(ts.squad.reduce((a,b)=>a+b.season,0) / ts.squad.length),
   t20Prime: Math.round(ts.squad.reduce((a,b)=>a+b.prime,0) / ts.squad.length)
 }));
-// Helper: get the opp's rating based on current Prime Mode setting
+// Helper: opponent team rating, from that season's squad (season ratings only)
 function oppRating(o){
-  if (S.setup.primeMode && o.t20Prime) return o.t20Prime;
   return o.t20 || 80;
 }
 
@@ -1285,12 +1270,11 @@ const TEST_NATIONS = ["Australia","India","England","New Zealand","Pakistan","So
 function newSave(){
   return {
     screen:"setup",
-    setup:{ difficulty:"normal", showRatings:true, primeMode:true, eraMin:1975, eraMax:2026, oppDifficulty:"normal", draftMode:"spin" },
+    setup:{ difficulty:"normal", showRatings:true, eraMin:1975, eraMax:2026, oppDifficulty:"normal", draftMode:"spin" },
     rerollsLeft:1, rerollsTotal:1,
     squad: SLOTS.map(s => ({ id:s.id, label:s.label, player:null })),
     currentSpin:null,
     trophies:{ ipl:false, psl:false, bbl:false, cl:false },
-    lives:1, livesTotal:1,
     playerStats:{},
     careerLog:[],
     tour:null,
@@ -1313,7 +1297,7 @@ function reset(){ if(animTimer) clearTimeout(animTimer); S = newSave(); save(); 
 
 /* =========== HELPERS =========== */
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
-function ratingOf(p){ return S.setup.primeMode ? p.prime : p.season; }
+function ratingOf(p){ return p.season; }
 function ratingClass(r){ if(r>=90)return"r-90"; if(r>=85)return"r-85"; if(r>=80)return"r-80"; if(r>=75)return"r-75"; return"r-70"; }
 function filteredSeasons(){ return TEAM_SEASONS.map((t,i)=>({...t,_i:i})).filter(t => t.year >= S.setup.eraMin && t.year <= S.setup.eraMax); }
 function squadFull(){ return S.squad.every(s => s.player); }
@@ -1580,9 +1564,7 @@ function awardFig(award, kind){
 function startDraft(){
   const d = S.setup.difficulty;
   const rerolls = d==="easy"?2 : d==="hard"?0 : 1;
-  const lives = d==="easy"?2 : d==="hard"?0 : 1;
   S.rerollsLeft = rerolls; S.rerollsTotal = rerolls;
-  S.lives = lives; S.livesTotal = lives;
   S.playerStats = {};
   S.squad = SLOTS.map(s => ({ id:s.id, label:s.label, player:null }));
   S.trophies = { ipl:false, psl:false, bbl:false, cl:false };
@@ -1789,7 +1771,6 @@ function removeFromSlot(id){ const slot = S.squad.find(s=>s.id===id); slot.playe
 /* =========== TOURNAMENT =========== */
 function startTournament(tId){
   if (S.trophies[tId]) return;
-  if (S.lives < 0) { S.screen = "gameover"; save(); render(); return; }
   // CL requires the other 3 trophies first
   if (tId === "cl" && (!S.trophies.ipl || !S.trophies.psl || !S.trophies.bbl)) return;
   const t = TOURNAMENTS.find(x=>x.id===tId);
@@ -2196,8 +2177,6 @@ function continueAfterAwards(){
   const last = S.tour.scorecards[S.tour.scorecards.length-1];
   if (!last.won){
     S.careerLog.unshift({ t:t.name, won:false, lines: S.tour.scorecards.map((m,i)=>`${t.rounds[i]} v ${m.opp}: L`) });
-    S.lives--;
-    if (S.lives < 0){ S.tour.summary = buildTournamentSummary(false); S.screen = "summary"; save(); render(); return; }
     S.tour.summary = buildTournamentSummary(false);
     S.screen = "summary"; save(); render(); return;
   }
@@ -2232,7 +2211,7 @@ function sidebarSignature(){
   // Everything renderSidebar() visibly depends on. While this is unchanged we
   // leave the existing sidebar DOM in place, so the "YOUR XI" name list doesn't
   // flicker or scroll-reset on every button press.
-  return [S.screen, S.setup.showRatings, S.setup.primeMode, S.rerollsLeft, S.rerollsTotal,
+  return [S.screen, S.setup.showRatings, S.rerollsLeft, S.rerollsTotal,
     S.squad.map(s=>s.player?s.player.n:'-').join('|')].join('::');
 }
 function buildScreen(){
@@ -2248,7 +2227,6 @@ function buildScreen(){
   if (S.screen === "scorecard") return renderScorecard();
   if (S.screen === "awards") return renderAwards();
   if (S.screen === "win") return renderWin();
-  if (S.screen === "gameover") return renderGameOver();
   return el(`<div></div>`);
 }
 function render(){
@@ -2258,7 +2236,7 @@ function render(){
   // Setup is a standalone full-screen view with no app shell.
   if (S.screen === "setup") { root.innerHTML = ""; root.className = "app no-sidebar"; _sideSig = null; root.append(renderSetup()); ensureFab(); return; }
   root.className = "app";
-  if (S.screen === "gameover" || S.screen === "win") root.className = "app no-sidebar";
+  if (S.screen === "win") root.className = "app no-sidebar";
 
   // Build the persistent shell (hamburger + sidebar + main container) once, then
   // reuse it. Only the main panel is swapped on every render; the sidebar is
@@ -2329,7 +2307,7 @@ function openFeedbackModal(){
     if (!msg) { st.style.color = "var(--red)"; st.textContent = "Please write something."; return; }
     st.style.color = "var(--muted)"; st.textContent = "Sending…";
     const send = modal.querySelector('#fbSend'); send.disabled = true;
-    const body = `Type: ${type}\n\n${msg}\n\n---\nScreen: ${S.screen}\nLives: ${S.lives}/${S.livesTotal}\nTrophies: ${["ipl","psl","bbl","cl"].filter(k=>S.trophies[k]).join(", ")||"none"}\nDifficulty: ${S.setup.difficulty}, Opp: ${S.setup.oppDifficulty}`;
+    const body = `Type: ${type}\n\n${msg}\n\n---\nScreen: ${S.screen}\nTrophies: ${["ipl","psl","bbl","cl"].filter(k=>S.trophies[k]).join(", ")||"none"}\nDifficulty: ${S.setup.difficulty}, Opp: ${S.setup.oppDifficulty}`;
     let sent = false;
     // Try formsubmit first (no email client needed)
     try{
@@ -2432,7 +2410,7 @@ function renderSetup(){
   const left = el(`<div class="setup-card"></div>`);
   left.append(el(`<h2>Difficulty</h2>`));
   const diff = el(`<div class="opts"></div>`);
-  [["easy","Easy","2 rerolls · 2 lives"],["normal","Normal","1 reroll · 1 life"],["hard","Hard","0 rerolls · last chance · ratings hidden"]].forEach(([k,n,d])=>{
+  [["easy","Easy","2 rerolls"],["normal","Normal","1 reroll"],["hard","Hard","0 rerolls · ratings hidden"]].forEach(([k,n,d])=>{
     const o = el(`<div class="opt ${S.setup.difficulty===k?'active':''}">${n}<small>${d}</small></div>`);
     o.onclick = () => { S.setup.difficulty=k; if (k==="hard") S.setup.showRatings=false; save(); render(); };
     diff.append(o);
@@ -2456,14 +2434,6 @@ function renderSetup(){
   });
   right.append(dm);
 
-  right.append(el(`<h2>Player ratings</h2>`));
-  const pm = el(`<div class="opts"></div>`);
-  [[false,"Career Season","Rating from that WC year"],[true,"Prime Mode","Career-best rating"]].forEach(([v,n,d])=>{
-    const o = el(`<div class="opt ${S.setup.primeMode===v?'active':''}">${n}<small>${d}</small></div>`);
-    o.onclick = () => { S.setup.primeMode=v; save(); render(); };
-    pm.append(o);
-  });
-  right.append(pm);
   right.append(el(`<h2>Era</h2>`));
   const era = el(`<div class="opts"></div>`);
   [[1975,2026,"All-time"],[2000,2026,"2000s+"],[2010,2026,"2010s+"],[2020,2026,"Modern"]].forEach(([a,b,n])=>{
@@ -2660,20 +2630,8 @@ function renderHub(){
   wrap.append(el(`<h1>Career Hub</h1>`));
   wrap.append(el(`<p class="muted">Play each tournament with your XI. Win all four for the Grand Slam.</p>`));
 
-  // Lives + opp difficulty bar
-  const heartsHTML = (() => {
-    if (S.livesTotal === 0) return "";
-    let h = "";
-    for (let i=0; i<S.livesTotal; i++){
-      h += `<span class="heart ${i>=S.lives?'lost':''}"></span>`;
-    }
-    return h;
-  })();
-  const livesLbl = S.lives < 0 ? `<span style="color:var(--red);font-weight:700">No lives left</span>` :
-    S.lives === 0 ? `<b style="color:var(--gold)">Last chance!</b>` :
-    `<b>${S.lives}</b> ${S.lives===1?'life':'lives'} left`;
-  const status = el(`<div class="panel" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between">
-    <div class="row"><span class="muted" style="font-size:12px;letter-spacing:1px;font-weight:700;text-transform:uppercase">Lives</span> <span class="lives">${heartsHTML}</span> <span style="margin-left:4px;font-size:13px">${livesLbl}</span></div>
+  // Opp difficulty bar
+  const status = el(`<div class="panel" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:flex-end">
     <div class="row"><span class="muted" style="font-size:12px;letter-spacing:1px;font-weight:700;text-transform:uppercase">Opp strength</span>
       <span class="tour-diff">
         <button data-d="easy" class="${S.setup.oppDifficulty==='easy'?'active':''}">Easy</button>
@@ -2719,10 +2677,9 @@ function renderHub(){
     const r = avg(squadPicks().map(s=>ratingOf(s.player)));
     const won = S.trophies[t.id];
     const locked = (t.id === "cl") && clLocked;
-    const canPlay = !won && S.lives >= 0 && !locked;
+    const canPlay = !won && !locked;
     let btnText = 'Play';
     if (won) btnText = '🏆 Already won';
-    else if (S.lives < 0) btnText = 'Career ended';
     else if (locked) btnText = '🔒 Locked';
     const c = el(`<div class="spin-box" style="padding:18px;text-align:left;${locked?'opacity:.55':''}">
       <div style="font-size:22px"><span style="font-size:28px">${t.icon}</span> <b>${t.name.replace('ICC ','')}</b></div>
@@ -2992,7 +2949,6 @@ function enterPlayoffs(){
   if (myPos > 4){
     // Eliminated in league — go straight to summary
     S.tour.summary = buildTournamentSummary(false);
-    S.lives--;
     S.screen = "summary";
     save(); render(); return;
   }
@@ -3210,8 +3166,7 @@ function renderSummary(){
   const cont = el(`<button class="primary" style="flex:1">Back to hub →</button>`);
   cont.onclick = () => {
     S.tour=null;
-    if (S.lives < 0) S.screen = "gameover";
-    else if (S.trophies.ipl && S.trophies.psl && S.trophies.bbl && S.trophies.cl) S.screen = "win";
+    if (S.trophies.ipl && S.trophies.psl && S.trophies.bbl && S.trophies.cl) S.screen = "win";
     else S.screen = "hub";
     save(); render();
   };
@@ -3558,9 +3513,8 @@ function renderScorecard(){
   const row = el(`<div class="row" style="justify-content:space-between;margin-top:24px;gap:8px"></div>`);
   const back = el(`<button class="ghost">← Abandon tournament</button>`);
   back.onclick = () => {
-    if (!m.won) S.lives--;
     S.tour=null;
-    if (S.lives < 0) S.screen = "gameover"; else S.screen = "hub";
+    S.screen = "hub";
     save(); render();
   };
   const share = el(`<button class="share-btn">📸 Share</button>`);
@@ -3638,24 +3592,6 @@ function renderCareerStats(cs){
   }
   return wrap;
 }
-function renderGameOver(){
-  const wrap = el(`<div></div>`);
-  const cs = buildCareerSummary();
-  const tNames = { ipl:"IPL", psl:"PSL", bbl:"BBL", cl:"Champions League" };
-  wrap.append(el(`<div class="gameover">
-    <h1>CAREER ENDED</h1>
-    <p>You ran out of lives.</p>
-    <p style="margin-top:8px;font-size:14px">Trophies won: ${cs.trophies.length?cs.trophies.map(k=>`🏆 ${tNames[k]}`).join(" · "):"none"}</p>
-  </div>`));
-  wrap.append(renderCareerStats(cs));
-  const row = el(`<div class="row" style="justify-content:center;margin-top:20px"></div>`);
-  const a = el(`<button class="primary" style="padding:14px 28px;font-size:15px">Start a new career</button>`);
-  a.onclick = () => reset();
-  row.append(a);
-  wrap.append(row);
-  return wrap;
-}
-
 function renderWin(){
   setTimeout(()=>{
     sfx("win");
