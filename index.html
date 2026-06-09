@@ -68,7 +68,13 @@
   @media(max-width:900px){.app{grid-template-columns:1fr}}
   .sidebar{background:linear-gradient(180deg,var(--panel),var(--bg-alt));border-right:3px solid var(--green);padding:18px;position:sticky;top:0;height:100vh;overflow:auto}
   @media(max-width:900px){.sidebar{position:static;height:auto;border-right:0;border-bottom:3px solid var(--green)}}
-  .main{padding:30px 28px;max-width:1100px;margin:0 auto;width:100%}
+  .main{padding:30px 28px 100px;max-width:1100px;margin:0 auto;width:100%}
+  .screen-enter{animation:screenIn .22s ease}
+  @keyframes screenIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .diff-badge{display:inline-flex;align-items:center;gap:6px;flex-shrink:0}
+  .diff-dots{display:inline-flex;gap:3px;align-items:center}
+  .diff-dots .dot{width:7px;height:7px;border-radius:50%;background:var(--line)}
+  .diff-lbl{font-size:11px;font-weight:800;letter-spacing:.4px}
 
   h1{font-size:30px;margin:0 0 4px;letter-spacing:.5px;color:var(--ink);font-weight:900}
   h2{font-size:12px;margin:18px 0 10px;color:var(--label);text-transform:uppercase;letter-spacing:2.5px;font-weight:800}
@@ -446,7 +452,7 @@
     .sidebar{position:fixed;top:0;left:-320px;width:290px;height:100vh;z-index:200;transition:left .28s cubic-bezier(.32,.72,.32,1.02);border-right:3px solid var(--green);border-bottom:0;padding-top:60px}
     .sidebar.open{left:0;box-shadow:8px 0 32px rgba(0,0,0,.3)}
     .app{grid-template-columns:1fr}
-    .main{padding-top:60px;padding-left:16px;padding-right:16px}
+    .main{padding-top:60px;padding-left:16px;padding-right:16px;padding-bottom:100px}
     .hero h1{font-size:42px}
   }
 
@@ -1485,10 +1491,10 @@ function canonicalLeagueTeams(pool){
 }
 
 const TOURNAMENTS = [
-  { id:"ipl", name:"IPL", fmt:"t20", icon:"🏏", rounds:["Qualifier 1","Qualifier 2","Final"], overs:20, base:170, leagues:["ipl"] },
-  { id:"psl", name:"PSL", fmt:"t20", icon:"🏆", rounds:["Qualifier","Eliminator","Final"], overs:20, base:170, leagues:["psl"] },
-  { id:"bbl", name:"Big Bash League", fmt:"t20", icon:"🔥", rounds:["Knockout","Challenger","Final"], overs:20, base:170, leagues:["bbl"] },
-  { id:"cl",  name:"Champions League", fmt:"t20", icon:"🌍", rounds:["Round of 16","Quarter-Final","Semi-Final","Final"], overs:20, base:170, leagues:["ipl","psl","bbl","cpl","blast"] }
+  { id:"ipl", name:"IPL", fmt:"t20", icon:"🏏", rounds:["Qualifier 1","Qualifier 2","Final"], overs:20, base:170, leagues:["ipl"], diff:3, diffLabel:"Tough" },
+  { id:"psl", name:"PSL", fmt:"t20", icon:"🏆", rounds:["Qualifier","Eliminator","Final"], overs:20, base:170, leagues:["psl"], diff:1, diffLabel:"Approachable" },
+  { id:"bbl", name:"Big Bash League", fmt:"t20", icon:"🔥", rounds:["Knockout","Challenger","Final"], overs:20, base:170, leagues:["bbl"], diff:2, diffLabel:"Moderate" },
+  { id:"cl",  name:"Champions League", fmt:"t20", icon:"🌍", rounds:["Round of 16","Quarter-Final","Semi-Final","Final"], overs:20, base:170, leagues:["ipl","psl","bbl","cpl","blast"], diff:4, diffLabel:"Gauntlet" }
 ];
 
 // Top 3 teams from each league for the Champions League pool
@@ -2468,6 +2474,7 @@ function continueAfterAwards(){
 /* =========== RENDER =========== */
 function el(h){ const d=document.createElement("div"); d.innerHTML=h.trim(); return d.firstElementChild; }
 let _sideSig = null;
+let _prevScreen = null;
 function ensureFab(){
   // Floating feedback button lives on <body>, persists across renders.
   if (!document.getElementById("fab-feedback")){
@@ -2503,7 +2510,12 @@ function render(){
   const root = document.getElementById("app");
 
   // Setup is a standalone full-screen view with no app shell.
-  if (S.screen === "setup") { root.innerHTML = ""; root.className = "app no-sidebar"; _sideSig = null; root.append(renderSetup()); ensureFab(); return; }
+  if (S.screen === "setup") {
+    root.innerHTML = ""; root.className = "app no-sidebar"; _sideSig = null;
+    const sc = renderSetup();
+    if (S.screen !== _prevScreen){ window.scrollTo(0,0); sc.classList.add("screen-enter"); _prevScreen = S.screen; }
+    root.append(sc); ensureFab(); return;
+  }
   root.className = "app";
   if (S.screen === "win") root.className = "app no-sidebar";
 
@@ -2541,6 +2553,13 @@ function render(){
   // Main panel: always refreshed (this is the part that changes per interaction).
   main.innerHTML = "";
   main.append(buildScreen());
+  // On a screen CHANGE (navigation): scroll to top + play the enter transition.
+  // Same-screen re-renders (picking a player, live updates) are left untouched.
+  if (S.screen !== _prevScreen){
+    window.scrollTo(0, 0);
+    main.classList.remove("screen-enter"); void main.offsetWidth; main.classList.add("screen-enter");
+    _prevScreen = S.screen;
+  }
   ensureFab();
 }
 
@@ -2892,6 +2911,14 @@ function renderDraft(){
   return wrap;
 }
 
+// Difficulty badge: 4 dots (filled to the tournament's level) + a coloured label.
+function diffBadge(t){
+  const colors = ['', '#3ddc97', '#f5c451', '#f59e3c', '#ff5d73'];
+  const col = colors[t.diff] || '#f5c451';
+  let dots = '';
+  for (let i=1;i<=4;i++) dots += `<span class="dot"${i<=t.diff?` style="background:${col}"`:''}></span>`;
+  return `<span class="diff-badge" title="Difficulty: ${t.diffLabel}"><span class="diff-dots">${dots}</span><span class="diff-lbl" style="color:${col}">${t.diffLabel}</span></span>`;
+}
 function renderHub(){
   const allWon = S.trophies.ipl && S.trophies.psl && S.trophies.bbl && S.trophies.cl;
   if (allWon) { S.screen = "win"; save(); return renderWin(); }
@@ -2910,10 +2937,10 @@ function renderHub(){
       <div style="display:flex;flex-direction:column"><span class="muted" style="font-size:10px;letter-spacing:1.5px;font-weight:800;text-transform:uppercase">Losses</span><b style="font-size:18px;color:${invinciAlive?'var(--green)':'var(--red)'}">${run.losses}${invinciAlive?' · 🛡 Invincible alive':''}</b></div>
     </div>
     <div class="row" style="gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);font-weight:700">
-      <span>Best <b style="color:var(--ink)">${rec.bestTrophies||0}/4</b></span>
-      <span>Slams <b style="color:var(--ink)">${rec.grandSlams||0}</b></span>
-      <span>Invincible <b style="color:var(--ink)">${rec.invincibles||0}</b></span>
-      <span>Best streak <b style="color:var(--ink)">${Math.max(rec.bestStreak||0, run.bestStreak||0)}</b></span>
+      <span>🥇 Best <b style="color:var(--ink)">${rec.bestTrophies||0}/4</b></span>
+      <span>🏆 Slams <b style="color:var(--ink)">${rec.grandSlams||0}</b></span>
+      <span>🛡 Invincible <b style="color:var(--ink)">${rec.invincibles||0}</b></span>
+      <span>⚡ Best streak <b style="color:var(--ink)">${Math.max(rec.bestStreak||0, run.bestStreak||0)}</b></span>
     </div>
   </div>`));
 
@@ -2933,8 +2960,10 @@ function renderHub(){
       });
     };
   }
+  // Easiest → hardest order everywhere on the hub.
+  const byDiff = [...TOURNAMENTS].sort((a,b)=>a.diff-b.diff);
   const tr = el(`<div class="trophies"></div>`);
-  TOURNAMENTS.forEach(t => {
+  byDiff.forEach(t => {
     tr.append(el(`<div class="trophy ${S.trophies[t.id]?'won':''}">
       <div class="ic">${S.trophies[t.id]?'🏆':'<span style="filter:grayscale(1);opacity:.32">🏆</span>'}</div>
       <b>${t.name.replace('ICC ','')}</b>
@@ -2943,10 +2972,11 @@ function renderHub(){
   });
   wrap.append(tr);
   wrap.append(el(`<h2>Play Tournament</h2>`));
+  wrap.append(el(`<p class="muted" style="font-size:12px;margin:-4px 0 10px">Ordered easiest to hardest. The Champions League is a four-match knockout gauntlet — no league cushion.</p>`));
   const grid = el(`<div style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))"></div>`);
   // Champions League is locked until the other 3 trophies are won
   const clLocked = !S.trophies.ipl || !S.trophies.psl || !S.trophies.bbl;
-  TOURNAMENTS.forEach(t => {
+  byDiff.forEach(t => {
     const r = avg(squadPicks().map(s=>ratingOf(s.player)));
     const won = S.trophies[t.id];
     const locked = (t.id === "cl") && clLocked;
@@ -2955,8 +2985,11 @@ function renderHub(){
     if (won) btnText = '🏆 Already won';
     else if (locked) btnText = '🔒 Locked';
     const c = el(`<div class="spin-box" style="padding:18px;text-align:left;${locked?'opacity:.55':''}">
-      <div style="font-size:22px"><span style="font-size:28px">${t.icon}</span> <b>${t.name.replace('ICC ','')}</b></div>
-      <div class="muted" style="font-size:12px;margin:4px 0 10px">${(t.id === "cl" ? t.rounds : ["League Season", ...t.rounds]).join(' → ')} · ${t.overs} overs</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <div style="font-size:22px"><span style="font-size:28px">${t.icon}</span> <b>${t.name.replace('ICC ','')}</b></div>
+        ${diffBadge(t)}
+      </div>
+      <div class="muted" style="font-size:12px;margin:6px 0 10px">${(t.id === "cl" ? t.rounds : ["League Season", ...t.rounds]).join(' → ')} · ${t.overs} overs</div>
       ${locked ? `<div style="font-size:12px;color:var(--gold);margin-bottom:10px;font-weight:700">Win IPL, PSL & Big Bash first to unlock</div>` : `<div style="font-size:13px;margin-bottom:12px">XI rating: <b style="color:var(--gold)">${r.toFixed(1)}</b></div>`}
       <button class="primary" ${!canPlay?'disabled':''} style="width:100%">${btnText}</button>
     </div>`);
