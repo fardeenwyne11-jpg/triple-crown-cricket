@@ -141,7 +141,8 @@
   @keyframes pulse{0%,100%{opacity:.85}50%{opacity:1}}
 
   /* Hero */
-  .hero{text-align:center;padding:40px 20px;background:linear-gradient(180deg,rgba(45,122,77,.08),transparent 60%),var(--panel);border:2px solid var(--line);border-radius:16px;margin-bottom:24px;position:relative;overflow:hidden;box-shadow:0 2px 0 var(--line-soft),0 8px 32px rgba(168,122,14,.08);animation:fadeIn .5s ease}
+  .hero{text-align:center;padding:40px 20px;background:linear-gradient(180deg,rgba(45,122,77,.08),transparent 60%),var(--panel);border:2px solid var(--line);border-radius:16px;margin-bottom:24px;position:relative;overflow:hidden;box-shadow:0 2px 0 var(--line-soft),0 8px 32px rgba(168,122,14,.08)}
+  .screen-enter .hero{animation:fadeIn .5s ease}
   @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:repeating-linear-gradient(90deg,var(--red) 0,var(--red) 14px,#fff 14px,#fff 28px);opacity:.85}
   .hero h1{font-size:56px;letter-spacing:3px;margin-bottom:6px;color:var(--ink);font-weight:900}
@@ -151,7 +152,8 @@
   .setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
   @media(max-width:760px){.setup-grid{grid-template-columns:1fr}}
   .setup-card{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 2px 0 var(--line-soft)}
-  .setup-step{margin-bottom:18px;animation:stepIn .28s ease}
+  .setup-step{margin-bottom:18px}
+  .setup-step.active{animation:stepIn .28s ease}
   .setup-step.done{opacity:.7}
   .step-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
   .step-head b{font-size:16px;color:var(--ink)}
@@ -2872,8 +2874,7 @@ function renderDraft(){
       <div class="spin-box-stub"><span class="lbl-mini">CLUB</span><div class="val">${ts.team}</div></div>
       <span class="spin-x">×</span>
       <div class="spin-box-stub"><span class="lbl-mini">SEASON</span><div class="val">${ts.year}</div></div>
-    </div>
-    <div class="spun-league">${LEAGUE_NAMES[ts.league]||""}</div>`;
+    </div>`;
   // Spinning: two reels (CLUB + SEASON) so it matches the two-box pre/post layout.
   const spinning = `<div class="spin-boxes">
       <div class="spin-box-stub reel-cell"><span class="lbl-mini">CLUB</span><div class="reel reel-mini" id="reelClub"><div class="reel-track"></div></div></div>
@@ -2883,7 +2884,7 @@ function renderDraft(){
   const reveal = el(`<div class="spin-box">
     <div class="lbl">${S.spinning?'SPINNING…':'SQUAD SPUN'}</div>
     ${S.spinning ? spinning : landed}
-    ${!S.spinning && ts.trophy ? `<div class="trophy-label">${ts.trophy}</div>` : ''}
+    ${!S.spinning ? (ts.trophy ? `<div class="trophy-label">${ts.trophy}</div>` : `<div class="spun-league">${LEAGUE_NAMES[ts.league]||""}</div>`) : ''}
     ${!S.spinning ? `<div class="reroll">Rerolls left: <b>${S.rerollsLeft}</b> ${S.rerollsLeft>0?'· <a id="rr">Reroll squad</a>':''}</div>` : ''}
   </div>`);
   const rr = reveal.querySelector("#rr"); if (rr) rr.onclick = e => { e.preventDefault(); reroll(); };
@@ -2992,11 +2993,9 @@ function renderHub(){
     if (won) btnText = '🏆 Already won';
     else if (locked) btnText = '🔒 Locked';
     const c = el(`<div class="spin-box" style="padding:18px;text-align:left;${locked?'opacity:.55':''}">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <div style="font-size:22px"><span style="font-size:28px">${t.icon}</span> <b>${t.name.replace('ICC ','')}</b></div>
-        ${diffBadge(t)}
-      </div>
-      <div class="muted" style="font-size:12px;margin:6px 0 10px">${(t.id === "cl" ? t.rounds : ["League Season", ...t.rounds]).join(' → ')} · ${t.overs} overs</div>
+      <div style="font-size:22px;line-height:1.2"><span style="font-size:28px">${t.icon}</span> <b>${t.name.replace('ICC ','')}</b></div>
+      <div style="margin:8px 0 8px">${diffBadge(t)}</div>
+      <div class="muted" style="font-size:12px;margin:0 0 10px">${(t.id === "cl" ? t.rounds : ["League Season", ...t.rounds]).join(' → ')} · ${t.overs} overs</div>
       ${locked ? `<div style="font-size:12px;color:var(--gold);margin-bottom:10px;font-weight:700">Win IPL, PSL & Big Bash first to unlock</div>` : `<div style="font-size:13px;margin-bottom:12px">XI rating: <b style="color:var(--gold)">${r.toFixed(1)}</b></div>`}
       <button class="primary" ${!canPlay?'disabled':''} style="width:100%">${btnText}</button>
     </div>`);
