@@ -257,6 +257,133 @@
   .tour-diff{display:inline-flex;background:#0a1228;border:1px solid var(--line);border-radius:8px;padding:2px;margin-left:8px}
   .tour-diff button{padding:4px 10px;font-size:11px;border:0;background:transparent;border-radius:5px;color:var(--muted);font-weight:700;cursor:pointer}
   .tour-diff button.active{background:var(--blue);color:#fff}
+
+  /* ============ CRICKET THEME ============ */
+  :root{
+    --cherry:#a4222f;
+    --cherry-light:#d65766;
+    --pitch:#2d7a4d;
+    --pitch-dark:#1a4d2e;
+    --willow:#c8a165;
+    --boundary:#fff8e1;
+  }
+
+  /* Hero — willow-gold title + pitch stripes at the bottom */
+  .hero{
+    background:
+      linear-gradient(180deg,rgba(45,122,77,.12),transparent 60%),
+      radial-gradient(ellipse at center,#2a3a8a 0%,transparent 60%);
+    position:relative;overflow:hidden
+  }
+  .hero::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+    background:repeating-linear-gradient(90deg,var(--pitch-dark) 0,var(--pitch-dark) 12px,var(--pitch) 12px,var(--pitch) 24px);
+    opacity:.55
+  }
+  .hero h1{
+    background:linear-gradient(180deg,#fff8e1 0%,var(--willow) 90%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 2px 8px rgba(200,161,101,.2))
+  }
+
+  /* Cricket ball — Spin button */
+  .spin-btn{
+    background:radial-gradient(circle at 30% 28%,#e5777f 0%,#c8102e 50%,#7a0a18 100%);
+    color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4);
+    box-shadow:
+      0 8px 28px rgba(200,16,46,.45),
+      inset 0 -4px 12px rgba(0,0,0,.4),
+      inset 0 3px 6px rgba(255,255,255,.22);
+    position:relative;border-radius:14px
+  }
+  .spin-btn::before,.spin-btn::after{
+    content:"";position:absolute;left:14%;right:14%;height:2px;
+    background:linear-gradient(90deg,transparent 0%,var(--boundary) 18%,var(--boundary) 82%,transparent 100%);
+    opacity:.55;border-radius:1px;pointer-events:none
+  }
+  .spin-btn::before{top:34%}
+  .spin-btn::after{bottom:34%}
+  .spin-btn:hover{box-shadow:0 12px 36px rgba(200,16,46,.55),inset 0 -4px 12px rgba(0,0,0,.4),inset 0 3px 6px rgba(255,255,255,.22)}
+
+  /* Lives = cherry-red cricket balls */
+  .lives{display:inline-flex;gap:5px;align-items:center}
+  .heart{
+    display:inline-block;width:16px;height:16px;border-radius:50%;
+    background:radial-gradient(circle at 32% 28%,#e5777f 0%,#c8102e 55%,#7a0a18 100%);
+    box-shadow:inset 0 -2px 3px rgba(0,0,0,.4), 0 0 0 1px rgba(0,0,0,.3), 0 2px 4px rgba(200,16,46,.3);
+    position:relative;font-size:0;color:transparent;
+    animation:beat 1.6s ease-in-out infinite;
+  }
+  .heart::before,.heart::after{
+    content:"";position:absolute;left:18%;right:18%;height:1px;
+    background:var(--boundary);opacity:.7;border-radius:1px
+  }
+  .heart::before{top:42%}
+  .heart::after{top:58%}
+  .heart.lost{background:#2a2f4a;animation:none;opacity:.35;box-shadow:none}
+  .heart.lost::before,.heart.lost::after{display:none}
+
+  /* Scoreboard with cricket bat decoration */
+  .scoreboard{
+    background:
+      linear-gradient(135deg,rgba(45,122,77,.14),rgba(26,77,46,.06)),
+      linear-gradient(135deg,#1a2244,#0e1430);
+    position:relative
+  }
+  .scoreboard::before{
+    content:"🏏";position:absolute;top:10px;right:14px;font-size:14px;opacity:.35
+  }
+
+  /* Trophies with willow gleam */
+  .trophy.won{
+    background:linear-gradient(160deg,#3a2a08,#1b2347);
+    border-color:var(--gold);
+    box-shadow:0 6px 24px rgba(245,196,81,.22),inset 0 0 0 1px rgba(255,248,225,.08)
+  }
+
+  /* Sidebar header with cricket bat */
+  .sidebar > div:first-child b::before{content:"🏏 ";font-size:12px}
+
+  /* Watch/skip choice cards */
+  .choice-card{
+    background:linear-gradient(160deg,#1a2244,#11162a);
+    border:1px solid var(--line);border-radius:14px;padding:28px 22px;
+    text-align:center;cursor:pointer;transition:all .2s ease;
+    animation:popIn .4s ease
+  }
+  .choice-card:hover{border-color:var(--cherry-light);transform:translateY(-3px);box-shadow:0 10px 30px rgba(200,16,46,.18)}
+  .choice-card .ic{margin-bottom:14px}
+  .choice-card .title{font-size:22px;font-weight:800;margin-bottom:8px;
+    background:linear-gradient(180deg,#fff8e1,var(--willow));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .choice-card .desc{color:var(--muted);font-size:13px;line-height:1.5}
+
+  /* Order screen — jersey number style */
+  .order-row{
+    background:linear-gradient(180deg,#161c38,#11162a);
+    border-left:3px solid var(--pitch)
+  }
+  .order-row .pos{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:32px;height:32px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%,#fff8e1,var(--willow) 70%);
+    color:#1a1300;font-weight:900;font-size:14px;text-align:center
+  }
+
+  /* Spin box with subtle grass tint */
+  .spin-box{
+    background:
+      linear-gradient(135deg,rgba(45,122,77,.04),transparent 60%),
+      linear-gradient(180deg,#1a2244,var(--panel))
+  }
+
+  /* Game over with cricket flair */
+  .gameover h1{background:linear-gradient(180deg,#ff8a9b,#a4222f);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .gameover::before{content:"";display:block;font-size:80px;margin-bottom:6px;line-height:1}
+
+  /* Commentary cherry-red highlight for sixes/fours */
+  .c-6{color:var(--gold);text-shadow:0 0 8px rgba(245,196,81,.4)}
+  .c-W{color:var(--cherry-light);text-shadow:0 0 6px rgba(212,87,102,.3)}
 </style>
 </head>
 <body>
@@ -1464,7 +1591,7 @@ function awardFig(award, kind){
 function startDraft(){
   const d = S.setup.difficulty;
   const rerolls = d==="easy"?3 : d==="hard"?0 : 1;
-  const lives = d==="easy"?2 : d==="hard"?0 : 1;
+  const lives = d==="easy"?3 : d==="hard"?1 : 2;
   S.rerollsLeft = rerolls; S.rerollsTotal = rerolls;
   S.lives = lives; S.livesTotal = lives;
   S.playerStats = {};
@@ -1531,7 +1658,7 @@ function removeFromSlot(id){ const slot = S.squad.find(s=>s.id===id); slot.playe
 /* =========== TOURNAMENT =========== */
 function startTournament(tId){
   if (S.trophies[tId]) return;
-  if (S.lives < 0) { S.screen = "gameover"; save(); render(); return; }
+  if (S.lives <= 0) { S.screen = "gameover"; save(); render(); return; }
   const t = TOURNAMENTS.find(x=>x.id===tId);
   // WTC restricted to established Test-playing nations
   let pool = OPPONENTS;
@@ -1557,18 +1684,28 @@ function moveOrder(idx, dir){
   [ord[idx], ord[j]] = [ord[j], ord[idx]];
   render();
 }
-function startMatch(){
+function buildMatchForCurrent(){
   const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
   const opp = S.tour.opps[S.tour.roundIdx];
   const byName = {};
   squadPicks().forEach(s=>{ byName[s.player.n] = s.player; });
   const players = S.tour.battingOrder.map(n => byName[n]).filter(Boolean);
-  const match = simulateMatch(t, players, opp);
+  return simulateMatch(t, players, opp);
+}
+function startMatch(){
+  const match = buildMatchForCurrent();
   S.tour.currentMatch = match;
   S.tour.live = true;
   S.screen = "live";
   render();
   animateInnings(match, 0);
+}
+function startMatchSkip(){
+  const match = buildMatchForCurrent();
+  S.tour.currentMatch = match;
+  S.tour.live = false;
+  // endMatch handles stats, awards, scorecard routing
+  endMatch(match);
 }
 
 function simulateMatch(t, myPlayers, opp){
@@ -1868,7 +2005,7 @@ function continueAfterAwards(){
     S.careerLog.unshift({ t:t.name, won:false, lines: S.tour.scorecards.map((m,i)=>`${t.rounds[i]} v ${m.opp}: L`) });
     S.lives--;
     S.tour = null;
-    if (S.lives < 0){ S.screen = "gameover"; save(); render(); return; }
+    if (S.lives <= 0){ S.screen = "gameover"; save(); render(); return; }
     S.screen = "hub"; save(); render(); return;
   }
   S.tour.roundIdx++;
@@ -1906,6 +2043,7 @@ function render(){
   if (S.screen === "draft") main.append(renderDraft());
   else if (S.screen === "hub") main.append(renderHub());
   else if (S.screen === "order") main.append(renderOrder());
+  else if (S.screen === "watch-choice") main.append(renderWatchChoice());
   else if (S.screen === "live") main.append(renderLive());
   else if (S.screen === "scorecard") main.append(renderScorecard());
   else if (S.screen === "awards") main.append(renderAwards());
@@ -2069,13 +2207,13 @@ function renderHub(){
   // Lives + opp difficulty bar
   const heartsHTML = (() => {
     let h = "";
-    const total = Math.max(S.livesTotal, S.lives);
-    for (let i=0; i<Math.max(total,1); i++){
-      h += `<span class="heart ${i>=S.lives?'lost':''}">${i<S.lives?'❤️':'🤍'}</span>`;
+    const total = Math.max(S.livesTotal, 1);
+    for (let i=0; i<total; i++){
+      h += `<span class="heart ${i>=S.lives?'lost':''}"></span>`;
     }
-    return h || `<span class="heart lost">🤍</span>`;
+    return h;
   })();
-  const livesLbl = S.lives < 0 ? `<span style="color:var(--red);font-weight:700">No lives left</span>` :
+  const livesLbl = S.lives <= 0 ? `<span style="color:var(--red);font-weight:700">No lives left</span>` :
     `<b>${S.lives}</b> ${S.lives===1?'life':'lives'} left`;
   const status = el(`<div class="panel" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between">
     <div class="row"><span class="muted" style="font-size:12px;letter-spacing:1px;font-weight:700;text-transform:uppercase">Lives</span> <span class="lives">${heartsHTML}</span> <span style="margin-left:4px;font-size:13px">${livesLbl}</span></div>
@@ -2106,8 +2244,8 @@ function renderHub(){
   TOURNAMENTS.forEach(t => {
     const r = avg(squadPicks().map(s=>ratingOf(s.player)));
     const won = S.trophies[t.id];
-    const canPlay = !won && S.lives >= 0;
-    const btnText = won ? 'Already won' : (S.lives < 0 ? 'Career ended' : 'Play');
+    const canPlay = !won && S.lives > 0;
+    const btnText = won ? 'Already won' : (S.lives <= 0 ? 'Career ended' : 'Play');
     const c = el(`<div class="spin-box" style="padding:18px;text-align:left">
       <div style="font-size:22px"><span style="font-size:28px">${t.icon}</span> <b>${t.name.replace('ICC ','')}</b></div>
       <div class="muted" style="font-size:12px;margin:4px 0 10px">${t.rounds.join(' → ')} · ${t.overs} overs</div>
@@ -2193,8 +2331,8 @@ function renderOrder(){
   cancel.onclick = () => { S.tour=null; S.screen="hub"; save(); render(); };
   const auto = el(`<button class="ghost">Auto-order</button>`);
   auto.onclick = () => { S.tour.battingOrder = orderForBatting(squadPicks().map(s=>s.player)).map(p=>p.n); render(); };
-  const go = el(`<button class="primary">Start Match →</button>`);
-  go.onclick = () => startMatch();
+  const go = el(`<button class="primary">Confirm XI →</button>`);
+  go.onclick = () => { S.screen = "watch-choice"; save(); render(); };
   row.append(cancel, auto, go);
   wrap.append(row);
   return wrap;
@@ -2240,6 +2378,41 @@ function renderAwards(){
   const cont = el(`<button class="primary">${nextLabel}</button>`);
   cont.onclick = continueAfterAwards;
   row.append(back, cont);
+  wrap.append(row);
+  return wrap;
+}
+
+function renderWatchChoice(){
+  const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
+  const opp = S.tour.opps[S.tour.roundIdx];
+  const wrap = el(`<div></div>`);
+  wrap.append(el(`<div class="hero" style="padding:30px 20px;margin-bottom:18px">
+    <h1 style="font-size:32px">${t.icon} ${t.rounds[S.tour.roundIdx]}</h1>
+    <p style="font-size:14px"><b style="color:var(--ink)">${t.fmt==="wtc"?"You":"Your XI"}</b> vs <b style="color:var(--ink)">${opp.n}</b> · ${t.overs} overs${t.fmt==="wtc"?" × 2 innings":""}</p>
+  </div>`));
+  wrap.append(el(`<h2 style="text-align:center;margin-top:0">🎬 How do you want to play this match?</h2>`));
+  const choices = el(`<div class="awards" style="grid-template-columns:1fr 1fr;margin-top:10px"></div>`);
+  const watch = el(`<div class="choice-card">
+    <div class="ic" style="font-size:48px">📺</div>
+    <div class="title">Watch Live</div>
+    <div class="desc">Ball-by-ball commentary,<br/>animated scoring${t.fmt==="wtc"?'<br/><small style="color:var(--gold)">⚠ Test = 4 innings, longest format</small>':''}</div>
+    <button class="primary" style="width:100%;margin-top:14px">▶ Watch</button>
+  </div>`);
+  watch.querySelector("button").onclick = () => startMatch();
+  choices.append(watch);
+  const skip = el(`<div class="choice-card">
+    <div class="ic" style="font-size:48px">⏭️</div>
+    <div class="title">Skip to Result</div>
+    <div class="desc">Jump straight to<br/>scorecard & awards</div>
+    <button class="gold" style="width:100%;margin-top:14px">⏭ Skip</button>
+  </div>`);
+  skip.querySelector("button").onclick = () => startMatchSkip();
+  choices.append(skip);
+  wrap.append(choices);
+  const row = el(`<div class="row" style="justify-content:center;margin-top:18px"></div>`);
+  const back = el(`<button class="ghost">← Change batting order</button>`);
+  back.onclick = () => { S.screen = "order"; save(); render(); };
+  row.append(back);
   wrap.append(row);
   return wrap;
 }
@@ -2352,7 +2525,7 @@ function renderScorecard(){
   back.onclick = () => {
     if (!m.won) S.lives--;
     S.tour=null;
-    if (S.lives < 0) S.screen = "gameover"; else S.screen = "hub";
+    if (S.lives <= 0) S.screen = "gameover"; else S.screen = "hub";
     save(); render();
   };
   const cont = el(`<button class="primary">View awards →</button>`);
