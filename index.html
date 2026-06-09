@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Whitewash — Cricket Squad Draft</title>
+<title>11-0 — Cricket Squad Draft</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 <style>
   :root{
@@ -35,6 +35,7 @@
   ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}::-webkit-scrollbar-track{background:transparent}
 
   .app{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
+  .app.no-sidebar{grid-template-columns:1fr}
   @media(max-width:900px){.app{grid-template-columns:1fr}}
   .sidebar{background:linear-gradient(180deg,var(--panel),var(--bg-alt));border-right:3px solid var(--green);padding:18px;position:sticky;top:0;height:100vh;overflow:auto}
   @media(max-width:900px){.sidebar{position:static;height:auto;border-right:0;border-bottom:3px solid var(--green)}}
@@ -177,7 +178,7 @@
   #splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .6s ease}
   #splash.fade{opacity:0;pointer-events:none}
   .splash-inner{text-align:center;animation:splashIn .9s cubic-bezier(.18,1,.32,1)}
-  .splash-logo{font-size:clamp(40px,12vw,72px);font-weight:900;letter-spacing:4px;line-height:1;background:linear-gradient(180deg,#fff,var(--green));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:splashBeat 1.6s ease-in-out infinite;text-shadow:0 0 40px rgba(61,220,151,.15)}
+  .splash-logo{font-size:88px;font-weight:900;letter-spacing:8px;line-height:1;background:linear-gradient(180deg,#fff,var(--green));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:splashBeat 1.6s ease-in-out infinite;text-shadow:0 0 40px rgba(61,220,151,.15)}
   .splash-tagline{color:var(--muted);font-size:12px;letter-spacing:6px;text-transform:uppercase;margin-top:14px;font-weight:800}
   .splash-ball{width:50px;height:50px;border-radius:50%;background:radial-gradient(circle at 30% 28%,#e5777f,#c8102e 50%,#7a0a18);margin:30px auto 0;position:relative;animation:splashSpin 1.5s linear infinite;box-shadow:0 8px 30px rgba(200,16,46,.45),inset 0 -3px 8px rgba(0,0,0,.35)}
   .splash-ball::before,.splash-ball::after{content:"";position:absolute;left:15%;right:15%;height:2px;background:#fff8e1;opacity:.6;border-radius:1px}
@@ -714,6 +715,58 @@ const TEAM_SEASONS = [
     { n:"Matheesha Pathirana",roles:["PAC"], season:84, prime:86 },
     { n:"Maheesh Theekshana",roles:["SPN"], season:80, prime:84 }
   ]},
+  { team:"Delhi Capitals", year:2024, fmt:"t20", league:"ipl", trophy:"IPL — Group Stage", squad:[
+    { n:"Rishabh Pant",      roles:["WK","BAT"], season:88, prime:90 },
+    { n:"David Warner",      roles:["OPN"], season:82, prime:91 },
+    { n:"Jake Fraser-McGurk",roles:["OPN"], season:84, prime:84 },
+    { n:"Shai Hope",         roles:["OPN","WK"], season:82, prime:84 },
+    { n:"Mitchell Marsh",    roles:["AR","BAT"], season:84, prime:88 },
+    { n:"Tristan Stubbs",    roles:["BAT","FIN"], season:84, prime:86 },
+    { n:"Axar Patel",        roles:["AR","SPN"], season:84, prime:84 },
+    { n:"Kuldeep Yadav",     roles:["SPN"], season:86, prime:86 },
+    { n:"Anrich Nortje",     roles:["PAC"], season:86, prime:90 },
+    { n:"Mukesh Kumar",      roles:["PAC"], season:80, prime:82 },
+    { n:"Khaleel Ahmed",     roles:["PAC"], season:80, prime:82 }
+  ]},
+  { team:"Punjab Kings", year:2024, fmt:"t20", league:"ipl", trophy:"IPL — Group Stage", squad:[
+    { n:"Jonny Bairstow",    roles:["OPN","WK"], season:86, prime:90 },
+    { n:"Shashank Singh",    roles:["FIN","BAT"], season:80, prime:82 },
+    { n:"Sam Curran",        roles:["AR","PAC"], season:84, prime:86 },
+    { n:"Liam Livingstone",  roles:["AR","BAT"], season:82, prime:86 },
+    { n:"Atharva Taide",     roles:["BAT"], season:74, prime:76 },
+    { n:"Jitesh Sharma",     roles:["WK","BAT"], season:80, prime:82 },
+    { n:"Harshal Patel",     roles:["PAC","AR"], season:82, prime:86 },
+    { n:"Kagiso Rabada",     roles:["PAC"], season:90, prime:92 },
+    { n:"Arshdeep Singh",    roles:["PAC"], season:84, prime:86 },
+    { n:"Rilee Rossouw",     roles:["BAT","FIN"], season:80, prime:84 },
+    { n:"Rahul Chahar",      roles:["SPN"], season:78, prime:80 }
+  ]},
+  { team:"Lucknow Super Giants", year:2024, fmt:"t20", league:"ipl", trophy:"IPL — Group Stage", squad:[
+    { n:"KL Rahul",          roles:["OPN","WK"], season:88, prime:88 },
+    { n:"Quinton de Kock",   roles:["OPN","WK"], season:86, prime:90 },
+    { n:"Nicholas Pooran",   roles:["WK","FIN"], season:86, prime:86 },
+    { n:"Marcus Stoinis",    roles:["AR","FIN"], season:84, prime:84 },
+    { n:"Krunal Pandya",     roles:["AR","SPN"], season:82, prime:82 },
+    { n:"Ayush Badoni",      roles:["BAT","AR"], season:76, prime:78 },
+    { n:"Deepak Hooda",      roles:["AR","BAT"], season:76, prime:78 },
+    { n:"Ravi Bishnoi",      roles:["SPN"], season:84, prime:84 },
+    { n:"Naveen-ul-Haq",     roles:["PAC"], season:80, prime:84 },
+    { n:"Mark Wood",         roles:["PAC"], season:86, prime:88 },
+    { n:"Mohsin Khan",       roles:["PAC"], season:78, prime:80 }
+  ]},
+  { team:"Gujarat Titans", year:2024, fmt:"t20", league:"ipl", trophy:"IPL — Group Stage", squad:[
+    { n:"Shubman Gill",      roles:["OPN"], season:88, prime:88 },
+    { n:"Sai Sudharsan",     roles:["BAT"], season:84, prime:84 },
+    { n:"David Miller",      roles:["FIN","BAT"], season:84, prime:86 },
+    { n:"Vijay Shankar",     roles:["AR","BAT"], season:78, prime:80 },
+    { n:"Wriddhiman Saha",   roles:["WK","BAT"], season:78, prime:82 },
+    { n:"Rashid Khan",       roles:["AR","SPN"], season:90, prime:92 },
+    { n:"Azmatullah Omarzai",roles:["AR","PAC"], season:82, prime:82 },
+    { n:"Mohit Sharma",      roles:["PAC"], season:84, prime:84 },
+    { n:"Mohammed Shami",    roles:["PAC"], season:88, prime:90 },
+    { n:"Spencer Johnson",   roles:["PAC"], season:84, prime:84 },
+    { n:"Joshua Little",     roles:["PAC"], season:82, prime:84 }
+  ]},
   { team:"Sunrisers Hyderabad", year:2016, fmt:"t20", league:"ipl", trophy:"IPL — Champions", squad:[
     { n:"David Warner",      roles:["OPN"], season:92, prime:91 },
     { n:"Shikhar Dhawan",    roles:["OPN"], season:86, prime:88 },
@@ -937,32 +990,44 @@ const TEAM_SEASONS = [
     { n:"Rashid Khan",       roles:["AR","SPN"], season:90, prime:92 },
     { n:"Carlos Brathwaite", roles:["AR","FIN"], season:78, prime:84 }
   ]},
-  // PSL expanded to 8 teams in 2026 — two new franchises join below.
-  { team:"Hyderabad Kingsmen", year:2026, fmt:"t20", league:"psl", trophy:"PSL — Finalists (debut)", squad:[
-    { n:"Saim Ayub",         roles:["OPN"], season:86, prime:88 },
-    { n:"Sharjeel Khan",     roles:["OPN"], season:80, prime:84 },
-    { n:"Marnus Labuschagne",roles:["BAT"], season:84, prime:88 },
-    { n:"Kusal Perera",      roles:["WK","BAT"], season:82, prime:86 },
-    { n:"Usman Khan",        roles:["BAT","FIN"], season:82, prime:84 },
-    { n:"Glenn Maxwell",     roles:["AR","FIN"], season:86, prime:90 },
-    { n:"Hammad Azam",       roles:["AR"], season:74, prime:76 },
-    { n:"Maheesh Theekshana",roles:["SPN"], season:84, prime:86 },
-    { n:"Riley Meredith",    roles:["PAC"], season:82, prime:84 },
-    { n:"Ottneil Baartman",  roles:["PAC"], season:80, prime:82 },
-    { n:"Akif Javed",        roles:["PAC"], season:78, prime:80 }
+  { team:"Karachi Kings", year:2024, fmt:"t20", league:"psl", trophy:"PSL — Group Stage", squad:[
+    { n:"Shan Masood",       roles:["OPN"], season:80, prime:82 },
+    { n:"James Vince",       roles:["BAT"], season:82, prime:84 },
+    { n:"Tim Seifert",       roles:["WK","BAT"], season:80, prime:80 },
+    { n:"Adam Rossington",   roles:["WK","BAT"], season:74, prime:76 },
+    { n:"Daniel Sams",       roles:["AR","PAC"], season:78, prime:80 },
+    { n:"Imad Wasim",        roles:["AR","SPN"], season:80, prime:84 },
+    { n:"Mohammad Amir",     roles:["PAC"], season:82, prime:90 },
+    { n:"Hasan Ali",         roles:["PAC"], season:82, prime:86 },
+    { n:"Mir Hamza",         roles:["PAC"], season:76, prime:78 },
+    { n:"Tayyab Tahir",      roles:["BAT","AR"], season:74, prime:76 },
+    { n:"Anwar Ali",         roles:["AR","PAC"], season:74, prime:78 }
   ]},
-  { team:"Rawalpindiz", year:2026, fmt:"t20", league:"psl", trophy:"PSL — Debut Season", squad:[
-    { n:"Mohammad Rizwan",   roles:["WK","BAT"], season:86, prime:88 },
-    { n:"Jake Fraser-McGurk",roles:["OPN","AR"], season:82, prime:86 },
-    { n:"Usman Khawaja",     roles:["OPN","BAT"], season:80, prime:84 },
-    { n:"Daryl Mitchell",    roles:["BAT","AR"], season:84, prime:86 },
-    { n:"Sam Billings",      roles:["BAT","FIN"], season:78, prime:82 },
-    { n:"Laurie Evans",      roles:["BAT","FIN"], season:76, prime:80 },
-    { n:"Asif Afridi",       roles:["AR","SPN"], season:74, prime:76 },
-    { n:"Naseem Shah",       roles:["PAC"], season:85, prime:87 },
-    { n:"Mohammad Amir",     roles:["PAC"], season:83, prime:88 },
-    { n:"Rishad Hossain",    roles:["SPN"], season:80, prime:82 },
-    { n:"Zaman Khan",        roles:["PAC"], season:78, prime:80 }
+  { team:"Peshawar Zalmi", year:2024, fmt:"t20", league:"psl", trophy:"PSL — Knockouts", squad:[
+    { n:"Babar Azam",        roles:["OPN"], season:92, prime:92 },
+    { n:"Saim Ayub",         roles:["OPN"], season:80, prime:82 },
+    { n:"Mohammad Haris",    roles:["WK","BAT"], season:78, prime:80 },
+    { n:"Hussain Talat",     roles:["BAT","AR"], season:78, prime:78 },
+    { n:"Paul Walter",       roles:["AR","PAC"], season:76, prime:78 },
+    { n:"Mehran Mumtaz",     roles:["AR","SPN"], season:76, prime:76 },
+    { n:"Aamer Jamal",       roles:["AR","PAC"], season:82, prime:82 },
+    { n:"Wahab Riaz",        roles:["PAC"], season:80, prime:86 },
+    { n:"Salman Irshad",     roles:["PAC"], season:76, prime:76 },
+    { n:"Naveen-ul-Haq",     roles:["PAC"], season:82, prime:84 },
+    { n:"Mohammad Imran",    roles:["AR","SPN"], season:74, prime:76 }
+  ]},
+  { team:"Quetta Gladiators", year:2024, fmt:"t20", league:"psl", trophy:"PSL — Knockouts", squad:[
+    { n:"Rilee Rossouw",     roles:["OPN","BAT"], season:82, prime:84 },
+    { n:"Saud Shakeel",      roles:["BAT"], season:78, prime:82 },
+    { n:"Sarfaraz Ahmed",    roles:["WK","BAT"], season:78, prime:84 },
+    { n:"Khurram Shahzad",   roles:["PAC"], season:74, prime:76 },
+    { n:"Iftikhar Ahmed",    roles:["AR","BAT"], season:80, prime:82 },
+    { n:"Mohammad Hasnain",  roles:["PAC"], season:80, prime:80 },
+    { n:"Mohammad Amir",     roles:["PAC"], season:82, prime:90 },
+    { n:"Akeal Hosein",      roles:["AR","SPN"], season:80, prime:82 },
+    { n:"Aimal Khan",        roles:["AR","PAC"], season:74, prime:76 },
+    { n:"Omair Bin Yousuf",  roles:["BAT"], season:74, prime:76 },
+    { n:"Usman Tariq",       roles:["SPN"], season:74, prime:76 }
   ]},
 
   /* ============ BIG BASH LEAGUE ============ */
@@ -1109,6 +1174,58 @@ const TEAM_SEASONS = [
     { n:"Michael Beer",      roles:["SPN"], season:74, prime:76 },
     { n:"Ben Hilfenhaus",    roles:["PAC"], season:80, prime:82 }
   ]},
+  { team:"Perth Scorchers", year:2024, fmt:"t20", league:"bbl", trophy:"BBL — Knockouts", squad:[
+    { n:"Faf du Plessis",    roles:["OPN"], season:84, prime:88 },
+    { n:"Stephen Eskinazi",  roles:["OPN","BAT"], season:78, prime:80 },
+    { n:"Cooper Connolly",   roles:["AR","BAT"], season:78, prime:80 },
+    { n:"Aaron Hardie",      roles:["AR"], season:80, prime:82 },
+    { n:"Josh Inglis",       roles:["WK","BAT"], season:84, prime:84 },
+    { n:"Hilton Cartwright", roles:["BAT","AR"], season:78, prime:80 },
+    { n:"Andrew Tye",        roles:["PAC"], season:82, prime:86 },
+    { n:"Jhye Richardson",   roles:["PAC"], season:82, prime:86 },
+    { n:"Lance Morris",      roles:["PAC"], season:82, prime:82 },
+    { n:"Peter Hatzoglou",   roles:["SPN"], season:78, prime:80 },
+    { n:"Ashton Agar",       roles:["AR","SPN"], season:78, prime:80 }
+  ]},
+  { team:"Melbourne Stars", year:2024, fmt:"t20", league:"bbl", trophy:"BBL — Group Stage", squad:[
+    { n:"Glenn Maxwell",     roles:["AR","BAT"], season:86, prime:88 },
+    { n:"Marcus Stoinis",    roles:["AR","FIN"], season:80, prime:82 },
+    { n:"Hilton Cartwright", roles:["BAT","AR"], season:76, prime:80 },
+    { n:"Joe Clarke",        roles:["WK","BAT"], season:78, prime:80 },
+    { n:"Sam Harper",        roles:["WK","BAT"], season:76, prime:78 },
+    { n:"Beau Webster",      roles:["AR","BAT"], season:78, prime:80 },
+    { n:"Mark Steketee",     roles:["PAC"], season:80, prime:82 },
+    { n:"Tom Curran",        roles:["AR","PAC"], season:80, prime:84 },
+    { n:"Will Sutherland",   roles:["AR","PAC"], season:78, prime:80 },
+    { n:"Hassan Khan",       roles:["AR","SPN"], season:76, prime:78 },
+    { n:"Liam Hatcher",      roles:["PAC"], season:74, prime:76 }
+  ]},
+  { team:"Melbourne Renegades", year:2024, fmt:"t20", league:"bbl", trophy:"BBL — Group Stage", squad:[
+    { n:"Aaron Finch",       roles:["OPN"], season:80, prime:88 },
+    { n:"Jake Fraser-McGurk",roles:["OPN"], season:82, prime:84 },
+    { n:"Marcus Harris",     roles:["OPN","BAT"], season:78, prime:80 },
+    { n:"Quinton de Kock",   roles:["WK","OPN"], season:86, prime:90 },
+    { n:"Mackenzie Harvey",  roles:["BAT"], season:76, prime:78 },
+    { n:"Andre Fletcher",    roles:["BAT","WK"], season:76, prime:80 },
+    { n:"Will Sutherland",   roles:["AR","PAC"], season:78, prime:80 },
+    { n:"Akeal Hosein",      roles:["AR","SPN"], season:80, prime:82 },
+    { n:"Mohammad Nabi",     roles:["AR","SPN"], season:80, prime:86 },
+    { n:"Tom Rogers",        roles:["PAC"], season:80, prime:82 },
+    { n:"Adam Zampa",        roles:["SPN"], season:84, prime:86 }
+  ]},
+  { team:"Sydney Thunder", year:2024, fmt:"t20", league:"bbl", trophy:"BBL — Group Stage", squad:[
+    { n:"David Warner",      roles:["OPN"], season:84, prime:91 },
+    { n:"Matthew Gilkes",    roles:["OPN","WK"], season:78, prime:80 },
+    { n:"Cameron Bancroft",  roles:["BAT","OPN"], season:76, prime:80 },
+    { n:"Daniel Sams",       roles:["AR","PAC"], season:78, prime:80 },
+    { n:"Sam Billings",      roles:["WK","BAT"], season:80, prime:82 },
+    { n:"Oliver Davies",     roles:["BAT"], season:76, prime:78 },
+    { n:"Nathan McAndrew",   roles:["PAC"], season:80, prime:80 },
+    { n:"Wes Agar",          roles:["PAC"], season:78, prime:80 },
+    { n:"Tanveer Sangha",    roles:["SPN"], season:80, prime:82 },
+    { n:"Daniel Hughes",     roles:["BAT"], season:78, prime:80 },
+    { n:"Chris Green",       roles:["AR","SPN"], season:78, prime:80 }
+  ]},
 
   /* ============ CARIBBEAN PREMIER LEAGUE (for CL) ============ */
   { team:"Trinbago Knight Riders", year:2018, fmt:"t20", league:"cpl", trophy:"CPL — Champions", squad:[
@@ -1210,24 +1327,11 @@ OPPONENTS.forEach(o => {
   OPP_XI[o.n] = o.squad.slice();
 });
 
-// Reduce a league pool to ONE canonical entry per franchise (its most recent
-// edition; tie-break on rating). This guarantees every real participating team
-// shows up exactly once as a possible opponent — no franchise dropped just
-// because its title-winning season predates the latest edition.
-function canonicalLeagueTeams(pool){
-  const byTeam = {};
-  pool.forEach(o => {
-    const cur = byTeam[o.team];
-    if (!cur || o.year > cur.year || (o.year === cur.year && o.t20 > cur.t20)) byTeam[o.team] = o;
-  });
-  return Object.values(byTeam);
-}
-
 const TOURNAMENTS = [
   { id:"ipl", name:"IPL", fmt:"t20", icon:"🏏", rounds:["Qualifier 1","Qualifier 2","Final"], overs:20, base:170, leagues:["ipl"] },
   { id:"psl", name:"PSL", fmt:"t20", icon:"🏆", rounds:["Qualifier","Eliminator","Final"], overs:20, base:170, leagues:["psl"] },
   { id:"bbl", name:"Big Bash League", fmt:"t20", icon:"🔥", rounds:["Knockout","Challenger","Final"], overs:20, base:170, leagues:["bbl"] },
-  { id:"cl",  name:"Champions League", fmt:"t20", icon:"🌍", rounds:["Round of 16","Quarter-Final","Semi-Final","Final"], overs:20, base:170, leagues:["ipl","psl","bbl","cpl","blast"] }
+  { id:"cl",  name:"Champions League", fmt:"t20", icon:"🌍", rounds:["Qualifier 1","Qualifier 2","Final"], overs:20, base:170, leagues:["ipl","psl","bbl","cpl","blast"] }
 ];
 
 // Top 3 teams from each league for the Champions League pool
@@ -1249,7 +1353,7 @@ const TEST_NATIONS = ["Australia","India","England","New Zealand","Pakistan","So
 function newSave(){
   return {
     screen:"setup",
-    setup:{ difficulty:"normal", showRatings:true, primeMode:true, eraMin:1975, eraMax:2026, oppDifficulty:"normal", draftMode:"spin" },
+    setup:{ difficulty:"normal", showRatings:true, primeMode:true, eraMin:1975, eraMax:2024, oppDifficulty:"normal", draftMode:"spin" },
     rerollsLeft:1, rerollsTotal:1,
     squad: SLOTS.map(s => ({ id:s.id, label:s.label, player:null })),
     currentSpin:null,
@@ -1263,16 +1367,7 @@ function newSave(){
   };
 }
 function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify({...S, spinning:false, tour: S.tour && !S.tour.live ? S.tour : null })); }catch(e){} }
-function load(){
-  try {
-    const s = JSON.parse(localStorage.getItem(SAVE_KEY));
-    // Migration: pre-2026 saves capped the draft era at 2024, which hid the
-    // RCB 2025 and the new PSL 2026 squads. Bump old saves so returning
-    // players see them without having to re-tap an Era preset.
-    if (s && s.setup && s.setup.eraMax === 2024) s.setup.eraMax = 2026;
-    return s;
-  } catch(e){ return null; }
-}
+function load(){ try { return JSON.parse(localStorage.getItem(SAVE_KEY)); } catch(e){ return null; } }
 function reset(){ if(animTimer) clearTimeout(animTimer); S = newSave(); save(); render(); }
 
 /* =========== HELPERS =========== */
@@ -1578,7 +1673,7 @@ function nextAuctionLot(){
   clearAuctionTimer();
   if (picksRemaining() === 0){ S.screen = "hub"; save(); render(); return; }
   const slotsLeft = picksRemaining();
-  // FIRE SALE when budget can't cover one more pick
+  // FIRE SALE when budget can't cover one more pick at min price
   if (S.auctionBudget < slotsLeft * AUCTION_MIN_PRICE) {
     S.auctionFireSale = true;
     S.auctionBudget = Math.max(S.auctionBudget, slotsLeft * AUCTION_MIN_PRICE);
@@ -1605,6 +1700,23 @@ function nextAuctionLot(){
   if (!candidate){ S.screen = "hub"; save(); render(); return; }
   S.auctionCurrent = candidate;
   S.auctionTimeLeft = AUCTION_TIMER_SECS;
+  // Additional fire-sale trigger: current player + next 5 all unaffordable
+  if (!S.auctionFireSale){
+    const currentPrice = playerPrice(candidate.p);
+    if (S.auctionBudget < currentPrice){
+      let canAffordSomething = false;
+      for (let i=0; i<Math.min(8, S.auctionQueue.length); i++){
+        const lk = S.auctionQueue[i];
+        if (!lk || alreadyPicked(lk.p.n)) continue;
+        if (playerPrice(lk.p) <= S.auctionBudget){ canAffordSomething = true; break; }
+      }
+      if (!canAffordSomething){
+        S.auctionFireSale = true;
+        S.auctionBudget = Math.max(S.auctionBudget, slotsLeft * AUCTION_MIN_PRICE);
+        sfx("warning");
+      }
+    }
+  }
   save(); render();
   startAuctionTimer();
 }
@@ -1706,9 +1818,13 @@ function startTournament(tId){
   let pool = OPPONENTS.filter(o => t.leagues.includes(o.league));
   if (tId === "cl") {
     pool = pool.filter(o => CL_POOL.includes(o.team));
+  } else {
+    // For league tournaments: use teams from the MOST RECENT edition only
+    const maxYear = Math.max(...pool.map(o=>o.year));
+    const recent = pool.filter(o => o.year === maxYear);
+    // Need at least t.rounds.length opponents; if not enough, fall back to broader pool
+    pool = recent.length >= t.rounds.length ? recent : pool.filter(o => o.year >= maxYear - 2);
   }
-  // One entry per franchise — every real participating team is available.
-  pool = canonicalLeagueTeams(pool);
   // Opponent difficulty modifier
   const mod = S.setup.oppDifficulty === "easy" ? -8 : S.setup.oppDifficulty === "legend" ? +4 : 0;
   let candidates = pool.map(o=>({ n:o.n, team:o.team, year:o.year, r: Math.max(60, Math.min(98, o[t.fmt] + mod)) }));
@@ -1774,21 +1890,14 @@ function startMatchSkip(){
 function simulateMatch(t, myPlayers, opp){
   const my = myPlayers.slice();
   const myBat = my.slice(); // user-defined batting order
-  // A bowling attack must be able to cover the innings within the per-bowler
-  // over cap: ceil(overs / cap) bowlers (5 for a 20-over T20 at 4 each). Pad
-  // thin attacks with the lowest-rated remaining players so nobody is ever
-  // forced to bowl over quota.
-  const maxPerBowler = t.fmt==="t20" ? 4 : t.fmt==="odi" ? 10 : 30;
-  const minBowlers = Math.ceil(t.overs / maxPerBowler);
-  const padAttack = (attack, squad) => {
-    if (attack.length >= minBowlers) return attack;
-    const fillers = squad.filter(p=>!attack.includes(p)).sort((a,b)=>ratingOf(a)-ratingOf(b)).slice(0, minBowlers-attack.length);
-    return attack.concat(fillers);
-  };
-  const myBowl = padAttack(my.filter(isBowler).sort((a,b)=>bowlSkill(b)-bowlSkill(a)).slice(0,6), my);
+  const myBowl = my.filter(isBowler).sort((a,b)=>bowlSkill(b)-bowlSkill(a)).slice(0,6);
+  if (myBowl.length < 4){
+    const tail = my.filter(p=>!myBowl.includes(p)).sort((a,b)=>ratingOf(a)-ratingOf(b)).slice(0,4-myBowl.length);
+    tail.forEach(p=>myBowl.push(p));
+  }
   const oppPlayers = buildOppXI(opp);
   const oppBat = orderForBatting(oppPlayers);
-  const oppBowl = padAttack(oppPlayers.filter(p => p.roles.includes("PAC")||p.roles.includes("SPN")||p.roles.includes("AR")).slice(0,6), oppPlayers);
+  const oppBowl = oppPlayers.filter(p => p.roles.includes("PAC")||p.roles.includes("SPN")||p.roles.includes("AR")).slice(0,6);
 
   const tossWin = Math.random() < 0.5 ? "me" : "opp";
   const tossDecision = (Math.random()<0.5?"bat":"bowl");
@@ -1841,13 +1950,10 @@ function simulateMatch(t, myPlayers, opp){
   const inn1 = simInnings(cfgFirst());
   const target = inn1.runs + 1;
   const inn2 = simInnings(cfgSecond(target));
-  let won, tie = false;
-  if (inn2.runs >= target) won = !meBatFirst;            // chase completed
-  else if (inn2.runs === inn1.runs){                     // scores level — Super Over
-    tie = true;
-    won = (myR + (Math.random()-0.5)*10) >= (oppR + (Math.random()-0.5)*10);
-  } else won = meBatFirst;                               // total defended
-  return { opp:opp.n, format:t.fmt, overs:t.overs, tie,
+  let won;
+  if (inn2.runs >= target) won = !meBatFirst;
+  else won = meBatFirst;
+  return { opp:opp.n, format:t.fmt, overs:t.overs,
     toss:{ winner: tossWin==="me"?"You":opp.n, decision: tossDecision },
     firstBatTeam:meBatFirst?"You":opp.n, target,
     innings:[inn1, inn2], won };
@@ -1882,20 +1988,12 @@ function simInnings({fmt, overs, base, bat, bowl, batTeam, bowlTeam, batRating, 
   const expectedTotal = Math.min(maxScore, base * Math.pow(batRating/85, 1.0) * Math.pow(85/bowlRating, 0.6));
   const runRate = expectedTotal / overs;
   const maxOversPerBowler = fmt==="t20" ? 4 : fmt==="odi" ? 10 : 30;
+  let bowlerIdx = 0;
   function nextBowler(prev){
-    // Pick the under-quota bowler with the fewest overs so far, never repeating
-    // the previous over's bowler. Spreads overs evenly and never exceeds the cap
-    // while any legal bowler remains.
-    let best = -1;
-    for (let i=0;i<bowlCard.length;i++){
-      if (i === prev || bowlCard[i].overs >= maxOversPerBowler) continue;
-      if (best === -1 || bowlCard[i].overs < bowlCard[best].overs) best = i;
-    }
-    if (best === -1){ // last resort: everyone else is at quota
-      for (let i=0;i<bowlCard.length;i++){ if (i !== prev){ best = i; break; } }
-      if (best === -1) best = prev;
-    }
-    return best;
+    let tries=0;
+    do { bowlerIdx = (bowlerIdx+1) % bowlCard.length; tries++; }
+    while ((bowlCard[bowlerIdx].overs >= maxOversPerBowler || bowlerIdx === prev) && tries < bowlCard.length*2);
+    return bowlerIdx;
   }
   let lastBowler = -1;
 
@@ -2128,80 +2226,45 @@ function continueAfterAwards(){
 
 /* =========== RENDER =========== */
 function el(h){ const d=document.createElement("div"); d.innerHTML=h.trim(); return d.firstElementChild; }
-let _sideSig = null;
-function ensureFab(){
-  // Floating feedback button lives on <body>, persists across renders.
+function render(){
+  if (animTimer && S.screen !== "live") { clearTimeout(animTimer); animTimer = null; }
+  const root = document.getElementById("app");
+  root.innerHTML = "";
+  root.className = "app";
+  if (S.screen === "setup") { root.className = "app no-sidebar"; root.append(renderSetup()); return; }
+  if (S.screen === "gameover" || S.screen === "win") { root.className = "app no-sidebar"; }
+  // Hamburger (mobile only via CSS)
+  const ham = el(`<button class="hamburger" title="Menu">☰</button>`);
+  ham.onclick = toggleDrawer;
+  root.append(ham);
+  // Scrim when drawer open on mobile
+  if (S.drawerOpen){
+    const sc = el(`<div class="scrim"></div>`);
+    sc.onclick = toggleDrawer;
+    root.append(sc);
+  }
+  root.append(renderSidebar());
+  const main = document.createElement("div"); main.className="main";
+  if (S.screen === "draft") main.append(renderDraft());
+  else if (S.screen === "auction") main.append(renderAuction());
+  else if (S.screen === "hub") main.append(renderHub());
+  else if (S.screen === "odds") main.append(renderOdds());
+  else if (S.screen === "summary") main.append(renderSummary());
+  else if (S.screen === "leaguesim") main.append(renderLeagueSim());
+  else if (S.screen === "order") main.append(renderOrder());
+  else if (S.screen === "watch-choice") main.append(renderWatchChoice());
+  else if (S.screen === "live") main.append(renderLive());
+  else if (S.screen === "scorecard") main.append(renderScorecard());
+  else if (S.screen === "awards") main.append(renderAwards());
+  else if (S.screen === "win") main.append(renderWin());
+  else if (S.screen === "gameover") main.append(renderGameOver());
+  root.append(main);
+  // Small floating feedback button (in-app form)
   if (!document.getElementById("fab-feedback")){
     const fab = el(`<button id="fab-feedback" class="fab-feedback" title="Send feedback">💬</button>`);
     fab.onclick = openFeedbackModal;
     document.body.appendChild(fab);
   }
-}
-function sidebarSignature(){
-  // Everything renderSidebar() visibly depends on. While this is unchanged we
-  // leave the existing sidebar DOM in place, so the "YOUR XI" name list doesn't
-  // flicker or scroll-reset on every button press.
-  return [S.screen, S.setup.showRatings, S.setup.primeMode, S.rerollsLeft, S.rerollsTotal,
-    S.squad.map(s=>s.player?s.player.n:'-').join('|')].join('::');
-}
-function buildScreen(){
-  if (S.screen === "draft") return renderDraft();
-  if (S.screen === "auction") return renderAuction();
-  if (S.screen === "hub") return renderHub();
-  if (S.screen === "odds") return renderOdds();
-  if (S.screen === "summary") return renderSummary();
-  if (S.screen === "leaguesim") return renderLeagueSim();
-  if (S.screen === "order") return renderOrder();
-  if (S.screen === "watch-choice") return renderWatchChoice();
-  if (S.screen === "live") return renderLive();
-  if (S.screen === "scorecard") return renderScorecard();
-  if (S.screen === "awards") return renderAwards();
-  if (S.screen === "win") return renderWin();
-  if (S.screen === "gameover") return renderGameOver();
-  return el(`<div></div>`);
-}
-function render(){
-  if (animTimer && S.screen !== "live") { clearTimeout(animTimer); animTimer = null; }
-  const root = document.getElementById("app");
-
-  // Setup is a standalone full-screen view with no app shell.
-  if (S.screen === "setup") { root.innerHTML = ""; _sideSig = null; root.append(renderSetup()); ensureFab(); return; }
-
-  // Build the persistent shell (hamburger + sidebar + main container) once, then
-  // reuse it. Only the main panel is swapped on every render; the sidebar is
-  // rebuilt only when sidebarSignature() changes. This stops the name list from
-  // refreshing each time a button is pressed.
-  let main = root.querySelector(":scope > .main");
-  if (!main || !root.querySelector(":scope > .hamburger")){
-    root.innerHTML = ""; _sideSig = null;
-    const ham = el(`<button class="hamburger" title="Menu">☰</button>`);
-    ham.onclick = toggleDrawer;
-    root.append(ham, renderSidebar());
-    _sideSig = sidebarSignature();
-    main = document.createElement("div"); main.className = "main";
-    root.append(main);
-  }
-
-  // Drawer scrim (mobile): add/remove in place without disturbing siblings.
-  let scrim = root.querySelector(":scope > .scrim");
-  if (S.drawerOpen && !scrim){ scrim = el(`<div class="scrim"></div>`); scrim.onclick = toggleDrawer; root.querySelector(":scope > .hamburger").after(scrim); }
-  else if (!S.drawerOpen && scrim){ scrim.remove(); }
-
-  // Sidebar: rebuild only when its inputs actually changed.
-  const sig = sidebarSignature();
-  const sb = root.querySelector(":scope > .sidebar");
-  if (!sb || sig !== _sideSig){
-    const fresh = renderSidebar();
-    if (sb) sb.replaceWith(fresh); else root.querySelector(":scope > .hamburger").after(fresh);
-    _sideSig = sig;
-  } else {
-    sb.classList.toggle("open", !!S.drawerOpen); // keep drawer state in sync
-  }
-
-  // Main panel: always refreshed (this is the part that changes per interaction).
-  main.innerHTML = "";
-  main.append(buildScreen());
-  ensureFab();
 }
 
 function openFeedbackModal(){
@@ -2244,9 +2307,9 @@ function openFeedbackModal(){
         method:'POST',
         headers:{'Content-Type':'application/json','Accept':'application/json'},
         body: JSON.stringify({
-          name: `Whitewash ${type}`,
-          email: 'noreply@whitewash.app',
-          _subject: `[Whitewash Cricket] ${type}`,
+          name: `11-0 ${type}`,
+          email: 'noreply@11-0.app',
+          _subject: `[11-0 Cricket] ${type}`,
           _captcha:'false',
           message: body
         })
@@ -2260,7 +2323,7 @@ function openFeedbackModal(){
       return;
     }
     // Fallback: open user's mail client with prefilled email to the dev
-    const mailto = `mailto:fardeenwyne11@yahoo.com?subject=${encodeURIComponent('[Whitewash Cricket] '+type)}&body=${encodeURIComponent(body)}`;
+    const mailto = `mailto:fardeenwyne11@yahoo.com?subject=${encodeURIComponent('[11-0 Cricket] '+type)}&body=${encodeURIComponent(body)}`;
     st.style.color = "var(--gold)"; st.innerHTML = `Couldn't auto-send. <a href="${mailto}" style="color:var(--green-deep);font-weight:800">Open email app to send →</a>`;
     send.disabled = false;
   };
@@ -2271,7 +2334,7 @@ function buildShareCard({title, subtitle, trophyEmoji, headline, body, footer}){
   const url = "fardeenwyne11-jpg.github.io/triple-crown-cricket";
   const card = el(`<div class="share-card" id="shareCard">
     <div class="sc-head">
-      <h1>Whitewash</h1>
+      <h1>11-0</h1>
       <div class="sub">${subtitle||'Cricket Squad Draft'}</div>
     </div>
     <div class="sc-trophy">
@@ -2309,18 +2372,18 @@ async function shareResult(opts){
     const canvas = await html2canvas(card, { backgroundColor:'#fafdf2', scale:2, useCORS:true });
     canvas.toBlob(async (blob) => {
       if (!blob) return;
-      const file = new File([blob], "whitewash-cricket.png", { type:'image/png' });
+      const file = new File([blob], "cricket-11-0.png", { type:'image/png' });
       const shareData = {
         files: [file],
-        title: "Whitewash Cricket",
-        text: opts.shareText || "I built an XI in Whitewash — can you beat it?\n\nPlay: https://fardeenwyne11-jpg.github.io/triple-crown-cricket/"
+        title: "11-0 Cricket",
+        text: opts.shareText || "I built an XI in 11-0 — can you beat it?\n\nPlay: https://fardeenwyne11-jpg.github.io/triple-crown-cricket/"
       };
       if (navigator.canShare && navigator.canShare(shareData)){
         try{ await navigator.share(shareData); } catch(e){}
       } else {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = "whitewash-cricket.png";
+        a.download = "cricket-11-0.png";
         document.body.appendChild(a); a.click(); a.remove();
       }
     }, 'image/png');
@@ -2334,7 +2397,7 @@ async function shareResult(opts){
 
 function renderSetup(){
   const wrap = el(`<div style="max-width:1100px;margin:0 auto;padding:40px 24px;width:100%"></div>`);
-  wrap.append(el(`<div class="hero"><h1>Whitewash</h1><p>Pick 11 cricketers from franchise squads. Build your dream XI. Win the Grand Slam — IPL, PSL, Big Bash, Champions League.</p></div>`));
+  wrap.append(el(`<div class="hero"><h1>11-0</h1><p>Pick 11 cricketers from franchise squads. Build your dream XI. Win the Grand Slam — IPL, PSL, Big Bash, Champions League.</p></div>`));
   const grid = el(`<div class="setup-grid"></div>`);
   const left = el(`<div class="setup-card"></div>`);
   left.append(el(`<h2>Difficulty</h2>`));
@@ -2373,7 +2436,7 @@ function renderSetup(){
   right.append(pm);
   right.append(el(`<h2>Era</h2>`));
   const era = el(`<div class="opts"></div>`);
-  [[1975,2026,"All-time"],[2000,2026,"2000s+"],[2010,2026,"2010s+"],[2020,2026,"Modern"]].forEach(([a,b,n])=>{
+  [[1975,2024,"All-time"],[2000,2024,"2000s+"],[2010,2024,"2010s+"],[2020,2024,"Modern"]].forEach(([a,b,n])=>{
     const active = S.setup.eraMin===a && S.setup.eraMax===b;
     const o = el(`<div class="opt ${active?'active':''}">${n}<small>${a}–${b}</small></div>`);
     o.onclick = () => { S.setup.eraMin=a; S.setup.eraMax=b; save(); render(); };
@@ -2387,7 +2450,7 @@ function renderSetup(){
   start.onclick = startDraft;
   startWrap.append(start);
   wrap.append(startWrap);
-  wrap.append(el(`<p class="muted" style="text-align:center;margin-top:24px;font-size:11px;line-height:1.5;max-width:560px;margin-left:auto;margin-right:auto">Whitewash is an independent project and is not affiliated with, endorsed by, or sponsored by the ICC, any national cricket board, or any player. All names are used for identification purposes only.<br/>Inspired by <a href="https://38-0.app" target="_blank">38-0</a>.</p>`));
+  wrap.append(el(`<p class="muted" style="text-align:center;margin-top:24px;font-size:11px;line-height:1.5;max-width:560px;margin-left:auto;margin-right:auto">11-0 is an independent project and is not affiliated with, endorsed by, or sponsored by the ICC, any national cricket board, or any player. All names are used for identification purposes only.<br/>Inspired by <a href="https://38-0.app" target="_blank">38-0</a>.</p>`));
   return wrap;
 }
 
@@ -2600,7 +2663,7 @@ function renderHub(){
         trophyEmoji: won.length===4 ? "🏆🏆🏆🏆" : "🏆",
         headline: won.length===4 ? "GRAND SLAM!" : `${won.length} trophies won`,
         body: won.map(k=>labels[k]).join(" · "),
-        shareText: `My XI in Whitewash Cricket — ${won.length} trophies won. Beat me?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
+        shareText: `My XI in 11-0 Cricket — ${won.length} trophies won. Beat me?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
       });
     };
   }
@@ -2622,7 +2685,7 @@ function renderHub(){
     const btnText = won ? 'Already won' : (S.lives < 0 ? 'Career ended' : 'Play');
     const c = el(`<div class="spin-box" style="padding:18px;text-align:left">
       <div style="font-size:22px"><span style="font-size:28px">${t.icon}</span> <b>${t.name.replace('ICC ','')}</b></div>
-      <div class="muted" style="font-size:12px;margin:4px 0 10px">${(t.id === "cl" ? t.rounds : ["League Season", ...t.rounds]).join(' → ')} · ${t.overs} overs</div>
+      <div class="muted" style="font-size:12px;margin:4px 0 10px">${["League Season", ...t.rounds].join(' → ')} · ${t.overs} overs</div>
       <div style="font-size:13px;margin-bottom:12px">XI rating: <b style="color:var(--gold)">${r.toFixed(1)}</b></div>
       <button class="primary" ${!canPlay?'disabled':''} style="width:100%">${btnText}</button>
     </div>`);
@@ -2678,20 +2741,32 @@ let _leagueInt = null;
 function startLeagueSim(){
   const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
   let pool = OPPONENTS.filter(o => t.leagues.includes(o.league));
-  // Every real franchise in this league participates (one canonical edition each).
-  let teams = canonicalLeagueTeams(pool);
+  let teams;
+  if (S.tour.tId === "cl"){
+    // Champions League — top 9 teams across all CL_POOL leagues (dedup, by rating)
+    const clCandidates = pool.filter(o => CL_POOL.includes(o.team));
+    const seen = {};
+    clCandidates.forEach(o => {
+      if (!seen[o.team] || seen[o.team].t20 < o.t20) seen[o.team] = o;
+    });
+    teams = Object.values(seen).sort((a,b)=>b.t20-a.t20).slice(0, 9);
+  } else {
+    // Most recent edition
+    const maxYear = Math.max(...pool.map(o=>o.year));
+    teams = pool.filter(o => o.year === maxYear);
+    if (teams.length < 4) teams = pool.filter(o => o.year >= maxYear - 1);
+    teams = teams.slice(0, 10); // cap at 10 teams
+  }
   const mod = S.setup.oppDifficulty === "easy" ? -8 : S.setup.oppDifficulty === "legend" ? +4 : 0;
   const allTeams = [
     { n:"Your XI", r: avg(squadPicks().map(s=>ratingOf(s.player))), isMe:true },
     ...teams.map(o => ({ n:o.n, r: Math.max(60, Math.min(98, o.t20 + mod)), isMe:false }))
   ];
-  // Round-robin. Small leagues play home/away (double) for ~10 games each; larger
-  // leagues (e.g. IPL's 10 franchises) play a single round-robin so the season
-  // stays a manageable length while still featuring every team.
-  const passes = allTeams.length <= 7 ? 2 : 1;
+  // Build double round-robin (each pair plays twice for ~10 games per team)
   const fixtures = [];
   let gw = 0;
-  for (let pass=0; pass<passes; pass++){
+  // Two passes for home/away
+  for (let pass=0; pass<2; pass++){
     const teamsR = pass===0 ? allTeams.slice() : allTeams.slice().reverse();
     for (let i=0; i<teamsR.length; i++){
       for (let j=i+1; j<teamsR.length; j++){
@@ -2721,29 +2796,8 @@ function startLeagueAnim(){
   if (_leagueInt) clearTimeout(_leagueInt);
   scheduleNextLeagueMatch();
 }
-function scheduleNextLeagueMatch(){
+function simAndApplyMatch(f, silent){
   const lg = S.tour.league;
-  if (!lg || S.screen !== "leaguesim"){ if (_leagueInt) clearTimeout(_leagueInt); _leagueInt=null; return; }
-  if (lg.fixtureIdx >= lg.fixtures.length){
-    if (_leagueInt) clearTimeout(_leagueInt); _leagueInt = null;
-    finishLeagueSim();
-    return;
-  }
-  // Look ahead: is the NEXT match involving the user?
-  const nextF = lg.fixtures[lg.fixtureIdx];
-  const isUserMatch = nextF.home.isMe || nextF.away.isMe;
-  // Build suspense — slower delay for the user's own matches; hidden AI-vs-AI
-  // matches resolve quickly since nothing is shown for them.
-  const delay = isUserMatch ? 1400 : 300;
-  _leagueInt = setTimeout(()=>{
-    playLeagueMatch();
-    scheduleNextLeagueMatch();
-  }, delay);
-}
-function playLeagueMatch(){
-  const lg = S.tour.league;
-  if (!lg || lg.fixtureIdx >= lg.fixtures.length) return;
-  const f = lg.fixtures[lg.fixtureIdx];
   const r = simSingleLeagueMatch(f.home, f.away);
   f.result = r;
   const hs = lg.standings.find(s => s.team.n === f.home.n);
@@ -2753,54 +2807,73 @@ function playLeagueMatch(){
   as.F += r.awayScore; as.A += r.homeScore;
   if (r.winner === "home"){ hs.W++; hs.pts+=2; as.L++; }
   else { as.W++; as.pts+=2; hs.L++; }
-  if (f.home.isMe || f.away.isMe){
-    if ((f.home.isMe && r.winner==="home") || (f.away.isMe && r.winner==="away")) sfx("six");
-    else sfx("wicket");
-  }
   lg.fixtureIdx++;
   lg.standings.sort((a,b)=>{
     if (b.pts !== a.pts) return b.pts - a.pts;
     return ((b.F-b.A)/Math.max(1,b.P)) - ((a.F-a.A)/Math.max(1,a.P));
   });
-  // Only surface the user's own fixtures in the results feed; AI-vs-AI matches
-  // are still simulated (they shape the standings) but stay hidden.
-  if (f.home.isMe || f.away.isMe) appendLeagueResult(f, r);
+  if (!silent){
+    appendLeagueResult(f, r);
+    if (f.home.isMe || f.away.isMe){
+      if ((f.home.isMe && r.winner==="home") || (f.away.isMe && r.winner==="away")) sfx("six");
+      else sfx("wicket");
+    }
+  }
+  return r;
+}
+function scheduleNextLeagueMatch(){
+  const lg = S.tour.league;
+  if (!lg || S.screen !== "leaguesim"){ if (_leagueInt) clearTimeout(_leagueInt); _leagueInt=null; return; }
+  if (lg.fixtureIdx >= lg.fixtures.length){
+    if (_leagueInt) clearTimeout(_leagueInt); _leagueInt = null;
+    updateStandingsTable(); updateLeagueProgress();
+    finishLeagueSim();
+    return;
+  }
+  const f = lg.fixtures[lg.fixtureIdx];
+  const isUserMatch = f.home.isMe || f.away.isMe;
+  // User matches: 1500ms suspense + show in feed
+  // AI matches: 90ms delay each (feel of a season ticking through) + silent (no feed entry)
+  const delay = isUserMatch ? 1500 : 90;
+  _leagueInt = setTimeout(()=>{
+    if (!S.tour || !S.tour.league || S.screen !== "leaguesim") return;
+    simAndApplyMatch(S.tour.league.fixtures[S.tour.league.fixtureIdx], !isUserMatch);
+    updateStandingsTable();
+    updateLeagueProgress();
+    scheduleNextLeagueMatch();
+  }, delay);
+}
+// Backward compat alias if needed
+function playLeagueMatch(){
+  const lg = S.tour.league;
+  if (!lg || lg.fixtureIdx >= lg.fixtures.length) return;
+  simAndApplyMatch(lg.fixtures[lg.fixtureIdx], false);
   updateStandingsTable();
   updateLeagueProgress();
 }
 function finishLeagueSim(){
   const lg = S.tour.league;
-  if (!lg) return;
   lg.done = true;
   const myPos = lg.standings.findIndex(s => s.team.isMe) + 1;
   lg.myFinish = myPos;
   S.tour.leagueFinish = myPos;
-  // Pause so user sees final table, then enter the playoffs once.
-  setTimeout(enterPlayoffs, 2400);
-}
-// Transition from the finished league table into the playoff bracket. Guarded so
-// it can only run once per tournament — both the auto-advance timer and the
-// "Continue to playoffs" button funnel through here without double-seeding the
-// bracket or replaying a round.
-function enterPlayoffs(){
-  if (!S.tour || !S.tour.league || S.tour._inPlayoffs) return;
-  if (S.screen !== "leaguesim") return;
-  S.tour._inPlayoffs = true;
-  const lg = S.tour.league;
-  const myPos = lg.myFinish;
-  if (myPos > 4){
-    // Eliminated in league — go straight to summary
-    S.tour.summary = buildTournamentSummary(false);
-    S.lives--;
-    S.screen = "summary";
-    save(); render(); return;
-  }
-  // Build playoff opponents = the other top-3 finishers by standings
-  const top4 = lg.standings.slice(0,4).filter(s=>!s.team.isMe).map(s=>({ n:s.team.n, r:s.team.r }));
-  S.tour.opps = top4;
-  S.tour.roundIdx = 0;
-  S.screen = "watch-choice";
-  save(); render();
+  // Pause so user sees final table
+  setTimeout(()=>{
+    if (S.screen !== "leaguesim" || !S.tour) return;
+    if (myPos > 4){
+      // Eliminated in league — go straight to summary
+      S.tour.summary = buildTournamentSummary(false);
+      S.lives--;
+      S.screen = "summary";
+      save(); render(); return;
+    }
+    // Build playoff opponents = other top 3 by standings
+    const top4 = lg.standings.slice(0,4).filter(s=>!s.team.isMe).map(s=>({ n:s.team.n, r:s.team.r }));
+    S.tour.opps = top4;
+    S.tour.roundIdx = 0;
+    S.screen = "watch-choice";
+    save(); render();
+  }, 2400);
 }
 function stripYear(name){ return name.replace(/\s+\d{4}(-\d{2})?$/,'').replace(/\s+20\d{2}$/,''); }
 function appendLeagueResult(f, r){
@@ -2855,14 +2928,14 @@ function renderLeagueSim(){
   const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
   const wrap = el(`<div></div>`);
   wrap.append(el(`<h1>${t.icon} ${t.name} — Season Simulation</h1>`));
-  wrap.append(el(`<p class="muted">Watch the season unfold. Top 4 advance to the playoffs.</p>`));
+  wrap.append(el(`<p class="muted">Your XI's matches play out below. Other matches simulate silently. Top 4 advance to the playoffs.</p>`));
   wrap.append(el(`<div class="league-header">
     <div class="gw-display" id="lgGwLbl">GAME WEEK 1</div>
     <div class="league-progress"><i id="lgProgress" style="width:0%"></i></div>
   </div>`));
   const grid = el(`<div class="league-grid"></div>`);
   const results = el(`<div class="league-results">
-    <h3>Your Matches</h3>
+    <h3>Your XI · Match Log</h3>
     <div class="lg-feed" id="lgFeed"></div>
   </div>`);
   const table = el(`<div class="league-table"><h3>Standings</h3><div id="lgStandings">${renderStandingsHTML()}</div></div>`);
@@ -2871,7 +2944,7 @@ function renderLeagueSim(){
   const lg = S.tour.league;
   if (lg && lg.done){
     const row = el(`<div class="row" style="justify-content:center;margin-top:14px"><button class="primary" id="contPlayoffs">Continue to playoffs →</button></div>`);
-    row.querySelector('#contPlayoffs').onclick = () => enterPlayoffs();
+    row.querySelector('#contPlayoffs').onclick = () => finishLeagueSim();
     wrap.append(row);
   }
   // Skip button
@@ -2952,6 +3025,39 @@ function renderSummary(){
   const summary = S.tour.summary;
   const wrap = el(`<div></div>`);
 
+  // Trophy celebration on win
+  if (summary.won){
+    setTimeout(()=>{
+      sfx("win");
+      // confetti
+      const c = document.createElement("div"); c.className = "confetti";
+      const colors = ['#f5c451','#3ddc97','#5aa9ff','#ff5d73','#a578f0'];
+      for (let i=0;i<100;i++){
+        const p = document.createElement("i");
+        p.style.left = Math.random()*100+'%';
+        p.style.background = colors[Math.floor(Math.random()*colors.length)];
+        p.style.animationDuration = (2+Math.random()*3)+'s';
+        p.style.animationDelay = (Math.random()*1.5)+'s';
+        c.appendChild(p);
+      }
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(), 6000);
+    }, 200);
+    wrap.append(el(`<div style="text-align:center;margin-bottom:18px;animation:popIn .6s cubic-bezier(.18,1,.32,1)">
+      <div style="font-size:96px;line-height:1;animation:trophyBob 2s ease-in-out infinite">🏆</div>
+      <h1 style="font-size:42px;margin-top:6px;letter-spacing:2px;background:linear-gradient(180deg,#f5c451,#d4a435);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">CHAMPIONS!</h1>
+      <p style="color:var(--muted);font-size:14px;margin-top:4px">${t.name} winners — bask in the glory.</p>
+    </div>`));
+  }
+
+  // Difficulty info chips
+  const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
+  wrap.append(el(`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+    <span class="pill">Difficulty: <b style="color:var(--ink)">${cap(S.setup.difficulty)}</b></span>
+    <span class="pill">Opp strength: <b style="color:var(--ink)">${cap(S.setup.oppDifficulty)}</b></span>
+    <span class="pill">Draft: <b style="color:var(--ink)">${S.setup.draftMode==='auction'?'Auction':'Spin'}</b></span>
+  </div>`));
+
   wrap.append(el(`<div class="verdict-row">
     <div class="verdict-card"><div class="ttl">Finished</div><div class="val">${ordinal(summary.finish)}</div></div>
     <div class="verdict-card dim"><div class="ttl">Projected</div><div class="val">${ordinal(summary.projected)}</div></div>
@@ -2994,7 +3100,7 @@ function renderSummary(){
       trophyEmoji: summary.won ? "🏆" : (summary.finish<=2?"🥈":"🏏"),
       headline: summary.title,
       body: `${summary.wins}W ${summary.draws}D ${summary.losses}L · ${summary.points} pts`,
-      shareText: `${summary.title} in Whitewash Cricket ${t.name}. Beat me?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
+      shareText: `${summary.title} in 11-0 Cricket ${t.name}. Beat me?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
     });
   };
   const cont = el(`<button class="primary" style="flex:1">Back to hub →</button>`);
@@ -3125,12 +3231,13 @@ function renderOrder(){
   auto.onclick = () => { S.tour.battingOrder = orderForBatting(squadPicks().map(s=>s.player)).map(p=>p.n); render(); };
   const go = el(`<button class="primary">Confirm XI →</button>`);
   go.onclick = () => {
-    // Champions League stays knockout-only. League tournaments run the full season
-    // sim ONCE; afterwards (during the playoff rounds) the league is already done,
-    // so go straight to the next knockout match instead of re-running the season.
-    if (S.tour.tId === "cl"){ S.screen = "watch-choice"; }
-    else if (S.tour.league && S.tour.league.done){ S.screen = "watch-choice"; }
-    else { startLeagueSim(); return; }
+    // All tournaments now run league phase first; subsequent rounds skip straight to watch-choice
+    if (S.tour.league && S.tour.league.done){
+      S.screen = "watch-choice";
+    } else {
+      startLeagueSim();
+      return;
+    }
     save(); render();
   };
   row.append(cancel, auto, go);
@@ -3155,8 +3262,8 @@ function renderAwards(){
   ];
   cards.forEach(c => {
     if (!c.a) return;
-    const base = findPlayerObj(c.a.n) || {};
-    const p = { ...base, team: base.from?.team || c.a.team }; // clone — don't mutate shared squad data
+    const p = findPlayerObj(c.a.n);
+    p.team = p.from?.team || c.a.team;
     const tags = (p.roles||[]).map(r=>`<span class="tag t-${r}">${r}</span>`).join('');
     const card = el(`<div class="award ${c.cls}">
       <div class="lbl">${c.lbl}</div>
@@ -3182,7 +3289,7 @@ function renderAwards(){
       trophyEmoji: m.won ? "🏆" : "🏏",
       headline: m.won ? `WIN vs ${opp.n}` : `Tough loss vs ${opp.n}`,
       body: motm ? `Player of the Match: <b>${motm.n}</b> · ${awardFig(motm,'motm')}` : "",
-      shareText: `${motm?motm.n+' was Player of the Match':'Match result'} in Whitewash Cricket — can you do better?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
+      shareText: `${motm?motm.n+' was Player of the Match':'Match result'} in 11-0 Cricket — can you do better?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
     });
   };
   const won = m.won;
@@ -3230,9 +3337,6 @@ function renderWatchChoice(){
 }
 
 function renderLive(){
-  // Defensive: a reload can land here with no live match in state (tour is
-  // nulled while a match is live). Fall back to the hub instead of crashing.
-  if (!S.tour || !S.tour.currentMatch){ S.screen = "hub"; return renderHub(); }
   const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
   const opp = S.tour.opps[S.tour.roundIdx];
   const m = S.tour.currentMatch;
@@ -3326,8 +3430,7 @@ function renderScorecard(){
   const wrap = el(`<div></div>`);
   const winner = m.won ? "You" : opp.n;
   const margin = computeMargin(m);
-  const resultPhrase = m.tie ? `Tied · ${winner} won the Super Over` : `${winner} won by ${margin}`;
-  wrap.append(el(`<h1>${m.won?'🏆 WIN':'😞 LOSS'} <span class="muted" style="font-weight:400;font-size:18px">· ${resultPhrase}</span></h1>`));
+  wrap.append(el(`<h1>${m.won?'🏆 WIN':'😞 LOSS'} <span class="muted" style="font-weight:400;font-size:18px">· ${winner} won by ${margin}</span></h1>`));
   wrap.append(el(`<p class="muted">${t.rounds[S.tour.roundIdx]} · ${t.name.replace('ICC ','')} · vs ${opp.n}</p>`));
   m.innings.forEach((inn,i)=>{
     wrap.append(el(`<h2 style="margin-top:20px">${inn.batTeam} — ${inn.runs}/${inn.wickets} (${inn.overs} ov)</h2>`));
@@ -3363,7 +3466,7 @@ function renderScorecard(){
       trophyEmoji: m.won ? "🏆" : "🏏",
       headline: m.won ? `WIN by ${margin}` : `Lost by ${margin}`,
       body: `${m.innings[0].batTeam} ${m.innings[0].runs}/${m.innings[0].wickets}<br/>${m.innings[1].batTeam} ${m.innings[1].runs}/${m.innings[1].wickets}`,
-      shareText: `${m.won?'Won':'Lost'} ${t.rounds[S.tour.roundIdx]} vs ${opp.n} by ${margin}. Try to beat my XI in Whitewash!\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
+      shareText: `${m.won?'Won':'Lost'} ${t.rounds[S.tour.roundIdx]} vs ${opp.n} by ${margin}. Try to beat my XI in 11-0!\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
     });
   };
   const cont = el(`<button class="primary">View awards →</button>`);
@@ -3374,7 +3477,6 @@ function renderScorecard(){
 }
 
 function computeMargin(m){
-  if (m.tie) return "Super Over";
   if (m.format === "wtc"){
     const lastChase = m.innings[3];
     if (lastChase.runs >= m.target) return `${10 - lastChase.wickets} wickets`;
@@ -3432,7 +3534,7 @@ function renderWin(){
       trophyEmoji:"🏆🏆🏆🏆",
       headline:"I won the GRAND SLAM!",
       body:"IPL · PSL · Big Bash · Champions League",
-      shareText:"🏆🏆🏆🏆 I just won the Grand Slam in Whitewash Cricket — IPL, PSL, BBL, Champions League. Think you can match it?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/"
+      shareText:"🏆🏆🏆🏆 I just won the Grand Slam in 11-0 Cricket — IPL, PSL, BBL, Champions League. Think you can match it?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/"
     });
   };
   const a = el(`<button class="primary" style="padding:14px 28px;font-size:15px">Start a new career</button>`);
@@ -3448,7 +3550,7 @@ function showSplash(){
   const sp = document.createElement('div');
   sp.id = "splash";
   sp.innerHTML = `<div class="splash-inner">
-    <div class="splash-logo">Whitewash</div>
+    <div class="splash-logo">11–0</div>
     <div class="splash-tagline">Cricket Squad Draft</div>
     <div class="splash-ball"></div>
     <div class="splash-bat">🏏</div>
