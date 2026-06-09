@@ -2279,7 +2279,7 @@ function openFeedbackModal(){
 
 /* =========== SHARE =========== */
 function buildShareCard({title, subtitle, trophyEmoji, headline, body, footer}){
-  const url = "fardeenwyne11-jpg.github.io/triple-crown-cricket";
+  const url = "whitewashcricket.github.io";
   const card = el(`<div class="share-card" id="shareCard">
     <div class="sc-head">
       <h1>Whitewash</h1>
@@ -2324,7 +2324,7 @@ async function shareResult(opts){
       const shareData = {
         files: [file],
         title: "Whitewash Cricket",
-        text: opts.shareText || "I built an XI in Whitewash — can you beat it?\n\nPlay: https://fardeenwyne11-jpg.github.io/triple-crown-cricket/"
+        text: opts.shareText || "I built an XI in Whitewash — can you beat it?\n\nPlay: https://whitewashcricket.github.io/"
       };
       if (navigator.canShare && navigator.canShare(shareData)){
         try{ await navigator.share(shareData); } catch(e){}
@@ -2611,7 +2611,7 @@ function renderHub(){
         trophyEmoji: won.length===4 ? "🏆🏆🏆🏆" : "🏆",
         headline: won.length===4 ? "GRAND SLAM!" : `${won.length} trophies won`,
         body: won.map(k=>labels[k]).join(" · "),
-        shareText: `My XI in Whitewash Cricket — ${won.length} trophies won. Beat me?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
+        shareText: `My XI in Whitewash Cricket — ${won.length} trophies won. Beat me?\nhttps://whitewashcricket.github.io/`
       });
     };
   }
@@ -3012,7 +3012,7 @@ function renderSummary(){
       trophyEmoji: summary.won ? "🏆" : (summary.finish<=2?"🥈":"🏏"),
       headline: summary.title,
       body: `${summary.wins}W ${summary.draws}D ${summary.losses}L · ${summary.points} pts`,
-      shareText: `${summary.title} in Whitewash Cricket ${t.name}. Beat me?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
+      shareText: `${summary.title} in Whitewash Cricket ${t.name}. Beat me?\nhttps://whitewashcricket.github.io/`
     });
   };
   const cont = el(`<button class="primary" style="flex:1">Back to hub →</button>`);
@@ -3198,7 +3198,7 @@ function renderAwards(){
       trophyEmoji: m.won ? "🏆" : "🏏",
       headline: m.won ? `WIN vs ${opp.n}` : `Tough loss vs ${opp.n}`,
       body: motm ? `Player of the Match: <b>${motm.n}</b> · ${awardFig(motm,'motm')}` : "",
-      shareText: `${motm?motm.n+' was Player of the Match':'Match result'} in Whitewash Cricket — can you do better?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
+      shareText: `${motm?motm.n+' was Player of the Match':'Match result'} in Whitewash Cricket — can you do better?\nhttps://whitewashcricket.github.io/`
     });
   };
   const won = m.won;
@@ -3379,7 +3379,7 @@ function renderScorecard(){
       trophyEmoji: m.won ? "🏆" : "🏏",
       headline: m.won ? `WIN by ${margin}` : `Lost by ${margin}`,
       body: `${m.innings[0].batTeam} ${m.innings[0].runs}/${m.innings[0].wickets}<br/>${m.innings[1].batTeam} ${m.innings[1].runs}/${m.innings[1].wickets}`,
-      shareText: `${m.won?'Won':'Lost'} ${t.rounds[S.tour.roundIdx]} vs ${opp.n} by ${margin}. Try to beat my XI in Whitewash!\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/`
+      shareText: `${m.won?'Won':'Lost'} ${t.rounds[S.tour.roundIdx]} vs ${opp.n} by ${margin}. Try to beat my XI in Whitewash!\nhttps://whitewashcricket.github.io/`
     });
   };
   const cont = el(`<button class="primary">View awards →</button>`);
@@ -3523,7 +3523,7 @@ function renderWin(){
       trophyEmoji: undefeated ? "🐐🏆🏆🏆🏆" : "🏆🏆🏆🏆",
       headline: undefeated ? "UNDEFEATED GRAND SLAM!" : "I won the GRAND SLAM!",
       body: undefeated ? "Won every tournament without losing one." : "IPL · PSL · Big Bash · Champions League",
-      shareText: (undefeated?"🐐 UNDEFEATED ":"🏆🏆🏆🏆 ") + "I just won the Grand Slam in Whitewash Cricket. Think you can match it?\nhttps://fardeenwyne11-jpg.github.io/triple-crown-cricket/"
+      shareText: (undefeated?"🐐 UNDEFEATED ":"🏆🏆🏆🏆 ") + "I just won the Grand Slam in Whitewash Cricket. Think you can match it?\nhttps://whitewashcricket.github.io/"
     });
   };
   const a = el(`<button class="primary" style="padding:14px 28px;font-size:15px">${undefeated?'Defend the legacy →':'Go undefeated next time →'}</button>`);
