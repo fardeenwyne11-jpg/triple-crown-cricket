@@ -538,23 +538,33 @@
   .share-btn:hover{transform:translateY(-1px);box-shadow:0 3px 0 var(--green-deep)}
 
   /* Share card (hidden, used for export) */
-  .share-card{position:fixed;left:-10000px;top:0;width:600px;background:#fafdf2;padding:32px;border:8px solid var(--green);border-radius:24px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;color:var(--ink)}
-  .share-card .sc-head{text-align:center;margin-bottom:18px;padding-bottom:14px;border-bottom:3px dashed var(--green-light)}
-  .share-card .sc-head h1{font-size:48px;letter-spacing:3px;color:var(--green-deep);margin:0;font-weight:900}
-  .share-card .sc-head .sub{font-size:14px;color:var(--muted);margin-top:6px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
-  .share-card .sc-trophy{text-align:center;padding:18px;background:linear-gradient(160deg,#3a4520,#2a3818);border:3px solid var(--gold-bright);border-radius:16px;margin-bottom:18px}
-  .share-card .sc-trophy .big{font-size:80px;line-height:1}
-  .share-card .sc-trophy h2{font-size:24px;color:var(--gold-deep);margin:6px 0;font-weight:900;text-transform:none;letter-spacing:0}
-  .share-card .sc-trophy .res{font-size:14px;color:var(--ink);font-weight:700}
-  .share-card .sc-xi{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
-  .share-card .sc-xi .row{display:flex;align-items:center;gap:8px;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line-soft)}
-  .share-card .sc-xi .row:last-child{border-bottom:0}
-  .share-card .sc-xi .num{width:22px;color:var(--green-deep);font-weight:900;text-align:center}
-  .share-card .sc-xi .nm{flex:1;font-weight:800}
-  .share-card .sc-xi .src{color:var(--muted);font-size:11px;font-weight:600}
-  .share-card .sc-xi .rt{color:var(--gold-deep);font-weight:900}
-  .share-card .sc-footer{text-align:center;margin-top:14px;padding-top:12px;border-top:3px dashed var(--green-light);font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase}
-  .share-card .sc-footer b{color:var(--red);letter-spacing:.5px;text-transform:none;font-size:13px;display:block;margin-top:4px}
+  .share-card{position:fixed;left:-10000px;top:0;width:600px;background:radial-gradient(120% 80% at 50% 0%,#0f3320 0%,#0a2418 55%,#061710 100%);border-radius:28px;overflow:hidden;border:1px solid #1c4a30;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;color:#eaf3e8}
+  .share-card .pc-top{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .share-card .pc-wordmark{font-size:19px;font-weight:900;letter-spacing:3px;color:#fff;display:flex;align-items:center;gap:8px}
+  .share-card .pc-wordmark .dot{width:9px;height:9px;border-radius:50%;background:#f5c451;box-shadow:0 0 12px #f5c451}
+  .share-card .pc-url{font-size:11px;font-weight:700;letter-spacing:1px;color:#8fce9c;text-transform:uppercase}
+  .share-card .pc-hero{text-align:center;padding:22px 26px 18px}
+  .share-card .pc-badge{display:inline-block;font-size:12px;font-weight:900;letter-spacing:3px;color:#06170f;background:linear-gradient(180deg,#ffd76b,#e3a92a);padding:7px 18px;border-radius:999px;text-transform:uppercase}
+  .share-card .pc-trophies{font-size:44px;line-height:1;margin:14px 0 6px;letter-spacing:4px}
+  .share-card .pc-team{font-size:38px;font-weight:900;letter-spacing:.5px;color:#fff;line-height:1.05}
+  .share-card .pc-stats{display:flex;justify-content:center;margin-top:14px}
+  .share-card .pc-stat{padding:0 20px;text-align:center;border-right:1px solid rgba(255,255,255,.12)}
+  .share-card .pc-stat:last-child{border-right:0}
+  .share-card .pc-stat .v{font-size:24px;font-weight:900;color:#ffd76b}
+  .share-card .pc-stat .l{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#7fa98c;text-transform:uppercase;margin-top:2px}
+  .share-card .pc-caption{font-size:13px;color:#bcd6c2;font-weight:600;margin-top:14px;line-height:1.5}
+  .share-card .pc-xi{margin:2px 22px 0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden}
+  .share-card .pc-xi-h{font-size:11px;font-weight:900;letter-spacing:2px;color:#7fa98c;text-transform:uppercase;padding:11px 18px 7px}
+  .share-card .pc-row{display:flex;align-items:center;gap:11px;padding:7px 18px;font-size:15px;border-top:1px solid rgba(255,255,255,.05)}
+  .share-card .pc-row .n{width:20px;color:#6f9a7d;font-weight:900;font-size:13px;text-align:center}
+  .share-card .pc-row .fl{font-size:17px}
+  .share-card .pc-row .nm{flex:1;font-weight:700;color:#f3f9f1}
+  .share-card .pc-row .yr{font-size:12px;color:#7fa98c;font-weight:700}
+  .share-card .pc-row .rt{font-weight:900;color:#fff;width:34px;text-align:right}
+  .share-card .pc-row .rt.hi{color:#ffd76b}
+  .share-card .pc-cta{display:flex;align-items:center;justify-content:space-between;margin:16px 22px 20px;padding:15px 22px;background:linear-gradient(180deg,#2f9d4f,#1d6e32);border-radius:16px}
+  .share-card .pc-cta .t{font-size:13px;font-weight:700;color:#d8f5dd}
+  .share-card .pc-cta .u{font-size:18px;font-weight:900;letter-spacing:.5px;color:#fff}
 
   /* Feedback modal */
   .fb-form{display:flex;flex-direction:column;gap:10px;margin-top:10px}
@@ -2774,36 +2784,42 @@ function openFeedbackModal(){
 }
 
 /* =========== SHARE =========== */
-function buildShareCard({title, subtitle, trophyEmoji, headline, body, footer}){
+function shareOVR(){ try{ return Math.round((squadStrengths().overall)||0); }catch(e){ return 0; } }
+function buildShareCard({subtitle, badge, hero, stats, caption}){
   const url = "whitewash.app";
+  const teamName = (typeof myTeamName==='function' ? myTeamName() : null) || "My XI";
+  const statHtml = (stats||[]).map(s=>`<div class="pc-stat"><div class="v">${s.v}</div><div class="l">${s.l}</div></div>`).join('');
   const card = el(`<div class="share-card" id="shareCard">
-    <div class="sc-head">
-      <h1>Whitewash</h1>
-      <div class="sub">${subtitle||'Cricket Squad Draft'}</div>
+    <div class="pc-top">
+      <div class="pc-wordmark"><span class="dot"></span>WHITEWASH</div>
+      <div class="pc-url">${subtitle||'Cricket Squad Draft'}</div>
     </div>
-    <div class="sc-trophy">
-      <div class="big">${trophyEmoji||'🏏'}</div>
-      <h2>${headline||title||''}</h2>
-      ${body ? `<div class="res">${body}</div>` : ''}
+    <div class="pc-hero">
+      ${badge ? `<div class="pc-badge">${badge}</div>` : ''}
+      ${hero ? `<div class="pc-trophies">${hero}</div>` : ''}
+      <div class="pc-team">${teamName}</div>
+      ${statHtml ? `<div class="pc-stats">${statHtml}</div>` : ''}
+      ${caption ? `<div class="pc-caption">${caption}</div>` : ''}
     </div>
-    <div class="sc-xi"></div>
-    <div class="sc-footer">
-      Can you beat my run?
-      <b>▶ play at ${url}</b>
+    <div class="pc-xi"><div class="pc-xi-h">Starting XI</div><div class="pc-xi-list"></div></div>
+    <div class="pc-cta">
+      <div class="t">Think you can beat it?</div>
+      <div class="u">▶ ${url}</div>
     </div>
   </div>`);
   // XI list
-  const xi = card.querySelector('.sc-xi');
+  const list = card.querySelector('.pc-xi-list');
   S.squad.forEach((s,i) => {
     if (!s.player) return;
     const r = ratingOf(s.player);
     const flag = playerFlag(s.player) || "🏏";
-    xi.append(el(`<div class="row">
-      <div class="num">${i+1}</div>
-      <div style="font-size:14px">${flag}</div>
+    const yr = String(s.player.from.year).slice(-2);
+    list.append(el(`<div class="pc-row">
+      <div class="n">${i+1}</div>
+      <div class="fl">${flag}</div>
       <div class="nm">${s.player.n}</div>
-      <div class="src">${s.player.from.year}</div>
-      <div class="rt">${r}</div>
+      <div class="yr">'${yr}</div>
+      <div class="rt${r>=90?' hi':''}">${r}</div>
     </div>`));
   });
   return card;
@@ -2813,7 +2829,7 @@ async function shareResult(opts){
   const card = buildShareCard(opts);
   document.body.appendChild(card);
   try{
-    const canvas = await html2canvas(card, { backgroundColor:'#fafdf2', scale:2, useCORS:true });
+    const canvas = await html2canvas(card, { backgroundColor:null, scale:2, useCORS:true });
     canvas.toBlob(async (blob) => {
       if (!blob) return;
       const file = new File([blob], "whitewash-cricket.png", { type:'image/png' });
@@ -3146,11 +3162,10 @@ function renderHub(){
     cabinetRow.querySelector('#shareCab').onclick = () => {
       const labels = { ipl:"IPL", psl:"PSL", bbl:"BBL", cl:"Champions League" };
       shareResult({
-        title:"My XI",
-        subtitle: won.length===4 ? "GRAND SLAM WINNER" : `${won.length} trophies won`,
-        trophyEmoji: won.length===4 ? "🏆🏆🏆🏆" : "🏆",
-        headline: won.length===4 ? "GRAND SLAM!" : `${won.length} trophies won`,
-        body: won.map(k=>labels[k]).join(" · "),
+        badge: won.length===4 ? "🏆 Grand Slam Winner" : `🏆 ${won.length} ${won.length===1?'Trophy':'Trophies'}`,
+        hero: "🏆".repeat(Math.max(1, won.length)),
+        stats: [{v: shareOVR(), l:'OVR'}, {v:`${won.length}/4`, l:'Trophies'}],
+        caption: won.map(k=>labels[k]).join(" · "),
         shareText: `My XI in Whitewash Cricket — ${won.length} trophies won. Beat me?\nhttps://whitewash.app/`
       });
     };
@@ -3684,10 +3699,11 @@ function renderSummary(){
   const share = el(`<button class="share-btn">📸 Share season</button>`);
   share.onclick = () => {
     shareResult({
-      title:t.name, subtitle: summary.won ? "CHAMPIONS" : `Finished ${ordinal(summary.finish)}`,
-      trophyEmoji: summary.won ? "🏆" : (summary.finish<=2?"🥈":"🏏"),
-      headline: summary.title,
-      body: `${summary.wins}W ${summary.draws}D ${summary.losses}L · ${summary.points} pts`,
+      subtitle: t.name.replace('ICC ',''),
+      badge: summary.won ? `🏆 ${t.name.replace('ICC ','')} Champions` : `Finished ${ordinal(summary.finish)}`,
+      hero: summary.won ? "🏆" : (summary.finish<=2?"🥈":"🏏"),
+      stats: [{v: shareOVR(), l:'OVR'}, {v:`${summary.wins}–${summary.losses}`, l:'Record'}, {v:`${trophyCount()}/4`, l:'Trophies'}],
+      caption: `${summary.wins}W · ${summary.draws}D · ${summary.losses}L · ${summary.points} pts`,
       shareText: `${summary.title} in Whitewash Cricket ${t.name}. Beat me?\nhttps://whitewash.app/`
     });
   };
@@ -4009,11 +4025,11 @@ function renderScorecard(){
     if (aw.bestBat && aw.bestBat.runs>0) awLines.push(`🏏 Top batter: ${aw.bestBat.n} ${aw.bestBat.runs}(${aw.bestBat.balls})`);
     if (aw.bestBowl && aw.bestBowl.wickets>0) awLines.push(`🎯 Top bowler: ${aw.bestBowl.n} ${aw.bestBowl.wickets}/${aw.bestBowl.runsConceded}`);
     shareResult({
-      title:"Match Result",
-      subtitle:`${t.rounds[S.tour.roundIdx]} vs ${opp.n}`,
-      trophyEmoji: m.won ? "🏆" : "🏏",
-      headline: m.won ? `WIN by ${margin}` : `Lost by ${margin}`,
-      body: `${teamLabel(m.innings[0].batTeam)} ${m.innings[0].runs}/${m.innings[0].wickets}<br/>${teamLabel(m.innings[1].batTeam)} ${m.innings[1].runs}/${m.innings[1].wickets}${awLines.length?'<br/><br/>'+awLines.join('<br/>'):''}`,
+      subtitle: t.name.replace('ICC ',''),
+      badge: m.won ? `🏆 Won by ${margin}` : `Lost by ${margin}`,
+      hero: m.won ? "🏆" : "🏏",
+      stats: [{v: shareOVR(), l:'Squad OVR'}],
+      caption: `${t.rounds[S.tour.roundIdx]} vs ${opp.n}<br/>${teamLabel(m.innings[0].batTeam)} ${m.innings[0].runs}/${m.innings[0].wickets} · ${teamLabel(m.innings[1].batTeam)} ${m.innings[1].runs}/${m.innings[1].wickets}${awLines.length?'<br/>'+awLines.join(' · '):''}`,
       shareText: `${m.won?'Won':'Lost'} ${t.rounds[S.tour.roundIdx]} vs ${opp.n} by ${margin}.${aw.motm?` 🏅 ${aw.motm.n} POTM.`:''} Try to beat my XI in Whitewash!\nhttps://whitewash.app/`
     });
   };
@@ -4128,11 +4144,11 @@ function renderWin(){
   const share = el(`<button class="share-btn" style="padding:14px 24px;font-size:15px">📸 Share ${invincible?'Whitewash':'Grand Slam'}</button>`);
   share.onclick = () => {
     shareResult({
-      title: invincible ? "WHITEWASH" : "GRAND SLAM",
-      subtitle: invincible ? "Zero matches lost" : `${run.losses} loss${run.losses===1?'':'es'} on the way`,
-      trophyEmoji: invincible ? "🛡🏆🏆🏆🏆" : "🏆🏆🏆🏆",
-      headline: invincible ? "WHITEWASH!" : "I won the GRAND SLAM!",
-      body: invincible ? "All four trophies, not a single match lost." : "IPL · PSL · Big Bash · Champions League",
+      subtitle: invincible ? "The Whitewash" : "Grand Slam",
+      badge: invincible ? "🛡 Whitewash" : "🏆 Grand Slam",
+      hero: "🏆🏆🏆🏆",
+      stats: [{v: shareOVR(), l:'OVR'}, {v:`${run.wins}–${run.losses}`, l:'Record'}, {v:'4/4', l:'Trophies'}],
+      caption: invincible ? "Every match won — not a single defeat." : "IPL · PSL · Big Bash · Champions League",
       shareText: (invincible?"🛡 WHITEWASH — all four trophies, zero losses. ":"🏆🏆🏆🏆 I won the Grand Slam in Whitewash Cricket. ") + "Think you can match it?\nhttps://whitewash.app/"
     });
   };
