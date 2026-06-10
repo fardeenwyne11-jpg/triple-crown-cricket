@@ -488,6 +488,9 @@
   .stat-card .stats{display:flex;gap:12px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
   .stat-card .stats span{color:var(--muted);font-size:11px;font-weight:600}
   .stat-card .stats b{color:var(--ink);font-weight:800}
+  .stat-card .stats .lbl{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:1px 6px;border-radius:5px;align-self:center}
+  .stat-card .stats .lbl.bat{background:rgba(90,153,255,.18);color:var(--blue)}
+  .stat-card .stats .lbl.bowl{background:rgba(61,220,151,.18);color:var(--green-light)}
   .stat-card.motm-card{border-color:var(--gold-bright);background:var(--panel2)}
 
   /* Attempt badges */
@@ -1793,7 +1796,8 @@ function roleIcon(player){
 function ensurePlayerStat(name){
   if (!S.playerStats[name]) S.playerStats[name] = {
     matches:0, runs:0, balls:0, fours:0, sixes:0,
-    wickets:0, ballsBowled:0, runsConceded:0, maidens:0, motm:0
+    wickets:0, ballsBowled:0, runsConceded:0, maidens:0, motm:0,
+    foursConceded:0, sixesConceded:0
   };
   return S.playerStats[name];
 }
@@ -1814,6 +1818,7 @@ function updatePlayerStats(match){
           const st = ensurePlayerStat(b.n);
           st.wickets += b.wickets; st.ballsBowled += b.balls;
           st.runsConceded += b.runs; st.maidens += b.maidens;
+          st.foursConceded += (b.fours||0); st.sixesConceded += (b.sixes||0);
         }
       });
     }
@@ -2386,7 +2391,7 @@ function simInnings({fmt, overs, base, bat, bowl, batTeam, bowlTeam, batRating, 
   // Per-ball skill is role-aware: a batsman forced to bowl (or a bowler batting)
   // uses their reduced batSkill/bowlSkill, floored so they're weak — not absurd.
   const batCard = bat.map(p=>({ n:p.n, roles:p.roles, r:Math.max(50, batSkill(p)), runs:0, balls:0, fours:0, sixes:0, out:false, dismissal:null }));
-  const bowlCard = bowl.map(p=>({ n:p.n, roles:p.roles, r:Math.max(50, bowlSkill(p)), overs:0, balls:0, runs:0, wickets:0, maidens:0 }));
+  const bowlCard = bowl.map(p=>({ n:p.n, roles:p.roles, r:Math.max(50, bowlSkill(p)), overs:0, balls:0, runs:0, wickets:0, maidens:0, fours:0, sixes:0 }));
   let runs=0, wickets=0, ballNo=0;
   let strikerIdx=0, nonStrikerIdx=1, nextBat=2;
   const events = [];
@@ -2483,8 +2488,8 @@ function simInnings({fmt, overs, base, bat, bowl, batTeam, bowlTeam, batRating, 
       } else {
         const r = parseInt(evt,10);
         striker.runs += r; runs += r; bw.runs += r; overRuns += r;
-        if (r===4) striker.fours++;
-        if (r===6) striker.sixes++;
+        if (r===4){ striker.fours++; bw.fours++; }
+        if (r===6){ striker.sixes++; bw.sixes++; }
         const ctx = { striker:striker.n, bowler:bw.n, strikerRuns:striker.runs };
         let kind = "dot"; if (r===6) kind="six"; else if (r===4) kind="four"; else if (r===3) kind="three"; else if (r===2) kind="two"; else if (r===1) kind="one";
         const txt = fmtCommentary(ov, b+1, kind, ctx);
@@ -3232,19 +3237,31 @@ function renderHub(){
         const ov = Math.floor(st.ballsBowled/6)+'.'+(st.ballsBowled%6);
         const econ = st.ballsBowled ? (st.runsConceded/(st.ballsBowled/6)).toFixed(2) : '—';
         const sr = st.balls ? ((st.runs/st.balls)*100).toFixed(1) : '—';
-        const card = el(`<div class="stat-card ${st.motm?'motm-card':''}">
-          <div class="h">
-            ${avatarHTML(p, 28)}
-            <div class="info"><b>${n} ${st.motm?'🏅×'+st.motm:''}</b><small>${st.matches} match${st.matches===1?'':'es'}</small></div>
-          </div>
-          <div class="stats">
+        const bowlSR = st.wickets ? (st.ballsBowled/st.wickets).toFixed(1) : '—';   // balls per wicket
+        const batLine = st.balls ? `<div class="stats">
+            <span class="lbl bat">Bat</span>
             <span>Runs <b>${st.runs}</b></span>
             <span>Balls <b>${st.balls}</b></span>
             <span>SR <b>${sr}</b></span>
             <span>4s <b>${st.fours}</b></span>
             <span>6s <b>${st.sixes}</b></span>
-            ${st.ballsBowled?`<span>Wkts <b>${st.wickets}</b></span><span>Ov <b>${ov}</b></span><span>Econ <b>${econ}</b></span>`:''}
+          </div>` : '';
+        const bowlLine = st.ballsBowled ? `<div class="stats" style="margin-top:6px">
+            <span class="lbl bowl">Bowl</span>
+            <span>Ov <b>${ov}</b></span>
+            <span>Runs <b>${st.runsConceded}</b></span>
+            <span>Wkts <b>${st.wickets}</b></span>
+            <span>Econ <b>${econ}</b></span>
+            <span>SR <b>${bowlSR}</b></span>
+            <span>4s <b>${st.foursConceded||0}</b></span>
+            <span>6s <b>${st.sixesConceded||0}</b></span>
+          </div>` : '';
+        const card = el(`<div class="stat-card ${st.motm?'motm-card':''}">
+          <div class="h">
+            ${avatarHTML(p, 28)}
+            <div class="info"><b>${n} ${st.motm?'🏅×'+st.motm:''}</b><small>${st.matches} match${st.matches===1?'':'es'}</small></div>
           </div>
+          ${batLine}${bowlLine}
         </div>`);
         sg.append(card);
       });
@@ -3449,7 +3466,11 @@ function distributeLeagueMatchStats(teamRuns, runsConceded){
       st.wickets += target;
       wktsLeft -= target;
       st.ballsBowled += Math.round(24 * (1 - i*0.12));
-      st.runsConceded += Math.round((runsConceded / bowlers.length) * (0.7 + Math.random()*0.6));
+      const conceded = Math.round((runsConceded / bowlers.length) * (0.7 + Math.random()*0.6));
+      st.runsConceded += conceded;
+      // Approximate boundaries conceded from runs (league games aren't simmed ball-by-ball).
+      st.foursConceded += Math.round(conceded * 0.085);
+      st.sixesConceded += Math.round(conceded * 0.03);
     });
   }
   // Match credit for the whole XI
