@@ -1570,11 +1570,15 @@ function oppRating(o){
 let DIFFICULTY_OFFSET = 7;            // legacy alias
 const DIFF_BASE = 2, DIFF_STEP = 1;  // fallback ramp if a tournament has no explicit `boost`
 // Per-tournament squad-rating boost (set on each TOURNAMENTS entry). These aren't a tidy
-// ramp because they COMPENSATE for league length — IPL's 20-game league is punishing at a
-// low boost, while the CL's 6-game group needs a high boost to be the true Gauntlet. The
-// result is a clean TROPHY-difficulty ramp that matches the badges (good ~90 draft):
-//   Big Bash ~64%  →  PSL ~49%  →  IPL ~33%  →  Champions League ~15% (hardest).
-// Full-run Monte-Carlo: Grand Slam ~1.8% (good draft), ~8% (optimal), ~0% casual.
+// ramp because they COMPENSATE for each league's intrinsic difficulty — the IPL field is
+// genuinely strong so it needs almost no boost to bite, while PSL needs a bigger one. The
+// boosts are calibrated against REAL drafted XIs (Monte-Carlo, not synthetic), so the
+// per-tournament WIN rates land on a clean honest ramp for a typical draft:
+//   Big Bash ~62% (Moderate) → PSL ~45% (Tough) → IPL ~19% (Brutal) → Champions League the Gauntlet.
+// Full pipeline (real drafts, 14-game CL gauntlet): you reach the CL final ~1 in 11 runs;
+// Grand Slam ~1.5% blended (1 in ~65), and the Whitewash (CL swept unbeaten) ~1 in 10,000.
+// The 12-game CL group is load-bearing: it decouples WINNING the CL (Grand Slam) from
+// SWEEPING it unbeaten (Whitewash) — winning survives a loss or two, a sweep never does.
 function tourDifficultyOffset(t){
   if (t && t.boost != null) return t.boost;
   return DIFF_BASE + (((t && t.diff) || 1) - 1) * DIFF_STEP;
@@ -1651,23 +1655,28 @@ function canonicalLeagueTeams(pool){
   });
   return Object.values(byTeam);
 }
-// Champions League field: the two strongest current franchises from each of
-// IPL, PSL and Big Bash → an elite 6-team event (+ you = 7-team table).
+// Champions League field: a 12-team multi-league gauntlet — the strongest
+// current franchises from all five world leagues (+ you = 13-team table, a
+// single round-robin of 12 group games before the Semi + Final). The long
+// group is what decouples "win the CL" (Grand Slam) from "sweep it unbeaten"
+// (the Whitewash): you can drop a game or two and still lift the trophy, but
+// the Whitewash demands all 14 CL matches won flawlessly.
+const CL_FIELD_SPEC = [['ipl',3],['psl',3],['bbl',2],['cpl',2],['blast',2]];
 function clEliteTeams(){
   const out = [];
-  ['ipl','psl','bbl'].forEach(lg => {
+  CL_FIELD_SPEC.forEach(([lg, n]) => {
     const top = canonicalLeagueTeams(OPPONENTS.filter(o => o.league === lg))
-      .sort((a,b) => oppRating(b) - oppRating(a)).slice(0,2);
+      .sort((a,b) => oppRating(b) - oppRating(a)).slice(0, n);
     out.push(...top);
   });
   return out;
 }
 
 const TOURNAMENTS = [
-  { id:"ipl", name:"IPL", fmt:"t20", icon:"🏏", rounds:["Qualifier 1","Qualifier 2","Final"], overs:20, base:170, leagues:["ipl"], diff:3, diffLabel:"Tough", boost:2 },
-  { id:"psl", name:"PSL", fmt:"t20", icon:"🏆", rounds:["Qualifier","Eliminator","Final"], overs:20, base:170, leagues:["psl"], diff:2, diffLabel:"Moderate", boost:5 },
-  { id:"bbl", name:"Big Bash League", fmt:"t20", icon:"🔥", rounds:["Knockout","Challenger","Final"], overs:20, base:170, leagues:["bbl"], diff:1, diffLabel:"Approachable", boost:3 },
-  { id:"cl",  name:"Champions League", fmt:"t20", icon:"🌍", rounds:["Semi-Final","Final"], overs:20, base:170, leagues:["ipl","psl","bbl"], singleLeg:true, diff:4, diffLabel:"Gauntlet", boost:6 }
+  { id:"ipl", name:"IPL", fmt:"t20", icon:"🏏", rounds:["Qualifier 1","Qualifier 2","Final"], overs:20, base:170, leagues:["ipl"], diff:3, diffLabel:"Brutal", boost:0.5 },
+  { id:"psl", name:"PSL", fmt:"t20", icon:"🏆", rounds:["Qualifier","Eliminator","Final"], overs:20, base:170, leagues:["psl"], diff:2, diffLabel:"Tough", boost:2 },
+  { id:"bbl", name:"Big Bash League", fmt:"t20", icon:"🔥", rounds:["Knockout","Challenger","Final"], overs:20, base:170, leagues:["bbl"], diff:1, diffLabel:"Moderate", boost:-0.5 },
+  { id:"cl",  name:"Champions League", fmt:"t20", icon:"🌍", rounds:["Semi-Final","Final"], overs:20, base:170, leagues:["ipl","psl","bbl","cpl","blast"], singleLeg:true, diff:4, diffLabel:"Gauntlet", boost:4 }
 ];
 
 // Top 3 teams from each league for the Champions League pool
