@@ -1568,12 +1568,17 @@ function oppRating(o){
 // the progression actually ramps: Big Bash (easiest) → PSL → IPL → Champions
 // League (hardest). Opponents are NOT rubber-banded — draft quality drives odds.
 let DIFFICULTY_OFFSET = 7;            // legacy alias
-const DIFF_BASE = 2, DIFF_STEP = 1;  // squad-rating boost: BBL +2, PSL +3, IPL +4, CL +5
-// Calibrated via full-run Monte-Carlo so the Grand Slam (win all 4 trophies) lands at
-// ~1.8% for a good (~90) draft and ~6% for an optimal one — the "almost nobody" 38-0 feel.
-// (A casual ~85 draft is ~0%.) The Whitewash — zero losses across the whole run — stays
-// the rarer flex on top.
-function tourDifficultyOffset(t){ return DIFF_BASE + (((t && t.diff) || 1) - 1) * DIFF_STEP; }
+const DIFF_BASE = 2, DIFF_STEP = 1;  // fallback ramp if a tournament has no explicit `boost`
+// Per-tournament squad-rating boost (set on each TOURNAMENTS entry). These aren't a tidy
+// ramp because they COMPENSATE for league length — IPL's 20-game league is punishing at a
+// low boost, while the CL's 6-game group needs a high boost to be the true Gauntlet. The
+// result is a clean TROPHY-difficulty ramp that matches the badges (good ~90 draft):
+//   Big Bash ~64%  →  PSL ~49%  →  IPL ~33%  →  Champions League ~15% (hardest).
+// Full-run Monte-Carlo: Grand Slam ~1.8% (good draft), ~8% (optimal), ~0% casual.
+function tourDifficultyOffset(t){
+  if (t && t.boost != null) return t.boost;
+  return DIFF_BASE + (((t && t.diff) || 1) - 1) * DIFF_STEP;
+}
 // Boost an opponent's squad player ratings by `boost` (what the sim actually
 // weighs), install it as their match XI, and return the boosted team rating.
 function boostOppSquad(o, boost){
@@ -1655,10 +1660,10 @@ function clEliteTeams(){
 }
 
 const TOURNAMENTS = [
-  { id:"ipl", name:"IPL", fmt:"t20", icon:"🏏", rounds:["Qualifier 1","Qualifier 2","Final"], overs:20, base:170, leagues:["ipl"], diff:3, diffLabel:"Tough" },
-  { id:"psl", name:"PSL", fmt:"t20", icon:"🏆", rounds:["Qualifier","Eliminator","Final"], overs:20, base:170, leagues:["psl"], diff:2, diffLabel:"Moderate" },
-  { id:"bbl", name:"Big Bash League", fmt:"t20", icon:"🔥", rounds:["Knockout","Challenger","Final"], overs:20, base:170, leagues:["bbl"], diff:1, diffLabel:"Approachable" },
-  { id:"cl",  name:"Champions League", fmt:"t20", icon:"🌍", rounds:["Semi-Final","Final"], overs:20, base:170, leagues:["ipl","psl","bbl"], singleLeg:true, diff:4, diffLabel:"Gauntlet" }
+  { id:"ipl", name:"IPL", fmt:"t20", icon:"🏏", rounds:["Qualifier 1","Qualifier 2","Final"], overs:20, base:170, leagues:["ipl"], diff:3, diffLabel:"Tough", boost:2 },
+  { id:"psl", name:"PSL", fmt:"t20", icon:"🏆", rounds:["Qualifier","Eliminator","Final"], overs:20, base:170, leagues:["psl"], diff:2, diffLabel:"Moderate", boost:5 },
+  { id:"bbl", name:"Big Bash League", fmt:"t20", icon:"🔥", rounds:["Knockout","Challenger","Final"], overs:20, base:170, leagues:["bbl"], diff:1, diffLabel:"Approachable", boost:3 },
+  { id:"cl",  name:"Champions League", fmt:"t20", icon:"🌍", rounds:["Semi-Final","Final"], overs:20, base:170, leagues:["ipl","psl","bbl"], singleLeg:true, diff:4, diffLabel:"Gauntlet", boost:6 }
 ];
 
 // Top 3 teams from each league for the Champions League pool
