@@ -2148,7 +2148,7 @@ function animateSpin(finalIdx){
     const y = `translateY(${-totalY*eased}px)`;
     club.style.transform = y; season.style.transform = y;
     if (e < 1) requestAnimationFrame(frame);
-    else { S.spinning = false; S.currentSpin.anim = false; render(); }
+    else { S.spinning = false; if (S.currentSpin) S.currentSpin.anim = false; render(); }
   }
   requestAnimationFrame(frame);
 }
