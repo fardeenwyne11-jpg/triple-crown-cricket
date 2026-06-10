@@ -1539,7 +1539,7 @@ function saveRecords(r){ try { localStorage.setItem(RECORDS_KEY, JSON.stringify(
 function trophyCount(){ return ["ipl","psl","bbl","cl"].filter(k=>S.trophies && S.trophies[k]).length; }
 
 // Per-run match bookkeeping (resets each new draft). Drives the Invincible badge.
-function ensureRun(){ if (!S.run) S.run = { losses:0, wins:0, streak:0, bestStreak:0, slamCommitted:false }; return S.run; }
+function ensureRun(){ if (!S.run) S.run = { losses:0, wins:0, streak:0, bestStreak:0, slamCommitted:false, attempted:[] }; if (!S.run.attempted) S.run.attempted = []; return S.run; }
 function recordMatchResult(won){
   const run = ensureRun();
   if (won){ run.wins++; run.streak++; if (run.streak > run.bestStreak) run.bestStreak = run.streak; }
@@ -1640,7 +1640,7 @@ function newSave(){
     squad: SLOTS.map(s => ({ id:s.id, label:s.label, player:null })),
     currentSpin:null,
     trophies:{ ipl:false, psl:false, bbl:false, cl:false },
-    run:{ losses:0, wins:0, streak:0, bestStreak:0, slamCommitted:false },
+    run:{ losses:0, wins:0, streak:0, bestStreak:0, slamCommitted:false, attempted:[] },
     playerStats:{},
     careerLog:[],
     tour:null,
@@ -1832,7 +1832,7 @@ function findPlayerObj(name){
   }
   return { n:name, roles:[], from:{ team:"" } };
 }
-function hamLabel(){ return S.drawerOpen ? '✕ Close' : '👥 Squad'; }
+function hamLabel(){ return S.drawerOpen ? '✕' : '👥 Squad'; }
 function toggleDrawer(){
   // Lightweight: just slide the drawer + toggle the scrim. Avoids a full
   // render() (which rebuilds the main panel and made the page appear to refresh).
@@ -1976,7 +1976,7 @@ function startDraft(){
   S.trophies = { ipl:false, psl:false, bbl:false, cl:false };
   S.careerLog = []; S.currentSpin = null; S.tour = null;
   // Fresh run: reset per-run match bookkeeping and tick the lifetime run counter.
-  S.run = { losses:0, wins:0, streak:0, bestStreak:0, slamCommitted:false };
+  S.run = { losses:0, wins:0, streak:0, bestStreak:0, slamCommitted:false, attempted:[] };
   const rec = loadRecords(); rec.runs = (rec.runs||0) + 1; saveRecords(rec);
   if (S.setup.draftMode === "auction"){
     startAuction();
@@ -2176,8 +2176,12 @@ function removeFromSlot(id){ const slot = S.squad.find(s=>s.id===id); slot.playe
 /* =========== TOURNAMENT =========== */
 function startTournament(tId){
   if (S.trophies[tId]) return;
+  // One attempt per tournament per run — no replaying after you've entered it.
+  const run = ensureRun();
+  if (run.attempted.includes(tId)) return;
   // CL requires the other 3 trophies first
   if (tId === "cl" && (!S.trophies.ipl || !S.trophies.psl || !S.trophies.bbl)) return;
+  run.attempted.push(tId);
   const t = TOURNAMENTS.find(x=>x.id===tId);
   // Filter opponents by league(s) belonging to this tournament
   let pool = OPPONENTS.filter(o => t.leagues.includes(o.league));
@@ -2577,11 +2581,6 @@ function endMatch(match){
   S.screen = "scorecard";
   render();
 }
-function continueAfterScorecard(){
-  // Show awards next
-  S.screen = "awards";
-  save(); render();
-}
 function continueAfterAwards(){
   const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
   const last = S.tour.scorecards[S.tour.scorecards.length-1];
@@ -2640,7 +2639,6 @@ function buildScreen(){
   if (S.screen === "watch-choice") return renderWatchChoice();
   if (S.screen === "live") return renderLive();
   if (S.screen === "scorecard") return renderScorecard();
-  if (S.screen === "awards") return renderAwards();
   if (S.screen === "win") return renderWin();
   return el(`<div></div>`);
 }
@@ -3161,19 +3159,22 @@ function renderHub(){
   const grid = el(`<div style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))"></div>`);
   // Champions League is locked until the other 3 trophies are won
   const clLocked = !S.trophies.ipl || !S.trophies.psl || !S.trophies.bbl;
+  const attempted = (S.run && S.run.attempted) || [];
   byDiff.forEach(t => {
     const r = (squadStrengths()||{overall:0}).overall;
     const won = S.trophies[t.id];
     const locked = (t.id === "cl") && clLocked;
-    const canPlay = !won && !locked;
+    const used = !won && attempted.includes(t.id);   // attempted this run but not won
+    const canPlay = !won && !locked && !used;
     let btnText = 'Play';
     if (won) btnText = '🏆 Already won';
+    else if (used) btnText = '✗ Eliminated';
     else if (locked) btnText = '🔒 Locked';
-    const c = el(`<div class="spin-box" style="padding:18px;text-align:left;${locked?'opacity:.55':''}">
+    const c = el(`<div class="spin-box" style="padding:18px;text-align:left;${locked||used?'opacity:.55':''}">
       <div style="font-size:22px;line-height:1.2"><span style="font-size:28px">${t.icon}</span> <b>${t.name.replace('ICC ','')}</b></div>
       <div style="margin:8px 0 8px">${diffBadge(t)}</div>
       <div class="muted" style="font-size:12px;margin:0 0 10px">${(t.id === "cl" ? t.rounds : ["League Season", ...t.rounds]).join(' → ')} · ${t.overs} overs</div>
-      ${locked ? `<div style="font-size:12px;color:var(--gold);margin-bottom:10px;font-weight:700">Win IPL, PSL & Big Bash first to unlock</div>` : `<div style="font-size:13px;margin-bottom:12px">XI rating: <b style="color:var(--gold)">${r.toFixed(1)}</b></div>`}
+      ${locked ? `<div style="font-size:12px;color:var(--gold);margin-bottom:10px;font-weight:700">Win IPL, PSL & Big Bash first to unlock</div>` : used ? `<div style="font-size:12px;color:var(--red);margin-bottom:10px;font-weight:700">Knocked out this run — start over for another go</div>` : `<div style="font-size:13px;margin-bottom:12px">XI rating: <b style="color:var(--gold)">${r.toFixed(1)}</b></div>`}
       <button class="primary" ${!canPlay?'disabled':''} style="width:100%">${btnText}</button>
     </div>`);
     c.querySelector("button").onclick = () => startTournament(t.id);
@@ -3808,62 +3809,6 @@ function renderOrder(){
   return wrap;
 }
 
-function renderAwards(){
-  const m = S.tour.scorecards[S.tour.scorecards.length-1];
-  const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
-  const opp = S.tour.opps[S.tour.roundIdx];
-  const aw = S.tour.lastAwards;
-  const wrap = el(`<div></div>`);
-  wrap.append(el(`<h1>🌟 Match Awards</h1>`));
-  wrap.append(el(`<p class="muted">${t.rounds[S.tour.roundIdx]} · ${t.name.replace('ICC ','')} · vs ${opp.n}</p>`));
-
-  const awards = el(`<div class="awards"></div>`);
-  const cards = [
-    { kind:"motm",  lbl:"🏅 Player of the Match", a:aw.motm, cls:"motm" },
-    { kind:"bat",   lbl:"🏏 Top Batter",          a:aw.bestBat, cls:"" },
-    { kind:"bowl",  lbl:"🎯 Top Bowler",          a:aw.bestBowl, cls:"" }
-  ];
-  cards.forEach(c => {
-    if (!c.a) return;
-    const base = findPlayerObj(c.a.n) || {};
-    const p = { ...base, team: base.from?.team || c.a.team }; // clone — don't mutate shared squad data
-    const tags = (p.roles||[]).map(r=>`<span class="tag t-${r}">${r}</span>`).join('');
-    const card = el(`<div class="award ${c.cls}">
-      <div class="lbl">${c.lbl}</div>
-      ${avatarHTML(p, 88)}
-      <div class="nm">${c.a.n}</div>
-      <div class="from">${p.from && p.from.year && p.from.year !== "All-time" ? p.from.year : ''}</div>
-      <div class="roles">${tags}</div>
-      <div class="fig">${awardFig(c.a, c.kind)}</div>
-    </div>`);
-    awards.append(card);
-  });
-  wrap.append(awards);
-
-  const row = el(`<div class="row" style="justify-content:space-between;margin-top:18px;gap:8px"></div>`);
-  const back = el(`<button class="ghost">View scorecard</button>`);
-  back.onclick = () => { S.screen="scorecard"; save(); render(); };
-  const share = el(`<button class="share-btn">📸 Share</button>`);
-  share.onclick = () => {
-    const motm = aw.motm;
-    shareResult({
-      title:"Match Awards",
-      subtitle:`${t.rounds[S.tour.roundIdx]} vs ${opp.n}`,
-      trophyEmoji: m.won ? "🏆" : "🏏",
-      headline: m.won ? `WIN vs ${opp.n}` : `Tough loss vs ${opp.n}`,
-      body: motm ? `Player of the Match: <b>${motm.n}</b> · ${awardFig(motm,'motm')}` : "",
-      shareText: `${motm?motm.n+' was Player of the Match':'Match result'} in Whitewash Cricket — can you do better?\nhttps://whitewash.app/`
-    });
-  };
-  const won = m.won;
-  const nextLabel = !won ? "Back to Hub" : (S.tour.roundIdx+1 < t.rounds.length ? "Next round →" : "Lift the trophy 🏆");
-  const cont = el(`<button class="primary">${nextLabel}</button>`);
-  cont.onclick = continueAfterAwards;
-  row.append(back, share, cont);
-  wrap.append(row);
-  return wrap;
-}
-
 function renderWatchChoice(){
   const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
   const opp = S.tour.opps[S.tour.roundIdx];
@@ -4038,17 +3983,22 @@ function renderScorecard(){
   };
   const share = el(`<button class="share-btn">📸 Share</button>`);
   share.onclick = () => {
+    const aw = S.tour.lastAwards || {};
+    const awLines = [];
+    if (aw.motm) awLines.push(`🏅 Player of the Match: ${aw.motm.n}`);
+    if (aw.bestBat && aw.bestBat.runs>0) awLines.push(`🏏 Top batter: ${aw.bestBat.n} ${aw.bestBat.runs}(${aw.bestBat.balls})`);
+    if (aw.bestBowl && aw.bestBowl.wickets>0) awLines.push(`🎯 Top bowler: ${aw.bestBowl.n} ${aw.bestBowl.wickets}/${aw.bestBowl.runsConceded}`);
     shareResult({
       title:"Match Result",
       subtitle:`${t.rounds[S.tour.roundIdx]} vs ${opp.n}`,
       trophyEmoji: m.won ? "🏆" : "🏏",
       headline: m.won ? `WIN by ${margin}` : `Lost by ${margin}`,
-      body: `${m.innings[0].batTeam} ${m.innings[0].runs}/${m.innings[0].wickets}<br/>${m.innings[1].batTeam} ${m.innings[1].runs}/${m.innings[1].wickets}`,
-      shareText: `${m.won?'Won':'Lost'} ${t.rounds[S.tour.roundIdx]} vs ${opp.n} by ${margin}. Try to beat my XI in Whitewash!\nhttps://whitewash.app/`
+      body: `${teamLabel(m.innings[0].batTeam)} ${m.innings[0].runs}/${m.innings[0].wickets}<br/>${teamLabel(m.innings[1].batTeam)} ${m.innings[1].runs}/${m.innings[1].wickets}${awLines.length?'<br/><br/>'+awLines.join('<br/>'):''}`,
+      shareText: `${m.won?'Won':'Lost'} ${t.rounds[S.tour.roundIdx]} vs ${opp.n} by ${margin}.${aw.motm?` 🏅 ${aw.motm.n} POTM.`:''} Try to beat my XI in Whitewash!\nhttps://whitewash.app/`
     });
   };
-  const cont = el(`<button class="primary">View awards →</button>`);
-  cont.onclick = continueAfterScorecard;
+  const cont = el(`<button class="primary">Continue →</button>`);
+  cont.onclick = continueAfterAwards;
   row.append(back, share, cont);
   wrap.append(row);
   return wrap;
