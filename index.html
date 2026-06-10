@@ -1568,9 +1568,11 @@ function oppRating(o){
 // the progression actually ramps: Big Bash (easiest) → PSL → IPL → Champions
 // League (hardest). Opponents are NOT rubber-banded — draft quality drives odds.
 let DIFFICULTY_OFFSET = 7;            // legacy alias
-const DIFF_BASE = 4, DIFF_STEP = 2;  // squad-rating boost: BBL +4, PSL +6, IPL +8, CL +10
-// Per-match win rate for a good (~90) draft, calibrated via Monte-Carlo:
-//   Big Bash ~64%  ·  PSL ~51%  ·  IPL ~35%  ·  Champions League ~26%
+const DIFF_BASE = 2, DIFF_STEP = 1;  // squad-rating boost: BBL +2, PSL +3, IPL +4, CL +5
+// Calibrated via full-run Monte-Carlo so the Grand Slam (win all 4 trophies) lands at
+// ~1.8% for a good (~90) draft and ~6% for an optimal one — the "almost nobody" 38-0 feel.
+// (A casual ~85 draft is ~0%.) The Whitewash — zero losses across the whole run — stays
+// the rarer flex on top.
 function tourDifficultyOffset(t){ return DIFF_BASE + (((t && t.diff) || 1) - 1) * DIFF_STEP; }
 // Boost an opponent's squad player ratings by `boost` (what the sim actually
 // weighs), install it as their match XI, and return the boosted team rating.
