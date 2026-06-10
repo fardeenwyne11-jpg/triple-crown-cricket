@@ -1467,7 +1467,7 @@ function oppRating(o){
 // Added to every opponent's rating. 0 = opponents at their real season strength;
 // positive = harder. Tuned so a well-drafted XI wins the Grand Slam only rarely.
 // Opponents are NOT rubber-banded to the player — draft quality drives your odds.
-let DIFFICULTY_OFFSET = 6;
+let DIFFICULTY_OFFSET = 7;
 
 // ===== Persistent cross-run records (localStorage — no account needed) =====
 const RECORDS_KEY = "ww_records";
@@ -1603,6 +1603,23 @@ function batSkill(p){ const r=ratingOf(p), rs=p.roles; if(rs.includes("OPN")||rs
 function bowlSkill(p){ const r=ratingOf(p), rs=p.roles; if(rs.includes("PAC")||rs.includes("SPN"))return r; if(rs.includes("AR"))return r*0.82; return 0; }
 function isKeeper(p){ return p.roles.includes("WK"); }
 function isBowler(p){ return p.roles.includes("PAC")||p.roles.includes("SPN")||p.roles.includes("AR"); }
+// Role-aware team strengths. Batting = top-7 of the batting lineup, bowling =
+// top-5 of the actual attack (so a team with no bowlers gets a floor ~40),
+// fielding = whole-XI athleticism. Overall blends them, NOT a flat average —
+// so an all-batsman side reads (and plays) as the weak team it is.
+function strengthsFor(players){
+  if (!players || !players.length) return { overall:0, batting:0, bowling:0, fielding:0 };
+  const has = (p,arr)=>p.roles.some(r=>arr.includes(r));
+  const mean = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
+  const clamp = x => Math.max(40, Math.min(99, x));
+  const bat = players.filter(p=>has(p,["OPN","BAT","FIN","WK","AR"])).map(ratingOf).sort((a,b)=>b-a).slice(0,7);
+  const bowl = players.filter(p=>has(p,["PAC","SPN","AR"])).map(ratingOf).sort((a,b)=>b-a).slice(0,5);
+  const arCount = players.filter(p=>p.roles.includes("AR")).length;
+  const batting = clamp(mean(bat));
+  const bowling = clamp(mean(bowl));
+  const fielding = clamp(mean(players.map(ratingOf)) + arCount*0.7 + (players.some(p=>p.roles.includes("WK"))?1:0));
+  return { batting, bowling, fielding, overall: clamp(0.45*batting + 0.45*bowling + 0.10*fielding) };
+}
 function roleTally(){
   const t = {OPN:0,BAT:0,WK:0,AR:0,SPN:0,PAC:0,FIN:0};
   squadPicks().forEach(s => s.player.roles.forEach(r => t[r]++));
@@ -2113,7 +2130,7 @@ function startTournament(tId){
 function computeOdds(){
   if (!S.tour) return null;
   const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
-  const myR = avg(squadPicks().map(s=>ratingOf(s.player)));
+  const myR = (squadStrengths()||{overall:0}).overall;
   // Opponent ratings average
   const oppRs = S.tour.opps.map(o=>o.r);
   const fieldAvg = avg(oppRs);
@@ -2185,21 +2202,24 @@ function simulateMatch(t, myPlayers, opp){
   let firstBatTeam = (tossWin === "me" ? (tossDecision === "bat" ? "me":"opp") : (tossDecision === "bat" ? "opp":"me"));
   const meBatFirst = firstBatTeam === "me";
 
-  const myR = avg(my.map(p=>ratingOf(p)));
-  const oppR = opp.r;
+  // Role-aware ratings for the user's XI: batting vs bowling are now distinct,
+  // so a side with no real attack defends with a weak (~40) bowling rating.
+  const myS = strengthsFor(my);
+  const myBatR = myS.batting, myBowlR = myS.bowling, myR = myS.overall;
+  const oppR = opp.r;   // opponents are balanced real squads (and carry the difficulty offset)
 
   // Helper to build innings config for a given side
   const cfgFirst = () => ({
     fmt:t.fmt, overs:t.overs, base:t.base,
     bat: meBatFirst?myBat:oppBat, bowl: meBatFirst?oppBowl:myBowl,
     batTeam: meBatFirst?"You":opp.n, bowlTeam: meBatFirst?opp.n:"You",
-    batRating: meBatFirst?myR:oppR, bowlRating: meBatFirst?oppR:myR
+    batRating: meBatFirst?myBatR:oppR, bowlRating: meBatFirst?oppR:myBowlR
   });
   const cfgSecond = (chasing) => ({
     fmt:t.fmt, overs:t.overs, base:t.base, chasing,
     bat: meBatFirst?oppBat:myBat, bowl: meBatFirst?myBowl:oppBowl,
     batTeam: meBatFirst?opp.n:"You", bowlTeam: meBatFirst?"You":opp.n,
-    batRating: meBatFirst?oppR:myR, bowlRating: meBatFirst?myR:oppR
+    batRating: meBatFirst?oppR:myBatR, bowlRating: meBatFirst?myBowlR:oppR
   });
 
   if (t.fmt === "wtc"){
@@ -2261,8 +2281,10 @@ function buildOppXI(opp){ return (OPP_XI[opp.n] || []).slice(); }
 function avg(a){ return a.reduce((x,y)=>x+y,0)/a.length; }
 
 function simInnings({fmt, overs, base, bat, bowl, batTeam, bowlTeam, batRating, bowlRating, chasing}){
-  const batCard = bat.map(p=>({ n:p.n, roles:p.roles, r:ratingOf(p), runs:0, balls:0, fours:0, sixes:0, out:false, dismissal:null }));
-  const bowlCard = bowl.map(p=>({ n:p.n, roles:p.roles, r:ratingOf(p), overs:0, balls:0, runs:0, wickets:0, maidens:0 }));
+  // Per-ball skill is role-aware: a batsman forced to bowl (or a bowler batting)
+  // uses their reduced batSkill/bowlSkill, floored so they're weak — not absurd.
+  const batCard = bat.map(p=>({ n:p.n, roles:p.roles, r:Math.max(50, batSkill(p)), runs:0, balls:0, fours:0, sixes:0, out:false, dismissal:null }));
+  const bowlCard = bowl.map(p=>({ n:p.n, roles:p.roles, r:Math.max(50, bowlSkill(p)), overs:0, balls:0, runs:0, wickets:0, maidens:0 }));
   let runs=0, wickets=0, ballNo=0;
   let strikerIdx=0, nonStrikerIdx=1, nextBat=2;
   const events = [];
@@ -2800,19 +2822,7 @@ function renderSetup(){
 // athleticism (everyone fields) nudged up by all-rounders + a specialist keeper.
 function squadStrengths(){
   const players = squadPicks().map(s=>s.player);
-  if (!players.length) return null;
-  const has = (p,arr)=>p.roles.some(r=>arr.includes(r));
-  const mean = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
-  const clamp = x => Math.max(40, Math.min(99, x));
-  const bat = players.filter(p=>has(p,["OPN","BAT","FIN","WK","AR"])).map(ratingOf).sort((a,b)=>b-a).slice(0,7);
-  const bowl = players.filter(p=>has(p,["PAC","SPN","AR"])).map(ratingOf).sort((a,b)=>b-a).slice(0,5);
-  const arCount = players.filter(p=>p.roles.includes("AR")).length;
-  return {
-    overall: clamp(mean(players.map(ratingOf))),
-    batting: clamp(mean(bat)),
-    bowling: clamp(mean(bowl)),
-    fielding: clamp(mean(players.map(ratingOf)) + arCount*0.7 + (players.some(p=>p.roles.includes("WK"))?1:0))
-  };
+  return players.length ? strengthsFor(players) : null;
 }
 function renderSidebar(){
   const filled = squadPicks().length;
@@ -3074,7 +3084,7 @@ function renderHub(){
   // Champions League is locked until the other 3 trophies are won
   const clLocked = !S.trophies.ipl || !S.trophies.psl || !S.trophies.bbl;
   byDiff.forEach(t => {
-    const r = avg(squadPicks().map(s=>ratingOf(s.player)));
+    const r = (squadStrengths()||{overall:0}).overall;
     const won = S.trophies[t.id];
     const locked = (t.id === "cl") && clLocked;
     const canPlay = !won && !locked;
@@ -3144,7 +3154,7 @@ function startLeagueSim(){
   let teams = canonicalLeagueTeams(pool);
   const mod = DIFFICULTY_OFFSET;
   const allTeams = [
-    { n:"Your XI", r: avg(squadPicks().map(s=>ratingOf(s.player))), isMe:true },
+    { n:"Your XI", r: (squadStrengths()||{overall:70}).overall, isMe:true },
     ...teams.map(o => ({ n:o.n, r: Math.max(60, Math.min(99, oppRating(o) + mod)), isMe:false }))
   ];
   // Double round-robin using the circle method.
