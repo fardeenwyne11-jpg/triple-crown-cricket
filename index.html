@@ -144,6 +144,7 @@
   .ts-row:last-child{margin-bottom:0}
   .ts-lbl{font-size:11px;font-weight:800;color:var(--ink);width:74px;flex-shrink:0}
   .ts-bar{flex:1;height:7px;background:var(--panel2);border-radius:4px;overflow:hidden}
+  .ts-bar.masked{background:repeating-linear-gradient(45deg,var(--panel2),var(--panel2) 4px,var(--line) 4px,var(--line) 8px)}
   .ts-bar > i{display:block;height:100%;border-radius:4px;transition:width .35s ease}
   .ts-bar > i.bat{background:#3a89e0}
   .ts-bar > i.bowl{background:#c8102e}
@@ -2860,7 +2861,10 @@ function renderSetup(){
     sec.append(el(`<div class="step-head"><span class="step-no">${done?'✓':idx+1}</span><b>${step.title}</b></div>`));
     const opts = el(`<div class="opts"></div>`);
     step.opts.forEach(([v,n,d,disabled])=>{
-      const sel = S.setup[step.key]===v;
+      // Only a *completed* step shows its choice highlighted. The current step
+      // never shows a pre-selection — even if a saved value exists — so there's
+      // no misleading "already selected" state to click past.
+      const sel = done && S.setup[step.key]===v;
       const o = el(`<div class="opt ${sel?'active':''} ${disabled?'disabled':''}">${n}<small>${d}</small></div>`);
       if (!disabled) o.onclick = () => { S.setup[step.key]=v; if (idx === _setupStep) _setupStep = idx+1; save(); render(); };
       opts.append(o);
@@ -2920,13 +2924,16 @@ function renderSidebar(){
   side.append(list);
 
   // Team strength card — batting / bowling / fielding, live as you draft.
-  // In blind mode, keep it hidden until the XI is locked in (all 11 chosen).
+  // In blind mode it stays as "??" until the XI is complete, then reveals.
   const st = squadStrengths();
-  if (st && (S.setup.showRatings || squadPicks().length === SQUAD_SIZE)){
+  if (st){
+    const masked = (S.setup.showRatings === false) && (squadPicks().length < SQUAD_SIZE);
     const w = v => Math.max(6, Math.min(100, (v-50)/49*100));
-    const row = (lbl,val,cls) => `<div class="ts-row"><span class="ts-lbl">${lbl}</span><div class="ts-bar"><i class="${cls}" style="width:${w(val)}%"></i></div><b class="ts-val">${Math.round(val)}</b></div>`;
+    const row = (lbl,val,cls) => masked
+      ? `<div class="ts-row"><span class="ts-lbl">${lbl}</span><div class="ts-bar masked"></div><b class="ts-val">??</b></div>`
+      : `<div class="ts-row"><span class="ts-lbl">${lbl}</span><div class="ts-bar"><i class="${cls}" style="width:${w(val)}%"></i></div><b class="ts-val">${Math.round(val)}</b></div>`;
     side.append(el(`<div class="strength-card">
-      <div class="ts-head"><span class="ts-title">TEAM STRENGTH</span><span class="ts-overall">${Math.round(st.overall)}<small>OVR</small></span></div>
+      <div class="ts-head"><span class="ts-title">TEAM STRENGTH</span><span class="ts-overall">${masked?'??':Math.round(st.overall)}<small>OVR</small></span></div>
       ${row("🏏 Batting", st.batting, "bat")}
       ${row("🔴 Bowling", st.bowling, "bowl")}
       ${row("🧤 Fielding", st.fielding, "field")}
