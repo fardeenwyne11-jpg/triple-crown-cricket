@@ -491,6 +491,19 @@
   .stat-card .stats .lbl{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:1px 6px;border-radius:5px;align-self:center}
   .stat-card .stats .lbl.bat{background:rgba(90,153,255,.18);color:var(--blue)}
   .stat-card .stats .lbl.bowl{background:rgba(61,220,151,.18);color:var(--green-light)}
+  /* Career stats — two compact tables (Batting / Bowling) */
+  .st-tbl{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:14px}
+  .st-tbl .cap{display:flex;align-items:center;gap:7px;padding:11px 14px 9px;font-size:13px;font-weight:900;letter-spacing:.3px}
+  .st-tbl .cap.bat{color:var(--blue)} .st-tbl .cap.bowl{color:var(--green-light)}
+  .st-tbl table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  .st-tbl th{font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);text-align:right;padding:6px 8px;border-top:1px solid var(--line-soft)}
+  .st-tbl th.l{text-align:left}
+  .st-tbl td{font-size:13px;padding:7px 8px;text-align:right;border-top:1px solid var(--line-soft);font-weight:700;color:var(--ink)}
+  .st-tbl td.l{text-align:left}
+  .st-tbl td.l .fl{margin-right:5px}
+  .st-tbl td.hi{color:var(--gold);font-weight:900}
+  .st-tbl tr:nth-child(even) td{background:rgba(255,255,255,.018)}
+  @media(max-width:430px){ .st-tbl th,.st-tbl td{padding:7px 5px;font-size:12px} .st-tbl td.l{font-size:12px} }
   .stat-card.motm-card{border-color:var(--gold-bright);background:var(--panel2)}
 
   /* Attempt badges */
@@ -3229,43 +3242,37 @@ function renderHub(){
   const playedNames = Object.keys(S.playerStats).filter(n => S.playerStats[n].matches > 0 && S.squad.some(s=>s.player && s.player.n===n));
   if (playedNames.length){
     wrap.append(el(`<h2>${myTeamName()} — career stats</h2>`));
-    const sg = el(`<div class="stat-grid"></div>`);
-    playedNames
-      .map(n => ({ n, st: S.playerStats[n], p: findPlayerObj(n) }))
-      .sort((a,b) => (b.st.runs + b.st.wickets*20) - (a.st.runs + a.st.wickets*20))
-      .forEach(({n, st, p}) => {
-        const ov = Math.floor(st.ballsBowled/6)+'.'+(st.ballsBowled%6);
-        const econ = st.ballsBowled ? (st.runsConceded/(st.ballsBowled/6)).toFixed(2) : '—';
+    const rows = playedNames.map(n => ({ n, st: S.playerStats[n], p: findPlayerObj(n) }));
+    const flagOf = p => (p ? (playerFlag(p) || '🏏') : '🏏');
+
+    // 🏏 Batting — anyone who's faced a ball, sorted by runs.
+    const batters = rows.filter(x => x.st.balls > 0).sort((a,b) => b.st.runs - a.st.runs);
+    if (batters.length){
+      const maxR = Math.max(1, ...batters.map(x => x.st.runs));
+      const body = batters.map(({n, st, p}) => {
         const sr = st.balls ? ((st.runs/st.balls)*100).toFixed(1) : '—';
-        const bowlSR = st.wickets ? (st.ballsBowled/st.wickets).toFixed(1) : '—';   // balls per wicket
-        const batLine = st.balls ? `<div class="stats">
-            <span class="lbl bat">Bat</span>
-            <span>Runs <b>${st.runs}</b></span>
-            <span>Balls <b>${st.balls}</b></span>
-            <span>SR <b>${sr}</b></span>
-            <span>4s <b>${st.fours}</b></span>
-            <span>6s <b>${st.sixes}</b></span>
-          </div>` : '';
-        const bowlLine = st.ballsBowled ? `<div class="stats" style="margin-top:6px">
-            <span class="lbl bowl">Bowl</span>
-            <span>Ov <b>${ov}</b></span>
-            <span>Runs <b>${st.runsConceded}</b></span>
-            <span>Wkts <b>${st.wickets}</b></span>
-            <span>Econ <b>${econ}</b></span>
-            <span>SR <b>${bowlSR}</b></span>
-            <span>4s <b>${st.foursConceded||0}</b></span>
-            <span>6s <b>${st.sixesConceded||0}</b></span>
-          </div>` : '';
-        const card = el(`<div class="stat-card ${st.motm?'motm-card':''}">
-          <div class="h">
-            ${avatarHTML(p, 28)}
-            <div class="info"><b>${n} ${st.motm?'🏅×'+st.motm:''}</b><small>${st.matches} match${st.matches===1?'':'es'}</small></div>
-          </div>
-          ${batLine}${bowlLine}
-        </div>`);
-        sg.append(card);
-      });
-    wrap.append(sg);
+        return `<tr><td class="l"><span class="fl">${flagOf(p)}</span>${n}${st.motm?' 🏅':''}</td><td>${st.matches}</td><td class="${st.runs===maxR?'hi':''}">${st.runs}</td><td>${sr}</td><td>${st.fours}</td><td>${st.sixes}</td></tr>`;
+      }).join('');
+      wrap.append(el(`<div class="st-tbl"><div class="cap bat">🏏 Batting</div><table>
+        <thead><tr><th class="l">Player</th><th>M</th><th>Runs</th><th>SR</th><th>4s</th><th>6s</th></tr></thead>
+        <tbody>${body}</tbody></table></div>`));
+    }
+
+    // 🎯 Bowling — anyone who's bowled a ball, sorted by wickets (then economy).
+    const bowlers = rows.filter(x => x.st.ballsBowled > 0)
+      .sort((a,b) => b.st.wickets - a.st.wickets || (a.st.runsConceded/a.st.ballsBowled) - (b.st.runsConceded/b.st.ballsBowled));
+    if (bowlers.length){
+      const maxW = Math.max(1, ...bowlers.map(x => x.st.wickets));
+      const body = bowlers.map(({n, st, p}) => {
+        const ov = Math.floor(st.ballsBowled/6)+'.'+(st.ballsBowled%6);
+        const econ = (st.runsConceded/(st.ballsBowled/6)).toFixed(2);
+        const bsr = st.wickets ? (st.ballsBowled/st.wickets).toFixed(1) : '—';
+        return `<tr><td class="l"><span class="fl">${flagOf(p)}</span>${n}</td><td>${ov}</td><td>${st.runsConceded}</td><td class="${st.wickets===maxW?'hi':''}">${st.wickets}</td><td>${econ}</td><td>${bsr}</td></tr>`;
+      }).join('');
+      wrap.append(el(`<div class="st-tbl"><div class="cap bowl">🎯 Bowling</div><table>
+        <thead><tr><th class="l">Player</th><th>Ov</th><th>R</th><th>W</th><th>Econ</th><th>SR</th></tr></thead>
+        <tbody>${body}</tbody></table></div>`));
+    }
   }
 
   if (S.careerLog.length){
