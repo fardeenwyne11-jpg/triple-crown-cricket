@@ -1855,6 +1855,13 @@ function audioCtx(){
   try { _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
   return _audioCtx;
 }
+// Browsers (esp. iOS Safari) suspend the AudioContext when sound is driven from
+// timers instead of a user gesture — which is exactly how the live match plays.
+// Resume it on every interaction so each tap (Watch/Continue/etc.) re-arms audio.
+(function bindAudioUnlock(){
+  const unlock = () => { const c = audioCtx(); if (c && c.state === "suspended") c.resume(); };
+  ["pointerdown","touchend","click","keydown"].forEach(ev => document.addEventListener(ev, unlock, { passive:true }));
+})();
 function beep(freq, dur, vol, type){
   const ctx = audioCtx(); if (!ctx) return;
   if (ctx.state === "suspended") ctx.resume();
