@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Whitewash — Cricket Squad Draft</title>
-<meta name="description" content="Can you get the Whitewash? Draft a cricket XI from real franchise squads and win the IPL, PSL, Big Bash & Champions League — without losing a single match." />
+<meta name="description" content="Can you get the Whitewash? Draft a cricket XI, win all four trophies, then sweep the Champions League unbeaten." />
 
 <!-- Favicon + Apple touch icon + PWA manifest -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -19,7 +19,7 @@
 <!-- Open Graph (Facebook / WhatsApp / iMessage / LinkedIn) -->
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Whitewash — Cricket Squad Draft" />
-<meta property="og:description" content="Can you get the Whitewash? Win the IPL, PSL, Big Bash & Champions League with one drafted XI — without losing a single match." />
+<meta property="og:description" content="Can you get the Whitewash? Win all four trophies with one drafted XI, then sweep the Champions League unbeaten." />
 <meta property="og:url" content="https://whitewash.app/" />
 <meta property="og:image" content="https://whitewash.app/og.png" />
 <meta property="og:image:width" content="1200" />
@@ -30,7 +30,7 @@
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Whitewash — Cricket Squad Draft" />
-<meta name="twitter:description" content="Can you get the Whitewash? Win IPL, PSL, Big Bash & Champions League with one XI — without losing a single match." />
+<meta name="twitter:description" content="Can you get the Whitewash? Win all four with one XI, then sweep the Champions League unbeaten." />
 <meta name="twitter:image" content="https://whitewash.app/og.png" />
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
@@ -1599,11 +1599,15 @@ function saveRecords(r){ try { localStorage.setItem(RECORDS_KEY, JSON.stringify(
 function trophyCount(){ return ["ipl","psl","bbl","cl"].filter(k=>S.trophies && S.trophies[k]).length; }
 
 // Per-run match bookkeeping (resets each new draft). Drives the Whitewash badge.
-function ensureRun(){ if (!S.run) S.run = { losses:0, wins:0, streak:0, bestStreak:0, slamCommitted:false, attempted:[] }; if (!S.run.attempted) S.run.attempted = []; return S.run; }
+function ensureRun(){ if (!S.run) S.run = { losses:0, wins:0, streak:0, bestStreak:0, slamCommitted:false, attempted:[], clLosses:0 }; if (!S.run.attempted) S.run.attempted = []; if (S.run.clLosses == null) S.run.clLosses = 0; return S.run; }
 function recordMatchResult(won){
   const run = ensureRun();
   if (won){ run.wins++; run.streak++; if (run.streak > run.bestStreak) run.bestStreak = run.streak; }
-  else { run.losses++; run.streak = 0; }
+  else {
+    run.losses++; run.streak = 0;
+    // The Whitewash = sweep the Champions League unbeaten, so only CL losses kill it.
+    if (S.tour && S.tour.tId === 'cl') run.clLosses = (run.clLosses||0) + 1;
+  }
   const rec = loadRecords();
   if (run.bestStreak > (rec.bestStreak||0)){ rec.bestStreak = run.bestStreak; saveRecords(rec); }
 }
@@ -1619,7 +1623,7 @@ function commitGrandSlam(){
   const rec = loadRecords();
   rec.grandSlams = (rec.grandSlams||0) + 1;
   rec.bestTrophies = 4;
-  if (run.losses === 0) rec.invincibles = (rec.invincibles||0) + 1;
+  if ((run.clLosses||0) === 0) rec.invincibles = (rec.invincibles||0) + 1;   // Whitewash = CL swept unbeaten
   if ((run.bestStreak||0) > (rec.bestStreak||0)) rec.bestStreak = run.bestStreak;
   saveRecords(rec);
 }
@@ -1711,7 +1715,7 @@ function newSave(){
     squad: SLOTS.map(s => ({ id:s.id, label:s.label, player:null })),
     currentSpin:null,
     trophies:{ ipl:false, psl:false, bbl:false, cl:false },
-    run:{ losses:0, wins:0, streak:0, bestStreak:0, slamCommitted:false, attempted:[] },
+    run:{ losses:0, wins:0, streak:0, bestStreak:0, slamCommitted:false, attempted:[], clLosses:0 },
     playerStats:{},
     careerLog:[],
     tour:null,
@@ -2056,7 +2060,7 @@ function startDraft(){
   S.trophies = { ipl:false, psl:false, bbl:false, cl:false };
   S.careerLog = []; S.currentSpin = null; S.tour = null;
   // Fresh run: reset per-run match bookkeeping and tick the lifetime run counter.
-  S.run = { losses:0, wins:0, streak:0, bestStreak:0, slamCommitted:false, attempted:[] };
+  S.run = { losses:0, wins:0, streak:0, bestStreak:0, slamCommitted:false, attempted:[], clLosses:0 };
   const rec = loadRecords(); rec.runs = (rec.runs||0) + 1; saveRecords(rec);
   if (S.setup.draftMode === "auction"){
     startAuction();
@@ -2917,7 +2921,7 @@ function renderSetup(){
     <div class="ww-kicker">🏏 The ultimate challenge</div>
     <div class="ww-ask">Can you get the</div>
     <div class="ww-word">WHITEWASH?</div>
-    <div class="ww-def">Win all four — IPL · PSL · Big Bash · Champions League — <b>without losing a single match.</b></div>
+    <div class="ww-def">Win all four trophies — then sweep the <b>Champions League without losing a single game.</b></div>
   </div>`));
 
   // Team name (optional — defaults to "Your XI"). Static block so it never re-animates.
@@ -3196,17 +3200,16 @@ function renderHub(){
   const hubHeader = el(`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap"><h1>Career Hub</h1><button class="ghost" id="startOver" style="padding:6px 12px;font-size:11px">↺ Start over</button></div>`);
   hubHeader.querySelector('#startOver').onclick = () => { if (confirm("Start a brand-new run? Your current squad and trophies will be lost.")) reset(); };
   wrap.append(hubHeader);
-  wrap.append(el(`<p class="muted">One XI. Four trophies. Win all four in a single run for the Grand Slam — lose nothing along the way for Whitewash.</p>`));
+  wrap.append(el(`<p class="muted">One XI. Four trophies. Win all four for the Grand Slam — then sweep the Champions League unbeaten for the Whitewash.</p>`));
 
   // This-run progress + lifetime records strip
   const run = ensureRun();
   const rec = loadRecords();
   const tc = trophyCount();
-  const invinciAlive = run.losses === 0;
   wrap.append(el(`<div class="panel" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:18px;display:flex;gap:18px;flex-wrap:wrap;align-items:center;justify-content:space-between">
     <div class="row" style="gap:18px;flex-wrap:wrap">
       <div style="display:flex;flex-direction:column"><span class="muted" style="font-size:10px;letter-spacing:1.5px;font-weight:800;text-transform:uppercase">This run</span><b style="font-size:18px;color:var(--gold)">${tc}/4 trophies</b></div>
-      <div style="display:flex;flex-direction:column"><span class="muted" style="font-size:10px;letter-spacing:1.5px;font-weight:800;text-transform:uppercase">Losses</span><b style="font-size:18px;color:${invinciAlive?'var(--green)':'var(--red)'}">${run.losses}${invinciAlive?' · 🛡 Whitewash alive':''}</b></div>
+      <div style="display:flex;flex-direction:column"><span class="muted" style="font-size:10px;letter-spacing:1.5px;font-weight:800;text-transform:uppercase">Losses</span><b style="font-size:18px;color:var(--gold)">${run.losses}</b></div>
     </div>
     <div class="row" style="gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);font-weight:700">
       <span>🥇 Best <b style="color:var(--ink)">${rec.bestTrophies||0}/4</b></span>
@@ -3742,12 +3745,11 @@ function renderSummary(){
   const run = ensureRun();
   const tc = trophyCount();
   const remaining = ["ipl","psl","bbl","cl"].filter(k=>!S.trophies[k]).length;
-  const invinciAlive = run.losses === 0;
   wrap.append(el(`<div class="panel" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:14px 0;display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:space-between">
     <div><span class="muted" style="font-size:10px;letter-spacing:1.5px;font-weight:800;text-transform:uppercase">Grand Slam run</span>
       <div style="font-size:16px;font-weight:900;color:var(--gold)">${tc}/4 trophies${remaining&&!summary.won?` · ${remaining} to go`:''}</div></div>
     <div style="text-align:right"><span class="muted" style="font-size:10px;letter-spacing:1.5px;font-weight:800;text-transform:uppercase">Run losses</span>
-      <div style="font-size:16px;font-weight:900;color:${invinciAlive?'var(--green)':'var(--red)'}">${run.losses}${invinciAlive?' · 🛡 Whitewash alive':''}</div></div>
+      <div style="font-size:16px;font-weight:900;color:var(--gold)">${run.losses}</div></div>
   </div>`));
 
   wrap.append(el(`<div class="big-stats">
@@ -4194,26 +4196,26 @@ function renderWin(){
   // Whitewash = won all four AND lost zero matches across the whole run.
   // (Recording into ww_records already happened in commitGrandSlam.)
   const run = ensureRun();
-  const invincible = run.losses === 0;
+  const invincible = (run.clLosses||0) === 0;   // Whitewash = Champions League swept unbeaten
   const rec = loadRecords();
   const wrap = el(`<div></div>`);
   wrap.append(el(`<div class="hero" style="background:radial-gradient(ellipse at center,${invincible?'#0d3a24':'#3a2a08'} 0%,transparent 60%)">
     <h1 style="font-size:72px;letter-spacing:4px">${invincible?'🛡🏆🏆🏆🏆':'🏆🏆🏆🏆'}</h1>
     <h1 style="font-size:48px;background:linear-gradient(180deg,${invincible?'#3ddc97,#2eb47a':'#f5c451,#d4a435'});-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${invincible?'WHITEWASH':'GRAND SLAM'}</h1>
-    <p>You won the IPL, PSL, Big Bash & Champions League${invincible?' <b style="color:var(--green)">without losing a single match</b>.':` — ${run.losses} loss${run.losses===1?'':'es'} along the way.`} ${run.wins} wins this run.</p>
+    <p>You won all four trophies${invincible?' — and <b style="color:var(--green)">swept the Champions League without dropping a game</b>.':`. ${run.wins} wins this run.`}</p>
   </div>`));
   // Next-challenge call to action
   if (invincible){
     wrap.append(el(`<div class="narrative" style="border-color:var(--green);background:linear-gradient(135deg,rgba(61,220,151,.12),rgba(61,220,151,.03))">
       <h3 style="color:var(--green)">🛡 WHITEWASH — ${rec.invincibles||1} all-time</h3>
-      <p>A flawless run. Every match, won. Almost nobody does this.</p>
+      <p>The Grand Slam, and the Champions League taken unbeaten. Almost nobody does this.</p>
       <p class="epi">There's no higher mountain. Draft a new XI and see if lightning strikes twice.</p>
     </div>`));
   } else {
     wrap.append(el(`<div class="narrative">
       <h3 style="color:var(--gold-bright)">🎯 THE FINAL CHALLENGE</h3>
-      <p>Grand Slam #${rec.grandSlams||1} — but you dropped ${run.losses} match${run.losses===1?'':'es'} on the way.</p>
-      <p class="epi">Now for the <b style="color:var(--green)">Whitewash</b>: draft a new XI and win all four without losing a single match. The rarest badge in the game.</p>
+      <p>Grand Slam #${rec.grandSlams||1} — but you dropped ${run.clLosses} game${run.clLosses===1?'':'s'} in the Champions League.</p>
+      <p class="epi">Now for the <b style="color:var(--green)">Whitewash</b>: win it all and sweep the Champions League unbeaten. The rarest badge in the game.</p>
     </div>`));
   }
   wrap.append(renderCareerStats(cs));
