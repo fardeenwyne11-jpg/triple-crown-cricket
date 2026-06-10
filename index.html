@@ -199,7 +199,7 @@
   /* CLUB | SEASON visualisation boxes */
   .spin-boxes{display:inline-flex;align-items:stretch;gap:12px;margin:14px 0 10px;max-width:100%;flex-wrap:wrap;justify-content:center}
   .spin-box-stub{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px 22px;min-width:130px;max-width:240px;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
-  .spin-box-stub .lbl-mini{position:absolute;top:-9px;background:var(--panel);padding:0 8px;font-size:9px;color:var(--muted);font-weight:800;letter-spacing:1.6px}
+  .spin-box-stub .lbl-mini{position:absolute;top:-9px;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--panel);padding:0 8px;font-size:9px;color:var(--muted);font-weight:800;letter-spacing:1.6px}
   .spin-box-stub .val{font-size:15px;font-weight:800;color:var(--ink);text-align:center;line-height:1.25;word-break:break-word}
   .spin-x{color:var(--muted);font-weight:700;font-size:14px;align-self:center}
   .spun-league{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:2px;margin:0 0 14px}
@@ -3090,7 +3090,9 @@ function renderHub(){
   const allWon = S.trophies.ipl && S.trophies.psl && S.trophies.bbl && S.trophies.cl;
   if (allWon) { S.screen = "win"; save(); return renderWin(); }
   const wrap = el(`<div></div>`);
-  wrap.append(el(`<h1>Career Hub</h1>`));
+  const hubHeader = el(`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap"><h1>Career Hub</h1><button class="ghost" id="startOver" style="padding:6px 12px;font-size:11px">↺ Start over</button></div>`);
+  hubHeader.querySelector('#startOver').onclick = () => { if (confirm("Start a brand-new run? Your current squad and trophies will be lost.")) reset(); };
+  wrap.append(hubHeader);
   wrap.append(el(`<p class="muted">One XI. Four trophies. Win all four in a single run for the Grand Slam — lose nothing along the way for Invincible.</p>`));
 
   // This-run progress + lifetime records strip
@@ -3155,7 +3157,7 @@ function renderHub(){
       <div style="font-size:22px;line-height:1.2"><span style="font-size:28px">${t.icon}</span> <b>${t.name.replace('ICC ','')}</b></div>
       <div style="margin:8px 0 8px">${diffBadge(t)}</div>
       <div class="muted" style="font-size:12px;margin:0 0 10px">${(t.id === "cl" ? t.rounds : ["League Season", ...t.rounds]).join(' → ')} · ${t.overs} overs</div>
-      ${locked ? `<div style="font-size:12px;color:var(--gold);margin-bottom:10px;font-weight:700">Win IPL, PSL & Big Bash first to unlock</div>` : `<div style="font-size:13px;margin-bottom:12px">XI rating: <b style="color:var(--gold)">${r.toFixed(1)}</b></div>`}
+      ${locked ? `<div style="font-size:12px;color:var(--gold);margin-bottom:10px;font-weight:700">Win IPL, PSL & Big Bash first to unlock</div>` : `<div style="font-size:13px;margin-bottom:12px">XI rating: <b style="color:var(--gold)">${S.setup.showRatings ? r.toFixed(1) : '?'}</b></div>`}
       <button class="primary" ${!canPlay?'disabled':''} style="width:100%">${btnText}</button>
     </div>`);
     c.querySelector("button").onclick = () => startTournament(t.id);
