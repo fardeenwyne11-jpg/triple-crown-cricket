@@ -1563,11 +1563,27 @@ function oppRating(o){
   return o.t20 || 80;
 }
 
-// ===== Single global difficulty knob (calibrated via Monte-Carlo) =====
-// Added to every opponent's rating. 0 = opponents at their real season strength;
-// positive = harder. Tuned so a well-drafted XI wins the Grand Slam only rarely.
-// Opponents are NOT rubber-banded to the player — draft quality drives your odds.
-let DIFFICULTY_OFFSET = 7;
+// ===== Per-tournament difficulty (calibrated via Monte-Carlo) =====
+// Each opponent's rating gets a boost that scales with the tournament's tier, so
+// the progression actually ramps: Big Bash (easiest) → PSL → IPL → Champions
+// League (hardest). Opponents are NOT rubber-banded — draft quality drives odds.
+let DIFFICULTY_OFFSET = 7;            // legacy alias
+const DIFF_BASE = 4, DIFF_STEP = 2;  // squad-rating boost: BBL +4, PSL +6, IPL +8, CL +10
+// Per-match win rate for a good (~90) draft, calibrated via Monte-Carlo:
+//   Big Bash ~64%  ·  PSL ~51%  ·  IPL ~35%  ·  Champions League ~26%
+function tourDifficultyOffset(t){ return DIFF_BASE + (((t && t.diff) || 1) - 1) * DIFF_STEP; }
+// Boost an opponent's squad player ratings by `boost` (what the sim actually
+// weighs), install it as their match XI, and return the boosted team rating.
+function boostOppSquad(o, boost){
+  const sq = o.squad.map(p => ({ ...p, season: Math.min(99, p.season + boost) }));
+  OPP_XI[o.n] = sq;
+  return Math.max(60, Math.min(99, Math.round(sq.reduce((a,b)=>a+b.season,0)/sq.length)));
+}
+// Progression lock: a tournament unlocks only once every EASIER tournament
+// (lower diff tier) has been won. Big Bash (tier 1) is open from the start.
+function tournamentUnlocked(t){
+  return TOURNAMENTS.filter(x => x.diff < t.diff).every(x => S.trophies && S.trophies[x.id]);
+}
 
 // ===== Persistent cross-run records (localStorage — no account needed) =====
 const RECORDS_KEY = "ww_records";
@@ -1638,8 +1654,8 @@ function clEliteTeams(){
 
 const TOURNAMENTS = [
   { id:"ipl", name:"IPL", fmt:"t20", icon:"🏏", rounds:["Qualifier 1","Qualifier 2","Final"], overs:20, base:170, leagues:["ipl"], diff:3, diffLabel:"Tough" },
-  { id:"psl", name:"PSL", fmt:"t20", icon:"🏆", rounds:["Qualifier","Eliminator","Final"], overs:20, base:170, leagues:["psl"], diff:1, diffLabel:"Approachable" },
-  { id:"bbl", name:"Big Bash League", fmt:"t20", icon:"🔥", rounds:["Knockout","Challenger","Final"], overs:20, base:170, leagues:["bbl"], diff:2, diffLabel:"Moderate" },
+  { id:"psl", name:"PSL", fmt:"t20", icon:"🏆", rounds:["Qualifier","Eliminator","Final"], overs:20, base:170, leagues:["psl"], diff:2, diffLabel:"Moderate" },
+  { id:"bbl", name:"Big Bash League", fmt:"t20", icon:"🔥", rounds:["Knockout","Challenger","Final"], overs:20, base:170, leagues:["bbl"], diff:1, diffLabel:"Approachable" },
   { id:"cl",  name:"Champions League", fmt:"t20", icon:"🌍", rounds:["Semi-Final","Final"], overs:20, base:170, leagues:["ipl","psl","bbl"], singleLeg:true, diff:4, diffLabel:"Gauntlet" }
 ];
 
@@ -2236,18 +2252,18 @@ function startTournament(tId){
   // One attempt per tournament per run — no replaying after you've entered it.
   const run = ensureRun();
   if (run.attempted.includes(tId)) return;
-  // CL requires the other 3 trophies first
-  if (tId === "cl" && (!S.trophies.ipl || !S.trophies.psl || !S.trophies.bbl)) return;
-  run.attempted.push(tId);
   const t = TOURNAMENTS.find(x=>x.id===tId);
+  // Progression: a tournament unlocks only once every easier one has been won.
+  if (!tournamentUnlocked(t)) return;
+  run.attempted.push(tId);
   // Champions League = elite 6-team field (2 best from each of IPL/PSL/Big Bash).
   // Other tournaments = every franchise in that league (one canonical edition each).
   let pool = (tId === "cl")
     ? clEliteTeams()
     : canonicalLeagueTeams(OPPONENTS.filter(o => t.leagues.includes(o.league)));
-  // Single global difficulty knob (see DIFFICULTY_OFFSET).
-  const mod = DIFFICULTY_OFFSET;
-  let candidates = pool.map(o=>({ n:o.n, team:o.team, year:o.year, r: Math.max(60, Math.min(99, oppRating(o) + mod)) }));
+  // Per-tournament difficulty: boost opponent squads by the tier amount.
+  const boost = tourDifficultyOffset(t);
+  let candidates = pool.map(o=>({ n:o.n, team:o.team, year:o.year, r: boostOppSquad(o, boost) }));
   const opps = shuffle(candidates).slice(0, t.rounds.length).sort((a,b)=>a.r-b.r);
   const auto = orderForBatting(squadPicks().map(s=>s.player)).map(p=>p.n);
   S.tour = { tId, fmt:t.fmt, roundIdx:0, opps, scorecards:[], live:false, speed:2, battingOrder: auto, oppPool: pool.map(o=>o.n) };
@@ -3220,17 +3236,19 @@ function renderHub(){
   });
   wrap.append(tr);
   wrap.append(el(`<h2>Play Tournament</h2>`));
-  wrap.append(el(`<p class="muted" style="font-size:12px;margin:-4px 0 10px">Ordered easiest to hardest. The Champions League is a four-match knockout gauntlet — no league cushion.</p>`));
+  wrap.append(el(`<p class="muted" style="font-size:12px;margin:-4px 0 10px">A locked progression — win each to unlock the next. Big Bash first, the Champions League last.</p>`));
   const grid = el(`<div style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))"></div>`);
-  // Champions League is locked until the other 3 trophies are won
-  const clLocked = !S.trophies.ipl || !S.trophies.psl || !S.trophies.bbl;
   const attempted = (S.run && S.run.attempted) || [];
   byDiff.forEach(t => {
     const r = (squadStrengths()||{overall:0}).overall;
     const won = S.trophies[t.id];
-    const locked = (t.id === "cl") && clLocked;
+    const locked = !tournamentUnlocked(t);
     const used = !won && attempted.includes(t.id);   // attempted this run but not won
     const canPlay = !won && !locked && !used;
+    // The easier tournaments still standing between you and this one.
+    const needed = TOURNAMENTS.filter(x => x.diff < t.diff && !S.trophies[x.id]).map(x => x.name.replace('ICC ',''));
+    const needTxt = needed.length <= 1 ? needed.join('') : needed.slice(0,-1).join(', ') + ' & ' + needed.slice(-1);
+    const phases = (t.id === "cl" ? ["Group Table", ...t.rounds] : ["League Season", ...t.rounds]);
     let btnText = 'Play';
     if (won) btnText = '🏆 Already won';
     else if (used) btnText = '✗ Eliminated';
@@ -3238,8 +3256,8 @@ function renderHub(){
     const c = el(`<div class="spin-box" style="padding:18px;text-align:left;${locked||used?'opacity:.55':''}">
       <div style="font-size:22px;line-height:1.2"><span style="font-size:28px">${t.icon}</span> <b>${t.name.replace('ICC ','')}</b></div>
       <div style="margin:8px 0 8px">${diffBadge(t)}</div>
-      <div class="muted" style="font-size:12px;margin:0 0 10px">${(t.id === "cl" ? t.rounds : ["League Season", ...t.rounds]).join(' → ')} · ${t.overs} overs</div>
-      ${locked ? `<div style="font-size:12px;color:var(--gold);margin-bottom:10px;font-weight:700">Win IPL, PSL & Big Bash first to unlock</div>` : used ? `<div style="font-size:12px;color:var(--red);margin-bottom:10px;font-weight:700">Knocked out this run — start over for another go</div>` : `<div style="font-size:13px;margin-bottom:12px">XI rating: <b style="color:var(--gold)">${r.toFixed(1)}</b></div>`}
+      <div class="muted" style="font-size:12px;margin:0 0 10px">${phases.join(' → ')} · ${t.overs} overs</div>
+      ${locked ? `<div style="font-size:12px;color:var(--gold);margin-bottom:10px;font-weight:700">🔒 Win ${needTxt} first to unlock</div>` : used ? `<div style="font-size:12px;color:var(--red);margin-bottom:10px;font-weight:700">Knocked out this run — start over for another go</div>` : `<div style="font-size:13px;margin-bottom:12px">XI rating: <b style="color:var(--gold)">${r.toFixed(1)}</b></div>`}
       <button class="primary" ${!canPlay?'disabled':''} style="width:100%">${btnText}</button>
     </div>`);
     c.querySelector("button").onclick = () => startTournament(t.id);
@@ -3304,10 +3322,10 @@ function startLeagueSim(){
   let teams = (S.tour.tId === "cl")
     ? clEliteTeams()
     : canonicalLeagueTeams(OPPONENTS.filter(o => t.leagues.includes(o.league)));
-  const mod = DIFFICULTY_OFFSET;
+  const boost = tourDifficultyOffset(t);
   const allTeams = [
     { n:"Your XI", r: (squadStrengths()||{overall:70}).overall, isMe:true },
-    ...teams.map(o => ({ n:o.n, r: Math.max(60, Math.min(99, oppRating(o) + mod)), isMe:false }))
+    ...teams.map(o => ({ n:o.n, r: boostOppSquad(o, boost), isMe:false }))
   ];
   // Double round-robin using the circle method.
   // Each team plays every other team exactly twice (one home, one away).
