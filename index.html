@@ -100,6 +100,9 @@
   .opt{display:inline-block;padding:12px 14px;border:2px solid var(--line);border-radius:10px;cursor:pointer;background:var(--panel);font-size:13px;transition:all .15s ease;text-align:center;font-weight:800;flex:1;min-width:120px;color:var(--ink)}
   .opt:hover{border-color:var(--gold);transform:translateY(-1px)}
   .opt.active{border-color:var(--green-deep);background:#d4edda;color:var(--green-deep)}
+  .opt.disabled{opacity:.45;cursor:not-allowed;filter:grayscale(1)}
+  .opt.disabled:hover{border-color:var(--line);transform:none}
+  .opt.disabled small{color:var(--gold)}
   .opt small{display:block;color:var(--muted);font-size:10px;margin-top:3px;font-weight:600;letter-spacing:.3px}
   .opt.active small{color:var(--green-deep)}
   .opts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
@@ -2783,7 +2786,7 @@ function renderSetup(){
   // Click-by-click setup: each step is revealed once the previous is answered.
   const steps = [
     { key:'draftMode', title:'How do you want to draft?',
-      opts:[["spin","🏏 Spin Wheel","Random team-season offers"],["auction","💰 Auction","Bid credits for any player"]] },
+      opts:[["spin","🏏 Spin Wheel","Random team-season offers"],["auction","💰 Auction","Coming soon",true]] },
     { key:'showRatings', title:'Show player ratings?',
       opts:[[true,"On","See every rating"],[false,"Off","Blind mode — trust your gut"]] },
   ];
@@ -2795,10 +2798,10 @@ function renderSetup(){
     const sec = el(`<div class="setup-step ${done?'done':'active'}"></div>`);
     sec.append(el(`<div class="step-head"><span class="step-no">${done?'✓':idx+1}</span><b>${step.title}</b></div>`));
     const opts = el(`<div class="opts"></div>`);
-    step.opts.forEach(([v,n,d])=>{
+    step.opts.forEach(([v,n,d,disabled])=>{
       const sel = S.setup[step.key]===v;
-      const o = el(`<div class="opt ${sel?'active':''}">${n}<small>${d}</small></div>`);
-      o.onclick = () => { S.setup[step.key]=v; if (idx === _setupStep) _setupStep = idx+1; save(); render(); };
+      const o = el(`<div class="opt ${sel?'active':''} ${disabled?'disabled':''}">${n}<small>${d}</small></div>`);
+      if (!disabled) o.onclick = () => { S.setup[step.key]=v; if (idx === _setupStep) _setupStep = idx+1; save(); render(); };
       opts.append(o);
     });
     sec.append(opts);
@@ -3590,6 +3593,8 @@ function renderSummary(){
       shareText: `${summary.title} in Whitewash Cricket ${t.name}. Beat me?\nhttps://whitewashcricket.github.io/`
     });
   };
+  const startOver = el(`<button class="ghost">↺ Start over</button>`);
+  startOver.onclick = () => { if (confirm("Start a brand-new run? Your current squad and trophies will be lost.")) reset(); };
   const cont = el(`<button class="primary" style="flex:1">Back to hub →</button>`);
   cont.onclick = () => {
     S.tour=null;
@@ -3597,7 +3602,7 @@ function renderSummary(){
     else S.screen = "hub";
     save(); render();
   };
-  row.append(share, cont);
+  row.append(share, startOver, cont);
   wrap.append(row);
   return wrap;
 }
