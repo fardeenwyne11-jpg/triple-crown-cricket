@@ -1514,9 +1514,14 @@ OPPONENTS.forEach(o => {
 // edition; tie-break on rating). This guarantees every real participating team
 // shows up exactly once as a possible opponent — no franchise dropped just
 // because its title-winning season predates the latest edition.
+// Franchises that no longer exist (or are an old name of a current team). They
+// stay in the spin draft pool for variety, but never appear as tournament
+// opponents — the opponent field is only current franchises.
+const DEFUNCT_FRANCHISES = new Set(["Pune Warriors India","Kochi Tuskers Kerala","Gujarat Lions","Delhi Daredevils"]);
 function canonicalLeagueTeams(pool){
   const byTeam = {};
   pool.forEach(o => {
+    if (DEFUNCT_FRANCHISES.has(o.team)) return;
     const cur = byTeam[o.team];
     if (!cur || o.year > cur.year || (o.year === cur.year && o.t20 > cur.t20)) byTeam[o.team] = o;
   });
