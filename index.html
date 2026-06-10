@@ -201,7 +201,12 @@
   .spin-box-stub{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px 22px;min-width:130px;max-width:240px;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
   .spin-box-stub .lbl-mini{position:absolute;top:-9px;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--panel);padding:0 8px;font-size:9px;color:var(--muted);font-weight:800;letter-spacing:1.6px}
   .spin-box-stub .val{font-size:15px;font-weight:800;color:var(--ink);text-align:center;line-height:1.25;word-break:break-word}
-  .spin-x{color:var(--muted);font-weight:700;font-size:14px;align-self:center}
+  .spin-x{color:var(--muted);font-weight:700;font-size:14px;align-self:center;flex:0 0 auto}
+  /* Mobile: keep CLUB × SEASON on one row, evenly sized, instead of wrapping crookedly */
+  @media(max-width:560px){
+    .spin-boxes{flex-wrap:nowrap;gap:8px;width:100%;max-width:360px}
+    .spin-boxes .spin-box-stub{flex:1 1 0;min-width:0;max-width:none;padding:14px 8px}
+  }
   .spun-league{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:2px;margin:0 0 14px}
 
   /* Expected odds screen */
@@ -2747,9 +2752,8 @@ function openFeedbackModal(){
       setTimeout(close, 1400);
       return;
     }
-    // Fallback: open user's mail client with prefilled email to the dev
-    const mailto = `mailto:fardeenwyne11@yahoo.com?subject=${encodeURIComponent('[Whitewash Cricket] '+type)}&body=${encodeURIComponent(body)}`;
-    st.style.color = "var(--gold)"; st.innerHTML = `Couldn't auto-send. <a href="${mailto}" style="color:var(--green-deep);font-weight:800">Open email app to send →</a>`;
+    // Auto-send failed — keep the user in-app, no email client. Let them retry.
+    st.style.color = "var(--gold)"; st.textContent = "Couldn't send just now — please tap Send to try again.";
     send.disabled = false;
   };
 }
@@ -2916,8 +2920,9 @@ function renderSidebar(){
   side.append(list);
 
   // Team strength card — batting / bowling / fielding, live as you draft.
+  // In blind mode, keep it hidden until the XI is locked in (all 11 chosen).
   const st = squadStrengths();
-  if (st){
+  if (st && (S.setup.showRatings || squadPicks().length === SQUAD_SIZE)){
     const w = v => Math.max(6, Math.min(100, (v-50)/49*100));
     const row = (lbl,val,cls) => `<div class="ts-row"><span class="ts-lbl">${lbl}</span><div class="ts-bar"><i class="${cls}" style="width:${w(val)}%"></i></div><b class="ts-val">${Math.round(val)}</b></div>`;
     side.append(el(`<div class="strength-card">
@@ -3157,7 +3162,7 @@ function renderHub(){
       <div style="font-size:22px;line-height:1.2"><span style="font-size:28px">${t.icon}</span> <b>${t.name.replace('ICC ','')}</b></div>
       <div style="margin:8px 0 8px">${diffBadge(t)}</div>
       <div class="muted" style="font-size:12px;margin:0 0 10px">${(t.id === "cl" ? t.rounds : ["League Season", ...t.rounds]).join(' → ')} · ${t.overs} overs</div>
-      ${locked ? `<div style="font-size:12px;color:var(--gold);margin-bottom:10px;font-weight:700">Win IPL, PSL & Big Bash first to unlock</div>` : `<div style="font-size:13px;margin-bottom:12px">XI rating: <b style="color:var(--gold)">${S.setup.showRatings ? r.toFixed(1) : '?'}</b></div>`}
+      ${locked ? `<div style="font-size:12px;color:var(--gold);margin-bottom:10px;font-weight:700">Win IPL, PSL & Big Bash first to unlock</div>` : `<div style="font-size:13px;margin-bottom:12px">XI rating: <b style="color:var(--gold)">${r.toFixed(1)}</b></div>`}
       <button class="primary" ${!canPlay?'disabled':''} style="width:100%">${btnText}</button>
     </div>`);
     c.querySelector("button").onclick = () => startTournament(t.id);
