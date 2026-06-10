@@ -1624,12 +1624,23 @@ function canonicalLeagueTeams(pool){
   });
   return Object.values(byTeam);
 }
+// Champions League field: the two strongest current franchises from each of
+// IPL, PSL and Big Bash → an elite 6-team event (+ you = 7-team table).
+function clEliteTeams(){
+  const out = [];
+  ['ipl','psl','bbl'].forEach(lg => {
+    const top = canonicalLeagueTeams(OPPONENTS.filter(o => o.league === lg))
+      .sort((a,b) => oppRating(b) - oppRating(a)).slice(0,2);
+    out.push(...top);
+  });
+  return out;
+}
 
 const TOURNAMENTS = [
   { id:"ipl", name:"IPL", fmt:"t20", icon:"🏏", rounds:["Qualifier 1","Qualifier 2","Final"], overs:20, base:170, leagues:["ipl"], diff:3, diffLabel:"Tough" },
   { id:"psl", name:"PSL", fmt:"t20", icon:"🏆", rounds:["Qualifier","Eliminator","Final"], overs:20, base:170, leagues:["psl"], diff:1, diffLabel:"Approachable" },
   { id:"bbl", name:"Big Bash League", fmt:"t20", icon:"🔥", rounds:["Knockout","Challenger","Final"], overs:20, base:170, leagues:["bbl"], diff:2, diffLabel:"Moderate" },
-  { id:"cl",  name:"Champions League", fmt:"t20", icon:"🌍", rounds:["Round of 16","Quarter-Final","Semi-Final","Final"], overs:20, base:170, leagues:["ipl","psl","bbl","cpl","blast"], diff:4, diffLabel:"Gauntlet" }
+  { id:"cl",  name:"Champions League", fmt:"t20", icon:"🌍", rounds:["Semi-Final","Final"], overs:20, base:170, leagues:["ipl","psl","bbl"], singleLeg:true, diff:4, diffLabel:"Gauntlet" }
 ];
 
 // Top 3 teams from each league for the Champions League pool
@@ -2229,13 +2240,11 @@ function startTournament(tId){
   if (tId === "cl" && (!S.trophies.ipl || !S.trophies.psl || !S.trophies.bbl)) return;
   run.attempted.push(tId);
   const t = TOURNAMENTS.find(x=>x.id===tId);
-  // Filter opponents by league(s) belonging to this tournament
-  let pool = OPPONENTS.filter(o => t.leagues.includes(o.league));
-  if (tId === "cl") {
-    pool = pool.filter(o => CL_POOL.includes(o.team));
-  }
-  // One entry per franchise — every real participating team is available.
-  pool = canonicalLeagueTeams(pool);
+  // Champions League = elite 6-team field (2 best from each of IPL/PSL/Big Bash).
+  // Other tournaments = every franchise in that league (one canonical edition each).
+  let pool = (tId === "cl")
+    ? clEliteTeams()
+    : canonicalLeagueTeams(OPPONENTS.filter(o => t.leagues.includes(o.league)));
   // Single global difficulty knob (see DIFFICULTY_OFFSET).
   const mod = DIFFICULTY_OFFSET;
   let candidates = pool.map(o=>({ n:o.n, team:o.team, year:o.year, r: Math.max(60, Math.min(99, oppRating(o) + mod)) }));
@@ -3290,9 +3299,11 @@ function renderHub(){
 let _leagueInt = null;
 function startLeagueSim(){
   const t = TOURNAMENTS.find(x=>x.id===S.tour.tId);
-  let pool = OPPONENTS.filter(o => t.leagues.includes(o.league));
-  // Every real franchise in this league participates (one canonical edition each).
-  let teams = canonicalLeagueTeams(pool);
+  // Champions League fields the elite 6 (2 best per domestic league); others use
+  // every franchise in the league (one canonical edition each).
+  let teams = (S.tour.tId === "cl")
+    ? clEliteTeams()
+    : canonicalLeagueTeams(OPPONENTS.filter(o => t.leagues.includes(o.league)));
   const mod = DIFFICULTY_OFFSET;
   const allTeams = [
     { n:"Your XI", r: (squadStrengths()||{overall:70}).overall, isMe:true },
@@ -3302,7 +3313,9 @@ function startLeagueSim(){
   // Each team plays every other team exactly twice (one home, one away).
   // Fixtures are interleaved by Game Week so AI matches and the user's matches
   // happen in the same round, like a real league season.
-  const fixtures = buildDoubleRoundRobin(allTeams);
+  // CL is a single round-robin table (each plays once) — a punchy elite finale;
+  // domestic leagues stay double round-robin (home + away).
+  const fixtures = t.singleLeg ? roundRobinLeg(allTeams, 0) : buildDoubleRoundRobin(allTeams);
   const perGw = Math.max(1, Math.floor(allTeams.length / 2));
   const standings = allTeams.map(t => ({ team:t, P:0, W:0, L:0, F:0, A:0, oversFor:0, oversAgainst:0, pts:0, nrr:0 }));
   S.tour.league = { fixtures, standings, fixtureIdx:0, teams: allTeams, perGw, done:false };
